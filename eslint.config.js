@@ -1,0 +1,232 @@
+// ESLint 10 flat config for The Last Clan (web build).
+// Locked at W0-01 (CONVENTIONS.md): rule changes need a note in state/STATUS.md.
+//
+// The boundaries below implement AGENTS.md "Non-negotiable engineering boundaries"
+// and TP v2.0 §21: nothing in packages/sim may import three, react, DOM types or
+// apps/web; no wall clock, Math.random, floats or timers may determine outcomes.
+// tests/arch/boundaries.test.ts proves each rule fires. W0-04 extends this file
+// with the intra-sim direction (ai may not import core implementation, ...).
+import js from "@eslint/js";
+import { defineConfig, globalIgnores } from "eslint/config";
+import globals from "globals";
+import tseslint from "typescript-eslint";
+
+// ---------------------------------------------------------------------------
+// Ban lists
+// ---------------------------------------------------------------------------
+
+/** Rendering / UI / app imports that no simulation-side package may take. */
+const RENDER_AND_APP_IMPORT_GROUPS = [
+  "three",
+  "three/*",
+  "@react-three/*",
+  "react",
+  "react/*",
+  "react-dom",
+  "react-dom/*",
+  "vite",
+  "vite/*",
+  "@lastclan/web",
+  "**/apps/web/**",
+];
+
+/** Node built-ins: packages/sim runs unchanged in a Web Worker and in Node. */
+const NODE_BUILTIN_MODULES = [
+  "assert", "async_hooks", "buffer", "child_process", "cluster", "console", "constants", "crypto",
+  "dgram", "diagnostics_channel", "dns", "domain", "events", "fs", "http", "http2", "https",
+  "inspector", "module", "net", "os", "path", "perf_hooks", "process", "punycode", "querystring",
+  "readline", "repl", "stream", "string_decoder", "sys", "timers", "tls", "trace_events", "tty",
+  "url", "util", "v8", "vm", "wasi", "worker_threads", "zlib",
+];
+
+/** DOM, Worker, storage, timer and clock globals that must not appear in packages/sim. */
+const SIM_BANNED_GLOBALS = [
+  // DOM and browser
+  "window", "document", "navigator", "self", "globalThis", "location", "history", "screen",
+  "alert", "confirm", "prompt", "addEventListener", "removeEventListener", "dispatchEvent",
+  "postMessage", "Worker", "SharedWorker", "MessageChannel", "BroadcastChannel", "XMLHttpRequest",
+  "fetch", "WebSocket", "localStorage", "sessionStorage", "indexedDB", "caches",
+  "requestAnimationFrame", "cancelAnimationFrame", "requestIdleCallback", "cancelIdleCallback",
+  "OffscreenCanvas", "ImageData", "Blob", "File", "URL", "Image", "Audio",
+  // timers and microtask scheduling
+  "setTimeout", "setInterval", "clearTimeout", "clearInterval", "setImmediate", "clearImmediate",
+  "queueMicrotask",
+  // wall clock and entropy
+  "Date", "performance", "crypto",
+  // Node
+  "process", "Buffer", "require", "module", "exports", "__dirname", "__filename",
+];
+
+/** Types that are DOM/Node/clock surfaces. Reported by @typescript-eslint/no-restricted-types. */
+const SIM_BANNED_TYPES = [
+  "Document", "Window", "Element", "HTMLElement", "HTMLCanvasElement", "HTMLDivElement",
+  "Node", "Event", "EventTarget", "MessageEvent", "Worker", "SharedWorker", "MessagePort",
+  "CanvasRenderingContext2D", "OffscreenCanvas", "OffscreenCanvasRenderingContext2D", "ImageData",
+  "WebGLRenderingContext", "WebGL2RenderingContext", "GPUDevice",
+  "Blob", "File", "URL", "Request", "Response", "Headers", "AbortController", "AbortSignal",
+  "IDBDatabase", "IDBFactory", "IDBTransaction", "IDBObjectStore", "Storage", "Navigator",
+  "Location", "XMLHttpRequest", "WebSocket", "Performance", "Date", "DOMRect",
+];
+
+/** Math members that produce floats or entropy. Integer-safe members (abs, max, min, floor, trunc, sign, imul, clz32) stay allowed. */
+const FLOAT_OR_ENTROPY_MATH = [
+  "random", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "sinh", "cosh", "tanh",
+  "asinh", "acosh", "atanh", "sqrt", "cbrt", "pow", "exp", "expm1", "log", "log2", "log10", "log1p",
+  "hypot", "fround", "PI", "E", "LN2", "LN10", "LOG2E", "LOG10E", "SQRT2", "SQRT1_2",
+];
+
+// ---------------------------------------------------------------------------
+// Rule blocks
+// ---------------------------------------------------------------------------
+
+const BOUNDARY_MSG = "packages/sim, packages/content and packages/lab import nothing from three, react, the DOM or apps/web (AGENTS.md; TP v2.0 §21).";
+
+/** Applied to every simulation-side package, tests included. */
+const noRenderOrAppImports = {
+  "no-restricted-imports": [
+    "error",
+    { patterns: [{ group: RENDER_AND_APP_IMPORT_GROUPS, message: BOUNDARY_MSG }] },
+  ],
+  "@typescript-eslint/no-restricted-types": [
+    "error",
+    {
+      types: Object.fromEntries(
+        SIM_BANNED_TYPES.map((t) => [t, { message: `${t} is a DOM/Node/clock type; ${BOUNDARY_MSG}` }]),
+      ),
+    },
+  ],
+};
+
+/** Applied to packages/sim production code only (tests may use Node and vitest). */
+const simPurity = {
+  "no-restricted-imports": [
+    "error",
+    {
+      patterns: [
+        { group: RENDER_AND_APP_IMPORT_GROUPS, message: BOUNDARY_MSG },
+        {
+          group: ["node:*", ...NODE_BUILTIN_MODULES, ...NODE_BUILTIN_MODULES.map((m) => `${m}/*`)],
+          message: "packages/sim runs unchanged in a Web Worker and in Node: no Node built-ins (AGENTS.md).",
+        },
+        {
+          group: ["@lastclan/lab", "@lastclan/content", "**/packages/lab/**", "**/packages/content/**"],
+          message: "packages/sim is the lowest layer: it never imports lab, content tooling or apps (INTERFACES.md).",
+        },
+        { group: ["vitest", "vitest/*"], message: "vitest is a test-only import." },
+      ],
+    },
+  ],
+  "no-restricted-globals": [
+    "error",
+    ...SIM_BANNED_GLOBALS.map((name) => ({
+      name,
+      message: `${name} is a DOM/timer/clock/Node global; packages/sim owns consequential state with no wall clock, timers or DOM (AGENTS.md).`,
+    })),
+  ],
+  "no-restricted-properties": [
+    "error",
+    ...FLOAT_OR_ENTROPY_MATH.map((property) => ({
+      object: "Math",
+      property,
+      message: `Math.${property} is float or entropy; consequential arithmetic is integer and goes through checkedMath (AGENTS.md, CONVENTIONS.md).`,
+    })),
+    { object: "Number", property: "parseFloat", message: "No floats in packages/sim." },
+  ],
+  "no-restricted-syntax": [
+    "error",
+    {
+      selector: "Literal[raw=/^[0-9]*\\.[0-9]+/]",
+      message: "Float literal in packages/sim: consequential arithmetic is integer-only (CONVENTIONS.md). Use integer units (mm, milli, ticks).",
+    },
+    {
+      selector: "CallExpression[callee.name='parseFloat']",
+      message: "No floats in packages/sim.",
+    },
+  ],
+};
+
+/** packages/lab and packages/content: no entropy from Math.random (CONVENTIONS.md). */
+const noMathRandom = {
+  "no-restricted-properties": [
+    "error",
+    { object: "Math", property: "random", message: "Math.random is banned in packages/lab and packages/content (CONVENTIONS.md); use derived streams from @lastclan/sim." },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Config
+// ---------------------------------------------------------------------------
+
+export default defineConfig([
+  globalIgnores([
+    "**/node_modules/",
+    "**/dist/",
+    "**/*.tsbuildinfo",
+    "docs/",
+    "reference/",
+    "handoffs/",
+    "coverage/",
+  ]),
+
+  // Baseline for all TypeScript sources.
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    extends: [js.configs.recommended, tseslint.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+    },
+    rules: {
+      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports", fixStyle: "inline-type-imports" }],
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      eqeqeq: ["error", "always"],
+      "no-var": "error",
+      "prefer-const": "error",
+    },
+  },
+
+  // Root config/scripts run in Node.
+  {
+    files: ["*.js", "*.ts", "scripts/**/*.js", "scripts/**/*.ts"],
+    languageOptions: { globals: { ...globals.node } },
+  },
+
+  // Simulation-side packages: no rendering, no DOM, no app imports (tests included).
+  {
+    files: ["packages/sim/**/*.ts", "packages/content/**/*.ts", "packages/lab/**/*.ts"],
+    rules: noRenderOrAppImports,
+  },
+
+  // packages/lab and packages/content are Node programs (compiler, CLI, renderer).
+  {
+    files: ["packages/lab/**/*.ts", "packages/content/**/*.ts"],
+    languageOptions: { globals: { ...globals.node } },
+    rules: noMathRandom,
+  },
+
+  // packages/sim production code: pure, deterministic, integer-only.
+  {
+    files: ["packages/sim/**/*.ts"],
+    ignores: ["packages/sim/**/*.test.ts"],
+    languageOptions: { globals: {} },
+    rules: simPurity,
+  },
+
+  // packages/sim tests run in Node under vitest; Node globals allowed, boundaries still enforced.
+  {
+    files: ["packages/sim/**/*.test.ts"],
+    languageOptions: { globals: { ...globals.node } },
+  },
+
+  // Browser app: DOM allowed; render-only floats allowed (AGENTS.md).
+  {
+    files: ["apps/web/**/*.ts", "apps/web/**/*.tsx"],
+    languageOptions: { globals: { ...globals.browser } },
+  },
+
+  // Repository-level tests (architecture, integration) run in Node.
+  {
+    files: ["tests/**/*.ts"],
+    languageOptions: { globals: { ...globals.node } },
+  },
+]);

@@ -1,0 +1,312 @@
+{
+ "schemaVersion": 1,
+ "gddSource": "design/GDD_v1.md",
+ "scenes": [
+  {
+   "id": "AI 01",
+   "packet": "P1-18",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 02",
+   "packet": "P2-03",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 03",
+   "packet": "P1-19",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 04",
+   "packet": "P2-14",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 05",
+   "packet": "P1-06",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 06",
+   "packet": "P1-08",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 07",
+   "packet": "P1-25",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 08",
+   "packet": "P2-09",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 09",
+   "packet": "P2-08",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 10",
+   "packet": "P1-15",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "AI 11",
+   "packet": "P2-10",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "LAW 01",
+   "packet": "P1-22",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "LAW 02",
+   "packet": "P1-13",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "LAW 03",
+   "packet": "P1-19",
+   "gate": "G1",
+   "status": "PLANNED"
+  },
+  {
+   "id": "LAW 04",
+   "packet": "P2-16",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "LAW 05",
+   "packet": "P3-08",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "END 01",
+   "packet": "P3-08",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "END 02",
+   "packet": "P3-08",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "END 03",
+   "packet": "P3-08",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "END 04",
+   "packet": "P3-08",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "END 05",
+   "packet": "P3-08",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "DATA 01",
+   "packet": "P2-20",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "DATA 02",
+   "packet": "P2-20",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "KNOW 01",
+   "packet": "P2-03",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "KNOW 02",
+   "packet": "P2-02",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "SOCIAL 01",
+   "packet": "P2-07",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "SOCIAL 02",
+   "packet": "P2-07",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "SOCIAL 03",
+   "packet": "P2-10",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "FORECAST 01",
+   "packet": "P2-21",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "FORECAST 02",
+   "packet": "P2-21",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "FORECAST 03",
+   "packet": "P2-21",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "TIME 01",
+   "packet": "P3-08",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "EXPO 01",
+   "packet": "P2-16",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "WILD 01",
+   "packet": "P2-11",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "INFO 01",
+   "packet": "P2-16",
+   "gate": "G2",
+   "status": "PLANNED"
+  },
+  {
+   "id": "BUILD 01",
+   "packet": "P3-04",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "FINALE 01",
+   "packet": "P3-10",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "ECON 01",
+   "packet": "P3-05",
+   "gate": "G3",
+   "status": "PLANNED"
+  },
+  {
+   "id": "PRESENT 01",
+   "packet": "P4-13",
+   "gate": "G4",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 01",
+   "packet": "P5-11",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 02",
+   "packet": "P5-11",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 03",
+   "packet": "P5-05",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 04",
+   "packet": "P5-04",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 05",
+   "packet": "P5-05",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 06",
+   "packet": "P5-07",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 07",
+   "packet": "P5-08",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 08",
+   "packet": "P5-06",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 09",
+   "packet": "P5-10",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 10",
+   "packet": "P5-10",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 11",
+   "packet": "P5-03",
+   "gate": "GS",
+   "status": "PLANNED"
+  },
+  {
+   "id": "STORY 12",
+   "packet": "P5-10",
+   "gate": "GS",
+   "status": "PLANNED"
+  }
+ ]
+}

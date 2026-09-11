@@ -1,0 +1,36 @@
+{
+  "name": "lastclan",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The Last Clan — web build (browser survival god game). npm workspace root.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json",
+    "clean": "node scripts/clean.js",
+    "test": "vitest run",
+    "test:tools": "python3 -m unittest discover -s tools -p test_tools.py -v",
+    "lint": "eslint .",
+    "lab": "node packages/lab/dist/cli/index.js",
+    "fixtures": "node packages/lab/dist/cli/index.js validate contracts/examples",
+    "screens": "node -e \"console.log('screens: BLOCKED_RENDER until W0-10 (no /capture route, no Playwright job yet)'); process.exit(0)\"",
+    "check:workboard": "python3 tools/check_workboard.py",
+    "verify": "npm run build && npm run lint && npm test && npm run test:tools && npm run check:workboard"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.2",
+    "eslint": "10.10.0",
+    "globals": "17.12.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.0",
+    "vitest": "5.0.0"
+  }
+}

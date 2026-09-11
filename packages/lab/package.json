@@ -1,0 +1,19 @@
+{
+  "name": "@lastclan/lab",
+  "version": "0.0.0",
+  "private": true,
+  "description": "clanlab — Node CLI: fixture runner, assertion registry, readability renderer, failure bundles (TP v2.0 §19).",
+  "type": "module",
+  "bin": {
+    "clanlab": "./dist/cli/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}

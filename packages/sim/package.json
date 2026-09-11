@@ -1,0 +1,17 @@
+{
+  "name": "@lastclan/sim",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The Last Clan simulation: consequential state at 10 Hz, integer units, deterministic streams. Pure TypeScript — no DOM, no rendering, no timers, no wall clock.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false
+}

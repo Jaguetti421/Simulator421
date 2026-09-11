@@ -1,0 +1,9 @@
+{
+ "schemaVersion": 1,
+ "baselineId": "PLANNING_ONLY_NO_GAME_SOURCE",
+ "gitCommit": null,
+ "archiveSha256": null,
+ "status": "NO_IMPLEMENTATION_ACCEPTED",
+ "acceptedPackets": [],
+ "contractVersion": "DESIGN_V0_UNIMPLEMENTED"
+}

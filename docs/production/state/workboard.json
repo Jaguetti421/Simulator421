@@ -1,0 +1,2929 @@
+{
+ "schemaVersion": 2,
+ "kitVersion": "web-1.0",
+ "baselineId": "PLANNING_ONLY_NO_GAME_SOURCE",
+ "operatingModel": "single developer; no per-packet authorization; stop at phase ends for Jani",
+ "phaseOrder": [
+  "W0",
+  "P1",
+  "P2",
+  "P3",
+  "P4",
+  "P5",
+  "P6",
+  "PX"
+ ],
+ "packets": [
+  {
+   "id": "W0-01",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Bootstrap the workspace, CI and instruction files",
+   "depends": [],
+   "goal": "Create the smallest buildable npm workspace with the package skeletons, strict TypeScript, Vitest, ESLint import boundaries, a `clanlab` stub, CI, and the production kit imported under docs/production. Record the actual environment.",
+   "accept": [
+    "`npm ci && npm test && npm run lint` pass on a fresh clone; packages sim/content/lab and apps/web exist with README stubs and no game systems.",
+    "An import of `three`, `react` or a DOM type inside packages/sim fails lint; the failure is demonstrated and recorded.",
+    ".github/workflows/ci.yml runs build, lint, test, fixture subset and `tools/check_workboard.py`; a Playwright screenshot job exists but may be marked BLOCKED until W0-10.",
+    "state/STATUS.md records Node/npm/git versions, browser and GPU availability, and whether GitHub push works from the sandbox; state/ACCEPTED_BASELINE.json records the first commit."
+   ],
+   "refs": "TP v2.0 \u00a72, \u00a721; AGENTS.md; CONVENTIONS.md",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "M",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-02",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Primitives: checked integer math, units, rounding, serialization",
+   "depends": [
+    "W0-01"
+   ],
+   "goal": "Implement branded Int, checkedMath (add, sub, mul, divFloor, divCeil, mulDiv, isqrt) with safe-integer assertions, tick/millimeter/thousandths units, saved rate remainders and little-endian serialization.",
+   "accept": [
+    "Known movement and need-rate vectors round as GDD 30.1\u201330.2 and D02 specify (ceil after single skill modifier; remainders carried).",
+    "Overflow past 2^53 and invalid units fail explicitly in test builds; `mulDiv` handles the millimeter-squared and thousandths products without overflow.",
+    "Serialization round-trips values and remainders byte-exactly; format version is recorded."
+   ],
+   "refs": "TP v2.0 \u00a74; TP v1.1 \u00a74; GDD 30.1\u201330.2; Addendum D02",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "S",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-03",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "PRNG (sfc32), stream derivation and canonical hashing",
+   "depends": [
+    "W0-02"
+   ],
+   "goal": "Implement sfc32 with pinned test vectors generated from the reference implementation, splitmix32-based labeled stream derivation, and a 32-bit canonical hash (FNV-1a default) over little-endian serialization with two hash domains.",
+   "accept": [
+    "Vectors identify algorithm, seeding rule and byte order; they are stored in the repository and match the implementation.",
+    "Adding an unused guest or cosmetic stream does not advance core streams; equal seeds give equal sequences across Node and a browser Worker (verified at W0-07/W0-10).",
+    "Equivalent data in different insertion order hashes identically; a changed consequential value changes the authoritative hash; observer data changes only the observer hash."
+   ],
+   "refs": "TP v2.0 \u00a74; TP v1.1 \u00a74, \u00a715; GDD 15.4",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "S",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-04",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Contracts v0 and dependency boundaries",
+   "depends": [
+    "W0-02"
+   ],
+   "goal": "Define PlayerCommand, CommandAck, ActionRequest/Result, ActorKnowledgeView, IPerceptionQuery, IRouteQuery, RouteResult, DamageProposal, DecisionTrace, CommittedEvent, RenderSnapshot, IStateSectionCodec, ContentProfile and FinalResult as TypeScript types plus JSON schemas, golden samples and the reason-ID registry.",
+   "accept": [
+    "Golden JSON samples in contracts/samples validate against the schemas and round-trip through the codecs; rejection and unknown-version samples are rejected.",
+    "The architecture test proves ai/ cannot import core/ implementation and nothing in packages/sim imports rendering or DOM.",
+    "The reason registry contains at least the mandatory v0 IDs from INTERFACES.md, each with player text and required debug fields; contract version and change procedure are recorded in contracts/registry.json."
+   ],
+   "refs": "contracts/INTERFACES.md; TP v1.1 \u00a73, \u00a712; TP v2.0 \u00a73",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "M",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-05",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Fixture DSL parser, semantic validation and assertion registry",
+   "depends": [
+    "W0-03",
+    "W0-04"
+   ],
+   "goal": "Implement the fixture envelope (contracts/fixture.schema.json), semantic validation from FIXTURE_DSL.md, catalog profiles (Fixture/Prototype8/Trial24/Standard100) and the assertion registry (EventCountGte, EventCountEq, Invariant, HashEqualVariant) with UnsupportedAssertion failures.",
+   "accept": [
+    "Unknown versions, fields, units, IDs and assertion kinds are rejected with typed errors before any world is constructed.",
+    "Setup-only state (precommitted laws, initial facts) is separated from validated player commands; a runtime law without 600 ticks of notice is rejected by the real validator path.",
+    "The three example fixtures parse; an EventCountGte with no matching events fails rather than passing empty."
+   ],
+   "refs": "contracts/FIXTURE_DSL.md; contracts/fixture.schema.json; TP v1.1 \u00a719\u201320; Addendum D07",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "M",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-06",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "clanlab run, summaries and failure bundles",
+   "depends": [
+    "W0-05"
+   ],
+   "goal": "Add `clanlab validate|run|inspect` as a Node CLI with JSON summaries, bounded log files and reproducible failure bundles.",
+   "accept": [
+    "A deliberately failing fixture returns nonzero and writes a bundle that `clanlab inspect` reopens with the failing assertion, tick and evidence paths.",
+    "Machine output is valid JSON with build/contract/content identity, profile, seed, executed/failed/skipped/blocked counts and artifact paths; detailed logs stay in files.",
+    "Exit 0 only when every requested supported check passed; BLOCKED and skipped counts are visible."
+   ],
+   "refs": "TP v1.1 \u00a719\u201321; contracts/FIXTURE_DSL.md (CLI contract)",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "S",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-07",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Minimal deterministic tick kernel and 137-actor synthetic workload (Node + Worker)",
+   "depends": [
+    "W0-03",
+    "W0-04"
+   ],
+   "goal": "Implement the ten-stage tick loop skeleton, pause barrier and command queue with a synthetic motion and law-query workload for 136/137 actors, runnable in Node and in a Worker, with operation counters and canonical hashes.",
+   "accept": [
+    "Same input tape produces equal authoritative hashes across repeated Node runs and between Node (`worker_threads`) and the browser Worker path (browser half verified in W0-10 via Playwright, recorded BLOCKED until then).",
+    "Pause and tick boundaries are explicit; stage order matches TP v1.1 \u00a74 and is asserted by a fixture.",
+    "Counters (route-like queries, perception-like queries, actors) and wall-time per tick are reported with the workload's omissions listed; it is labeled synthetic and cannot satisfy FINALE 01."
+   ],
+   "refs": "TP v1.1 \u00a74, \u00a718; TP v2.0 \u00a73\u20134, \u00a718; G0 contract",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "M",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-08",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Persistence smoke: section container, IndexedDB adapter, exactly-once result key",
+   "depends": [
+    "W0-07"
+   ],
+   "goal": "Implement the versioned state-section container, a storage interface with in-memory, fake-indexeddb and browser IndexedDB adapters, two-generation durable saves, and a results store with unique-key add semantics.",
+   "accept": [
+    "Snapshot load plus continuation matches the uninterrupted run's hashes for the synthetic kernel (Node adapters); corrupt or truncated generation leaves the previous valid generation intact.",
+    "Applying the same FinalResult twice increments once; a conflicting payload for the same key fails explicitly; a failed write is never acknowledged as saved.",
+    "The browser IndexedDB adapter passes the same suite under Playwright (recorded BLOCKED in the sandbox, executed in CI or on Jani's PC)."
+   ],
+   "refs": "TP v2.0 \u00a715; TP v1.1 \u00a715; SAVE-ROUNDTRIP; DATA 01 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "M",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-09",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Readability renderer and clanlab render",
+   "depends": [
+    "W0-06",
+    "W0-07"
+   ],
+   "goal": "Implement the deterministic 2D top-down render of any snapshot (terrain classes, law boundaries, actors as discs with clan ring, headwear glyph, action icon, nameplate) in packages/lab using node-canvas, expose `clanlab render`, and add the first readability assertions.",
+   "accept": [
+    "`clanlab render --fixture <f> --tick <t> --out <png>` produces a PNG in the sandbox with metadata (fixture, tick, build hash) for the synthetic workload.",
+    "Readability assertions exist and run: nameplate overlap count below a threshold, clan ring contrast above a threshold, every action-state icon distinct; thresholds are recorded as TUNE.",
+    "The renderer is pure over the snapshot: same snapshot, same bytes."
+   ],
+   "refs": "TP v2.0 \u00a713, \u00a720; GDD 14; PRESENT 01 (first automated half)",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "M",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-10",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Web app shell: Vite, Worker bootstrap, tabletop camera, procedural identity kit, /capture, Playwright job",
+   "depends": [
+    "W0-04",
+    "W0-07"
+   ],
+   "goal": "Create apps/web with the Worker bootstrap running the W0-07 kernel, a Three.js scene with the perspective tabletop camera, the procedural identity kit for eight recipes behind AppearanceRecipe, a watermarked FakeSim mode, the /capture route, and the Playwright screenshot job in CI.",
+   "accept": [
+    "`npm run build` produces a static site; opening it runs the synthetic workload in a Worker at 1x/2x/4x with pause; the page shows the confirmed tick.",
+    "Eight supplied recipes render as distinguishable procedural characters (build, head, headwear, accessory, clan color, personal accent) at default tabletop distance; mesh bounds and attachment points are recorded.",
+    "`/capture?fixture=&tick=&camera=&textScale=` renders after warm-up frames and writes a PNG with metadata under Playwright in CI (BLOCKED_RENDER in the sandbox, recorded as such); FakeSim frames carry a visible watermark.",
+    "Browser Worker hashes equal Node hashes for the workload (closes the W0-07 blocked half)."
+   ],
+   "refs": "TP v2.0 \u00a73, \u00a713, \u00a721; GDD 14.1\u201314.2; Addendum D06",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "L",
+   "webAdaptation": null
+  },
+  {
+   "id": "W0-11",
+   "phase": "W0",
+   "lane": "web-foundation",
+   "title": "Integrate, G0 evidence, playtest brief, stop for Jani",
+   "depends": [
+    "W0-01",
+    "W0-02",
+    "W0-03",
+    "W0-04",
+    "W0-05",
+    "W0-06",
+    "W0-07",
+    "W0-08",
+    "W0-09",
+    "W0-10"
+   ],
+   "goal": "Verify the integrated baseline, fill GATE_EVIDENCE.md for G0 with actual artifacts, produce the static build and PLAYTEST_BRIEF.md, record ADR 001 (web now, wrapper later), tag the baseline and stop.",
+   "accept": [
+    "All W0 packets ACCEPTED after fresh-context self-review; `npm test`, fixtures, replay of the synthetic tape and the workboard check are green on the tagged baseline.",
+    "GATE_EVIDENCE.md lists each G0 criterion with PASS/FAIL/BLOCKED/HUMAN_REQUIRED and artifact paths; blocked items name what Jani must run (JANI_PC_CHECKLIST.md).",
+    "state/STATUS.md contains the W0 metrics (sessions per packet, rework, blocked checks, time to first runnable slice); the developer stops and waits for Jani."
+   ],
+   "refs": "Gate G0 (state/gates.json); TP v2.0 \u00a72; templates/",
+   "gate": "G0",
+   "status": "PLANNED",
+   "complexity": "S",
+   "webAdaptation": null
+  },
+  {
+   "id": "P1-01",
+   "phase": "P1",
+   "title": "Freeze first-playable action contracts",
+   "depends": [
+    "W0-11"
+   ],
+   "goal": "Extend contracts for world queries, action lifecycle, damage proposals and complete state sections before lanes branch.",
+   "accept": [
+    "Shared requests, events, reason codes and codec versions have golden samples",
+    "Sim.Host composes providers without giving AI a world-state handle",
+    "Contract changes identify all consumer tests"
+   ],
+   "refs": "TP 3,8,12",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P1-02",
+   "phase": "P1",
+   "title": "Terrain and fine geometry compiler",
+   "depends": [
+    "P1-01"
+   ],
+   "goal": "Compile the valley height field, traversal classes, camp fine cells and canonical geometry.",
+   "accept": [
+    "Render and simulation exports share one geometry hash",
+    "Shallow water and impassable water match GDD speeds",
+    "Known start, work and obstacle coordinates match query results"
+   ],
+   "refs": "TP 5; GDD 4,30.2",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P1-03",
+   "phase": "P1",
+   "title": "Spatial index and line of sight",
+   "depends": [
+    "P1-02"
+   ],
+   "goal": "Implement broad-phase neighbors and integer height-field LOS with deterministic counters.",
+   "accept": [
+    "Occlusion, distance and boundary cases match geometry fixtures",
+    "A budget exhaustion result is explicit and never means visible by default",
+    "Static visibility means height/openness/cover, not hidden precomputed actor knowledge"
+   ],
+   "refs": "TP 5\u20136; INFO-ISOLATION",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P1-04",
+   "phase": "P1",
+   "title": "Knowledge-limited route segments",
+   "depends": [
+    "P1-03"
+   ],
+   "goal": "Implement hierarchical routes over known terrain with atomic bounded searches and certified partial progress.",
+   "accept": [
+    "Concealed-route changes cannot change a route before observation",
+    "Complete, Partial, BudgetExhausted and NoKnownRoute remain distinct",
+    "Repeated partial requests either advance toward a certified portal or trigger bounded recovery"
+   ],
+   "refs": "TP 5; AI 05; ROUTE-PROGRESS",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P1-05",
+   "phase": "P1",
+   "title": "Kinematic movement and obstacle sweep",
+   "depends": [
+    "P1-04"
+   ],
+   "goal": "Implement integer actor motion against terrain and structures without engine physics.",
+   "accept": [
+    "No teleport, corner cutting or obstacle tunneling occurs",
+    "Speed and carry/shallow multipliers use saved remainders",
+    "Headless and rendered inputs produce identical movement hashes"
+   ],
+   "refs": "TP 5; AI 05",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P1-06",
+   "phase": "P1",
+   "title": "Local avoidance and passage queues",
+   "depends": [
+    "P1-05"
+   ],
+   "goal": "Add deterministic neighbor avoidance, passage ownership and stuck recovery.",
+   "accept": [
+    "Opposing actors clear a narrow passage without overlap or permanent priority starvation",
+    "Intentional waits have triggers and deadlines",
+    "Unexplained lack of progress produces the ten-second diagnostic"
+   ],
+   "refs": "TP 5; BUILD 01 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P1-07",
+   "phase": "P1",
+   "title": "Inventory transactions",
+   "depends": [
+    "P1-01"
+   ],
+   "goal": "Implement typed stacks, weights, capacities and atomic transfers.",
+   "accept": [
+    "Competing transfers cannot duplicate or overdraw a stack",
+    "Failed transfer changes neither inventory",
+    "Inventory state round-trips through its owned state section"
+   ],
+   "refs": "TP 8; ECON 01 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-08",
+   "phase": "P1",
+   "title": "Reservations and lease lifecycle",
+   "depends": [
+    "P1-07"
+   ],
+   "goal": "Implement quantity/work-position leases and canonical atomic multi-key acquisition.",
+   "accept": [
+    "One scarce item is granted once and the loser receives a reason",
+    "Fifty-tick leases renew only with valid progress",
+    "Cancel, death, departure and target invalidation release every owned handle"
+   ],
+   "refs": "TP 8; AI 06",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-09",
+   "phase": "P1",
+   "title": "Food consumption and starvation",
+   "depends": [
+    "P1-07"
+   ],
+   "goal": "Implement fullness rates, eating completion and hunger damage proposals.",
+   "accept": [
+    "GDD food rates and item nutrition match fixed-point vectors",
+    "Interrupted eating consumes no item",
+    "Starvation damage remains distinct from hostile injury"
+   ],
+   "refs": "GDD 30.2; AI 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-10",
+   "phase": "P1",
+   "title": "Fatigue rest and exertion",
+   "depends": [
+    "P1-09"
+   ],
+   "goal": "Implement fatigue, rest completion, stamina and work/speed restrictions.",
+   "accept": [
+    "Thresholds and rest endpoint match the GDD",
+    "Emergency interruption preserves remaining fatigue and stamina",
+    "No actor loses ordinary walking merely because sprint stamina is exhausted"
+   ],
+   "refs": "GDD 30.2",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-11",
+   "phase": "P1",
+   "title": "Day night and exposure",
+   "depends": [
+    "P1-10"
+   ],
+   "goal": "Implement the five-day calendar, exposure rates, shelter/fire/cloak mitigation and recovery.",
+   "accept": [
+    "Night boundaries and twilight authority match TIME 01",
+    "Ordinary four-minute night and two-minute cold overlap match exposure vectors",
+    "Visual light settings cannot change exposure or illumination facts"
+   ],
+   "refs": "GDD 3.1,30.2; EXPO 01; TIME 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-12",
+   "phase": "P1",
+   "title": "Permission service and law intervals",
+   "depends": [
+    "P1-01"
+   ],
+   "goal": "Implement typed global permission intervals, legal action start, effect checks and version invalidation.",
+   "accept": [
+    "Start-inclusive and end-exclusive boundaries are consistent",
+    "New law wins over same-tick action resolution",
+    "Denied action produces no effect and retains a truthful reason"
+   ],
+   "refs": "TP 10; LAW 01,LAW 03",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-13",
+   "phase": "P1",
+   "title": "Sanctuary and protected injury state",
+   "depends": [
+    "P1-12"
+   ],
+   "goal": "Implement bidirectional region protection and source-aware bleed/status handling.",
+   "accept": [
+    "Attacker or target inside sanctuary blocks sentient harm",
+    "Boundary points are included",
+    "Wildlife/needs remain active while covered hostile bleed timers pause"
+   ],
+   "refs": "GDD 10; LAW 02",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-14",
+   "phase": "P1",
+   "title": "Belief records and provenance",
+   "depends": [
+    "P1-01"
+   ],
+   "goal": "Implement typed observations, received reports, staleness and deterministic eviction.",
+   "accept": [
+    "Reports retain original observed time and uncertainty",
+    "Active obligations survive ordinary belief eviction",
+    "Stale enemy position does not become a fresh exact coordinate"
+   ],
+   "refs": "TP 6; GDD 7.1,7.5",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P1-15",
+   "phase": "P1",
+   "title": "Sensory adapter and isolation",
+   "depends": [
+    "P1-03",
+    "P1-14"
+   ],
+   "goal": "Connect lawful sensory queries to ActorKnowledgeView and public arena notices.",
+   "accept": [
+    "Hidden enemies, stores and concealed routes do not change decisions",
+    "Sight/light/concealment/sleep and hearing channels match the GDD",
+    "Urgent threat evidence is delivered within five ticks"
+   ],
+   "refs": "TP 6; AI 10; SOCIAL 02",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P1-16",
+   "phase": "P1",
+   "title": "Utility scoring and decision traces",
+   "depends": [
+    "P1-15"
+   ],
+   "goal": "Implement normalized considerations, traits, commitment hysteresis and trace snapshots.",
+   "accept": [
+    "One-trait paired fixtures change only relevant considerations",
+    "Chosen and actually evaluated alternatives retain reason and evidence age",
+    "Emergency/legal invalidation bypasses ordinary switching delay"
+   ],
+   "refs": "GDD 6.5; AI 11 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P1-17",
+   "phase": "P1",
+   "title": "Action executor lifecycle",
+   "depends": [
+    "P1-08",
+    "P1-12"
+   ],
+   "goal": "Implement one generic executor for travel, work, interruption, revalidation and atomic completion.",
+   "accept": [
+    "Invalid range, permission or lease cancels with a typed failure",
+    "Actions do not apply effects through animation events",
+    "Every active field is captured by its state-section codec"
+   ],
+   "refs": "TP 8",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-18",
+   "phase": "P1",
+   "title": "Food and rest task methods",
+   "depends": [
+    "P1-16",
+    "P1-17",
+    "P1-09",
+    "P1-10",
+    "P1-05"
+   ],
+   "goal": "Implement bounded AcquireFood and Rest methods using known sources and actual resources.",
+   "accept": [
+    "Hungry actor gathers and eats reachable food without unrelated detours",
+    "Missing or reserved source yields an alternative or exploration",
+    "Plans finish or report a meaningful failure; no generic idle loop"
+   ],
+   "refs": "TP 7; AI 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P1-19",
+   "phase": "P1",
+   "title": "Timed waiting and law amendment response",
+   "depends": [
+    "P1-18",
+    "P1-12"
+   ],
+   "goal": "Implement explicit waits, earliest/latest useful start and dependency versions.",
+   "accept": [
+    "Patient actor may wait while an immediate-need profile selects a feasible alternative",
+    "Amended expiry invalidates the old wait within ten ticks",
+    "Permission opening still requires the normal attack wind-up"
+   ],
+   "refs": "TP 7; AI 03,AI 04,LAW 03",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P1-20",
+   "phase": "P1",
+   "title": "Socket construction and input milestones",
+   "depends": [
+    "P1-06",
+    "P1-08",
+    "P1-17"
+   ],
+   "goal": "Implement one Hearth and shelter build path with consumed-input ledgers and legal work positions.",
+   "accept": [
+    "Half-progress consumption and unfinished salvage conserve inputs",
+    "Two actors cannot claim the same socket",
+    "Filling prototype sockets preserves the required work routes and exits"
+   ],
+   "refs": "TP 8; BUILD 01,ECON 01 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-21",
+   "phase": "P1",
+   "title": "Projectile segment collision",
+   "depends": [
+    "P1-03",
+    "P1-05"
+   ],
+   "goal": "Implement swept projectile intersections, height, obstacle blocking and stable first contact.",
+   "accept": [
+    "An 18 m/s arrow cannot tunnel through an actor between ticks",
+    "First obstacle/contact ordering is stable",
+    "Collision output alone applies no damage"
+   ],
+   "refs": "TP 11; LAW 01 geometry",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P1-22",
+   "phase": "P1",
+   "title": "Combat preparation and contact",
+   "depends": [
+    "P1-17",
+    "P1-21",
+    "P1-13"
+   ],
+   "goal": "Implement melee/bow preparation, resource use, recovery and permission-checked hit proposals.",
+   "accept": [
+    "Prohibited attacks cannot precharge an instant hit",
+    "Launch and impact checks both enforce current rules",
+    "Stamina, arrows, range and facing follow GDD values"
+   ],
+   "refs": "TP 11; LAW 01\u201303",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-23",
+   "phase": "P1",
+   "title": "Simultaneous damage and health states",
+   "depends": [
+    "P1-22",
+    "P1-09"
+   ],
+   "goal": "Implement support-before-damage resolution, standing-to-downed transitions and source attribution.",
+   "accept": [
+    "Entity iteration order does not alter health results",
+    "Multiple same-tick hits down a standing target once, without also eliminating it",
+    "Eligible aid completion and later damage use the agreed boundary semantics"
+   ],
+   "refs": "TP 4,11; END 01; Addendum D01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-24",
+   "phase": "P1",
+   "title": "Revival bleed and elimination cleanup",
+   "depends": [
+    "P1-23",
+    "P1-13"
+   ],
+   "goal": "Implement downed timers, bandage revival, finish actions and cleanup.",
+   "accept": [
+    "Protection pauses only covered sentient-origin bleed",
+    "Revival consumes one bandage at completion and resets the episode",
+    "Elimination releases leases and produces carried drops once"
+   ],
+   "refs": "GDD 9,30.4; DATA 02 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P1-25",
+   "phase": "P1",
+   "title": "Immediate threat fallback and prototype wildlife",
+   "depends": [
+    "P1-15",
+    "P1-18",
+    "P1-24"
+   ],
+   "goal": "Implement simple flee/fight policies for contestants and one wolf/deer fixture.",
+   "accept": [
+    "Observed stronger threat interrupts work within five ticks",
+    "Wildlife remains dangerous during sentient Truce",
+    "The species policy never reads the observer selection or hidden target state"
+   ],
+   "refs": "AI 07,WILD 01 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P1-26",
+   "phase": "P1",
+   "title": "Eight-person prototype catalog",
+   "depends": [
+    "P1-01"
+   ],
+   "goal": "Author eight existing GDD identities, a declared recipe subset, action cues and 40 initial situation keys.",
+   "accept": [
+    "Prototype profile validates without weakening Standard requirements",
+    "Every implemented action has intent, icon, animation and sound-or-silent mapping",
+    "Authored data uses GDD identity/skill/trait values and explicit units"
+   ],
+   "refs": "GDD 14,26,30\u201331",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P1-27",
+   "phase": "P1",
+   "title": "Snapshot bridge and interpolation ownership",
+   "depends": [
+    "P1-01",
+    "W0-10"
+   ],
+   "goal": "Replace FakeSim view bindings with the real snapshot protocol and proven buffer ownership.",
+   "accept": [
+    "Renderer holds one shared read buffer and a local previous-sample cache",
+    "Slow rendering cannot mutate or block the core through a held buffer",
+    "Pause settles to the acknowledged tick; data age is visible"
+   ],
+   "refs": "TP 3; BRIDGE-OWNERSHIP",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "Worker postMessage bridge with transferable buffers (TP v2.0 \u00a73).",
+   "lane": "A4"
+  },
+  {
+   "id": "P1-28",
+   "phase": "P1",
+   "title": "Twelve procedural action motions",
+   "depends": [
+    "P1-27",
+    "P1-26"
+   ],
+   "goal": "Implement all twelve action states with tools, carrying cues and interruption overlays.",
+   "accept": [
+    "Rest, wait, blocked work, combat and rescue remain visually distinct",
+    "No motion or particle event creates gameplay effects",
+    "Day/night and close/wide images pass the presentation checklist"
+   ],
+   "refs": "GDD 14.3; PRESENT 01 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "Three.js per-instance attributes and state icons; no animation clips (TP v2.0 \u00a713).",
+   "lane": "A4"
+  },
+  {
+   "id": "P1-29",
+   "phase": "P1",
+   "title": "Selection follow and inspection",
+   "depends": [
+    "P1-27"
+   ],
+   "goal": "Implement picking, five follow slots, one Focus and essential contestant panels.",
+   "accept": [
+    "Keyboard and pointer select the same intended entity",
+    "Personal identity survives clan color changes",
+    "Scaling to 150 percent preserves critical labels and controls"
+   ],
+   "refs": "GDD 13\u201314",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "React components over view models; the W0-09 readability renderer becomes the overview map.",
+   "lane": "A4"
+  },
+  {
+   "id": "P1-30",
+   "phase": "P1",
+   "title": "Law timeline and player command UI",
+   "depends": [
+    "P1-29",
+    "P1-12"
+   ],
+   "goal": "Implement pause/speed controls, law previews, pending commands and acknowledgement feedback.",
+   "accept": [
+    "UI never displays a rejected law as active",
+    "Pending paused commands remain visibly pending",
+    "Actual delivered speed is shown when requested acceleration is unsustainable"
+   ],
+   "refs": "TP 3,10,14; TIME 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "React components; keyboard and text scale from CSS (TP v2.0 \u00a714).",
+   "lane": "A4"
+  },
+  {
+   "id": "P1-31",
+   "phase": "P1",
+   "title": "Why panel and event feed",
+   "depends": [
+    "P1-29",
+    "P1-16"
+   ],
+   "goal": "Bind readable reasons to recorded decision candidates and evidence ages.",
+   "accept": [
+    "Displayed alternatives are exactly a subset of evaluated trace entries",
+    "No evaluated alternative means an explicit unavailable explanation",
+    "Off-camera events enter the feed without changing bot knowledge"
+   ],
+   "refs": "TP 14; WHY-TRACE",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "React components; Why panel reads DecisionTrace verbatim (TP v2.0 \u00a714).",
+   "lane": "A4"
+  },
+  {
+   "id": "P1-32",
+   "phase": "P1",
+   "title": "Compose the first real simulation host",
+   "depends": [
+    "P1-06",
+    "P1-11",
+    "P1-19",
+    "P1-20",
+    "P1-24",
+    "P1-25",
+    "P1-26",
+    "P1-27",
+    "P1-30",
+    "P1-31",
+    "P1-28"
+   ],
+   "goal": "Wire completed providers into Sim.Host and use it in the console and Godot clients.",
+   "accept": [
+    "Both frontends use identical provider registrations and content",
+    "No placeholder action or FakeSim feeds player-facing claims",
+    "The valley runs real survival, building and law behavior"
+   ],
+   "refs": "TP 3,22",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P1-33",
+   "phase": "P1",
+   "title": "Complete first-playable save and replay",
+   "depends": [
+    "P1-32",
+    "W0-08"
+   ],
+   "goal": "Register all implemented state sections and test whole-host checkpoint continuation.",
+   "accept": [
+    "Save/load reproduces the next 600 ticks",
+    "Random checkpoint ticks and 10/60-second frequencies preserve hashes",
+    "Missing state sections fail validation instead of loading defaults"
+   ],
+   "refs": "TP 15; SAVE-ROUNDTRIP,SAVE-FREQUENCY",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "IndexedDB adapter in the browser, in-memory/fake-indexeddb in Node; JSON export/import (TP v2.0 \u00a715).",
+   "lane": "A5"
+  },
+  {
+   "id": "P1-34",
+   "phase": "P1",
+   "title": "First-playable and population evidence",
+   "depends": [
+    "P1-33"
+   ],
+   "goal": "Run G1 scenarios, production-query stress counts, screenshot checks and new-viewer observation.",
+   "accept": [
+    "Eight contestants complete meaningful tasks with traceable reasons",
+    "All G1-mapped scenes execute; omitted full-game behaviors are listed",
+    "136/137-actor counters and actual rendering evidence are separate"
+   ],
+   "refs": "TP 18,20,22; Gate G1",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "P1-35",
+   "phase": "P1",
+   "title": "Integrate and request G1 approval",
+   "depends": [
+    "P1-34"
+   ],
+   "goal": "Produce the first-playable accepted candidate, evidence index and next-phase dispatch.",
+   "accept": [
+    "All P1 returns have independent review and integrated evidence",
+    "Jani receives executable/source archives and a short test path",
+    "P2 starts only after the recorded G1 approval"
+   ],
+   "refs": "Gate G1",
+   "gate": "G1",
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P2-01",
+   "phase": "P2",
+   "title": "Freeze Trial and social contracts",
+   "depends": [
+    "P1-35"
+   ],
+   "goal": "Freeze the 30-minute Trial calendar, social transactions, taught knowledge and reported evidence contracts.",
+   "accept": [
+    "Addendum D08 is encoded without scaling survival rates",
+    "Public notices and private messages have distinct payloads",
+    "Golden samples cover interrupted and completed social actions"
+   ],
+   "refs": "GDD 8,30.6; Addendum D08",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P2-02",
+   "phase": "P2",
+   "title": "Procedure ownership and teaching",
+   "depends": [
+    "P2-01"
+   ],
+   "goal": "Implement basic versus learned procedures, teaching completion and loss of access.",
+   "accept": [
+    "Interrupted teaching grants no knowledge",
+    "Teacher loss never removes basics or invents recipes",
+    "Completed lesson records teacher, learner, procedure and tick"
+   ],
+   "refs": "KNOW 01\u201302; GDD 5.4",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P2-03",
+   "phase": "P2",
+   "title": "Tool and production task methods",
+   "depends": [
+    "P2-02",
+    "P1-18"
+   ],
+   "goal": "Implement short crafting dependencies, tool selection and missing-procedure alternatives.",
+   "accept": [
+    "Missing tool leads to a conserved gather/craft/use chain",
+    "Known incapable recipe is not retried forever",
+    "Planned quantities account for reservations and carried weight"
+   ],
+   "refs": "AI 02; TP 7\u20138",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P2-04",
+   "phase": "P2",
+   "title": "Clan membership and departure",
+   "depends": [
+    "P2-01"
+   ],
+   "goal": "Implement initial solo clans, invitations, capacity checks, departure notice and rejoin cooldown.",
+   "accept": [
+    "Eight living members includes downed members",
+    "Ten-second departure and fifteen-second protection obey future lock truncation",
+    "Simultaneous joins cannot exceed capacity or duplicate membership"
+   ],
+   "refs": "GDD 3.3,8.1,8.7; END 03,05 foundation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P2-05",
+   "phase": "P2",
+   "title": "Votes customs and succession",
+   "depends": [
+    "P2-04"
+   ],
+   "goal": "Implement fixed-electorate votes, custom adoption, leadership succession and notice delivery.",
+   "accept": [
+    "Absent votes never become consent",
+    "Uninformed members cannot knowingly violate a new custom",
+    "Leader death selects the documented successor and releases stale plan ownership"
+   ],
+   "refs": "SOCIAL 01,03; AI 09",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P2-06",
+   "phase": "P2",
+   "title": "Agreements and useful aid facts",
+   "depends": [
+    "P2-04"
+   ],
+   "goal": "Implement explicit commitments, betrayal facts, useful food/medicine aid and trade completion.",
+   "accept": [
+    "Betrayal requires an obligation known to the actor",
+    "Empty swaps produce no useful-aid credit",
+    "Failed exchange conserves both sides and records a truthful reason"
+   ],
+   "refs": "GDD 8.3\u20138.6,12.2; ECON 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P2-07",
+   "phase": "P2",
+   "title": "Trust and message propagation",
+   "depends": [
+    "P2-05",
+    "P2-06",
+    "P1-15"
+   ],
+   "goal": "Implement bounded relationships and communicated reports with original provenance.",
+   "accept": [
+    "Speaker proximity, attendance and interruption govern delivery",
+    "Repeat reports do not become firsthand observations",
+    "Trust changes cite actual conduct and one event cannot be applied twice"
+   ],
+   "refs": "SOCIAL 01\u201303; TP 6,9",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P2-08",
+   "phase": "P2",
+   "title": "Cooperation and contribution planning",
+   "depends": [
+    "P2-03",
+    "P2-07"
+   ],
+   "goal": "Implement proposed clan work priorities, individual acceptance and shared reservation coordination.",
+   "accept": [
+    "Leader suggestions remain optional individual decisions",
+    "A remote member does not receive instant private inventory knowledge",
+    "Unfilled roles trigger recovery without overriding personal survival"
+   ],
+   "refs": "TP 7\u20139; AI 06,09",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P2-09",
+   "phase": "P2",
+   "title": "Rescue and covering choices",
+   "depends": [
+    "P2-07",
+    "P1-24"
+   ],
+   "goal": "Implement rescue, cover, retreat and refusal from observed risk and relationships.",
+   "accept": [
+    "Paired loyal and cautious profiles produce defensible different choices",
+    "No bandage or blocked route is recognized as infeasible",
+    "Threat interruptions cannot strand a permanent rescue lease"
+   ],
+   "refs": "AI 08; GDD 7.4",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P2-10",
+   "phase": "P2",
+   "title": "Alliance departure and opportunism policies",
+   "depends": [
+    "P2-07",
+    "P2-08"
+   ],
+   "goal": "Implement bounded alliance invitations, departures and commitment-aware opportunistic choices.",
+   "accept": [
+    "Actors may wait for a law or depart before an attack legally",
+    "No betrayal is forced for narrative variety",
+    "Different policies still meet basic survival competence"
+   ],
+   "refs": "AI 11; SOCIAL 03; GDD 6.5,8",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P2-11",
+   "phase": "P2",
+   "title": "Rest guard and wildlife group policies",
+   "depends": [
+    "P2-08",
+    "P1-25"
+   ],
+   "goal": "Complete guard rotations, deer flight and wolf threat policies using species-specific observations.",
+   "accept": [
+    "Sleeping guards receive reduced lawful sensory evidence",
+    "Three contrasting contestants respond differently to a wolf during Truce",
+    "Wildlife work uses separate streams and no contestant career slot"
+   ],
+   "refs": "GDD 4.6\u20134.7; WILD 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P2-12",
+   "phase": "P2",
+   "title": "Trial24 content profile",
+   "depends": [
+    "P2-01",
+    "P1-26"
+   ],
+   "goal": "Author the 24-person Trial identity set, declared recipes and deterministic opening valley variations.",
+   "accept": [
+    "Every identity is an existing roster ID with authored profiles",
+    "Trial24 history is separate from Standard",
+    "Recipe profile dependencies are closed and content hash is stable"
+   ],
+   "refs": "TP 12; GDD 2.3,26,30",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P2-13",
+   "phase": "P2",
+   "title": "Trial world generation and route timing",
+   "depends": [
+    "P1-06",
+    "P2-12"
+   ],
+   "goal": "Generate seeded Trial terrain and validate starts, food, camp access and strategic route times.",
+   "accept": [
+    "All starts have reachable opening food within 45 seconds and a camp opportunity within 90 seconds under the stated model",
+    "Route reports use actual 3.5 m/s base speed and terrain costs",
+    "Sampled strategic diameter is labeled as sampled and failures reject the seed"
+   ],
+   "refs": "GDD 4.1,30.2\u201330.3; Addendum D05",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P2-14",
+   "phase": "P2",
+   "title": "Paid intervention scheduler",
+   "depends": [
+    "P2-01",
+    "P1-13"
+   ],
+   "goal": "Implement six Influence, notice, duration, overlap limits and paid amendments.",
+   "accept": [
+    "Rejected commands spend nothing and accepted amendments are accounted once",
+    "Future overlap is validated over intervals, not only at submission",
+    "Trial and Standard use distinct latest-start/expiry windows"
+   ],
+   "refs": "LAW 05; GDD 11; Addendum D08",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P2-15",
+   "phase": "P2",
+   "title": "Regional hazard placement validation",
+   "depends": [
+    "P2-13",
+    "P1-03"
+   ],
+   "goal": "Implement Storm Warning escape connectivity and region boundary queries.",
+   "accept": [
+    "A hazard that disconnects required safe components is rejected",
+    "New geometry is revalidated at defined activation boundaries",
+    "Overlapping hazards expose maximum rate without double counting"
+   ],
+   "refs": "LAW 04; TP 5,10",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P2-16",
+   "phase": "P2",
+   "title": "Information and environment power effects",
+   "depends": [
+    "P2-14",
+    "P2-15"
+   ],
+   "goal": "Implement Herald, Cold Front, Bountiful Ground and Storm Warning from typed scheduled commands.",
+   "accept": [
+    "Herald reads activation-time authorized bands and never retargets",
+    "Environmental rates match typed tuning and conservation rules",
+    "Every effect expires at the validated tick and produces source events"
+   ],
+   "refs": "INFO 01,EXPO 01,LAW 04\u201305",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P2-17",
+   "phase": "P2",
+   "title": "Trial pressure and ending director",
+   "depends": [
+    "P2-01",
+    "P2-14",
+    "P2-04",
+    "P1-24"
+   ],
+   "goal": "Implement the Trial calendar, shrinking refuge, membership lock and simultaneous result resolution.",
+   "accept": [
+    "Thirty-minute Trial ends at its own cutoff without creating Standard credit",
+    "Marker occupancy never awards a win",
+    "All-downed and all-dead cases follow the same health/result rules as Standard"
+   ],
+   "refs": "END 01\u201305; Addendum D08",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P2-18",
+   "phase": "P2",
+   "title": "Compose Trial host and profile",
+   "depends": [
+    "P2-03",
+    "P2-05",
+    "P2-06",
+    "P2-08",
+    "P2-09",
+    "P2-10",
+    "P2-11",
+    "P2-13",
+    "P2-16",
+    "P2-17"
+   ],
+   "goal": "Register the complete Trial providers and profile in both frontends.",
+   "accept": [
+    "Real Trial has no fake provider",
+    "Profile, recipe and law versions are recorded in every run",
+    "Provider ownership and serialized sections are audited before persistence expands"
+   ],
+   "refs": "TP 3,12,22",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P2-19",
+   "phase": "P2",
+   "title": "Trial save journals and branch provenance",
+   "depends": [
+    "P2-18",
+    "P1-33"
+   ],
+   "goal": "Persist all new social, director, knowledge and wildlife state and implement input replay branches.",
+   "accept": [
+    "Random checkpoints reproduce full-host continuation",
+    "Journal truncation recovers only confirmed records",
+    "Continuing a finalized earlier checkpoint becomes a distinct practice branch"
+   ],
+   "refs": "DATA 01; TP 15",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "IndexedDB career stores (TP v2.0 \u00a715).",
+   "lane": "A5"
+  },
+  {
+   "id": "P2-20",
+   "phase": "P2",
+   "title": "Career finalization and combat attribution",
+   "depends": [
+    "P2-19",
+    "W0-08"
+   ],
+   "goal": "Implement roster career projection and correct downing/revival damage episode accounting.",
+   "accept": [
+    "Unique result key makes repeated finalization idempotent",
+    "Episode reset after revival or thirty seconds without damage prevents stale assist credit",
+    "Tutorial, Trial, Standard, Custom and Story records remain identifiable"
+   ],
+   "refs": "DATA 01\u201302; GDD 12",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "IndexedDB `results` store with add semantics for exactly-once (TP v2.0 \u00a715).",
+   "lane": "A5"
+  },
+  {
+   "id": "P2-21",
+   "phase": "P2",
+   "title": "Forecast state and factual resolution",
+   "depends": [
+    "P2-19"
+   ],
+   "goal": "Implement eight templates, three slots, deadlines, sticky influence and observer-only persistence.",
+   "accept": [
+    "Only events after creation through the deadline count",
+    "Accepted later world commands mark influence permanently; rejected commands do not",
+    "Forecasts, notes and camera toggles do not change any authoritative hash"
+   ],
+   "refs": "FORECAST 01\u201303; Addendum D04",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "Observer store in IndexedDB with its own hash domain (TP v2.0 \u00a715).",
+   "lane": "A5"
+  },
+  {
+   "id": "P2-22",
+   "phase": "P2",
+   "title": "Trial social and observer interface",
+   "depends": [
+    "P2-18",
+    "P2-20",
+    "P2-21",
+    "P1-31"
+   ],
+   "goal": "Add clan membership, public power previews, career result and forecast controls with real data.",
+   "accept": [
+    "Consent, unknown evidence and refused plans are distinguishable",
+    "All eight powers expose cost, notice, region and expiry before submission",
+    "Forecast outcome links reach the supporting event and correct run"
+   ],
+   "refs": "GDD 11\u201313; TP 14",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "React.",
+   "lane": "A4"
+  },
+  {
+   "id": "P2-23",
+   "phase": "P2",
+   "title": "Trial invariants and paired behavior batch",
+   "depends": [
+    "P2-19",
+    "P2-20",
+    "P2-21",
+    "P2-22"
+   ],
+   "goal": "Run the full Trial suite, 100 varied seeds, save perturbations and paired profile fixtures.",
+   "accept": [
+    "Every failure yields a replayable package",
+    "Legal but poor survival metrics remain visible and distinct from invariant failures",
+    "No hidden-state leakage, duplicate result or endless route restart is accepted"
+   ],
+   "refs": "GDD 24; TP 19\u201320",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "P2-24",
+   "phase": "P2",
+   "title": "Comprehension capture and observation kit",
+   "depends": [
+    "P2-22"
+   ],
+   "goal": "Prepare a repeatable short session, neutral questions and screen recordings for ten new viewers.",
+   "accept": [
+    "Jani can run the study without coaching answers",
+    "Report records observed recall, causal explanations and next-law understanding",
+    "Missing participants remain HUMAN_REQUIRED and invented feedback is prohibited"
+   ],
+   "refs": "GDD 24.3; Gate G2",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "P2-25",
+   "phase": "P2",
+   "title": "Trial performance and player evidence review",
+   "depends": [
+    "P2-23",
+    "P2-24"
+   ],
+   "goal": "Evaluate the reference-machine Trial and aggregate the real comprehension study.",
+   "accept": [
+    "At least eight of ten new viewers meet the GDD recall/explanation/next-law threshold",
+    "Failed comprehension requires repair packets and a fresh check, not a pass with a repair plan",
+    "CPU, GPU, counters and actual delivered acceleration are recorded separately"
+   ],
+   "refs": "GDD 24.2\u201324.3; Gate G2",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "P2-26",
+   "phase": "P2",
+   "title": "Integrate and request G2 approval",
+   "depends": [
+    "P2-25"
+   ],
+   "goal": "Publish one integrated Trial candidate and dispatch the bounded full-Standard wave.",
+   "accept": [
+    "G2 is tied to the exact reviewed candidate and content hash",
+    "All required evidence exists or the phase remains blocked",
+    "Jani explicitly approves P3 before new implementation starts"
+   ],
+   "refs": "Gate G2",
+   "gate": "G2",
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P3-01",
+   "phase": "P3",
+   "title": "Freeze Standard Custom and history extensions",
+   "depends": [
+    "P2-26"
+   ],
+   "goal": "Freeze full population, Custom command restrictions, scenario format and endgame region contracts.",
+   "accept": [
+    "Shipping Custom scope includes two commandments and three structured whispers",
+    "Standard and Story provenance cannot be relabeled by a UI field",
+    "Extensions include golden valid and invalid samples"
+   ],
+   "refs": "GDD 2.3,11,12.4,20.2; TP 3,12",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P3-02",
+   "phase": "P3",
+   "title": "Roster100 and complete recipe catalog",
+   "depends": [
+    "P3-01"
+   ],
+   "goal": "Author the remaining roster and exactly 28 shipping recipes including ten structures.",
+   "accept": [
+    "All 100 identities are unique and statistically bounded",
+    "Recipe dependencies, costs and durations match the GDD manifest",
+    "No missing-role fallback silently substitutes duplicate personalities"
+   ],
+   "refs": "GDD 26,30\u201331; TP 12",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P3-03",
+   "phase": "P3",
+   "title": "Full island compiler and opening validation",
+   "depends": [
+    "P3-02",
+    "P2-13"
+   ],
+   "goal": "Expand generation to the Standard world with legal camps, materials and six-minute aggregate starting supply.",
+   "accept": [
+    "Generation validates opening access and all strategic anchor routes",
+    "Report gives actual travel-time distribution rather than geometric distance alone",
+    "Invalid seeds are deterministically rejected with bounded retries"
+   ],
+   "refs": "GDD 4,30.3; Addendum D05",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P3-04",
+   "phase": "P3",
+   "title": "Full camp sockets and demolition routes",
+   "depends": [
+    "P3-03",
+    "P1-20"
+   ],
+   "goal": "Validate every structure footprint and work position for full camps and Hearth loss.",
+   "accept": [
+    "Filled camps keep required work routes and exits",
+    "Demolition updates geometry versions and only encountered obstacles enter private knowledge",
+    "Hearth loss leaves clan identity intact"
+   ],
+   "refs": "BUILD 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P3-05",
+   "phase": "P3",
+   "title": "Full crafting harvest and salvage actions",
+   "depends": [
+    "P3-02",
+    "P1-20",
+    "P2-03"
+   ],
+   "goal": "Complete the recipe executor families and consumed-material recovery semantics.",
+   "accept": [
+    "Every manifest recipe has one legal execution route",
+    "Salvage is based on actually consumed inputs and rounded as specified",
+    "Interruptions at both consumption milestones conserve every item"
+   ],
+   "refs": "ECON 01; GDD 5,30.5",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P3-06",
+   "phase": "P3",
+   "title": "Settlement expansion and production priorities",
+   "depends": [
+    "P3-04",
+    "P3-05",
+    "P2-08"
+   ],
+   "goal": "Implement autonomous modular expansion, shortage response and learned-procedure alternatives.",
+   "accept": [
+    "Bots choose affordable legal sockets and maintain access",
+    "Hoarding or building cannot suppress urgent food and exposure needs",
+    "A clan can recover useful production after losing its only specialist"
+   ],
+   "refs": "AI 02,06; KNOW 01; TP 7\u20139",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P3-07",
+   "phase": "P3",
+   "title": "Scouting trade raids and retreat methods",
+   "depends": [
+    "P3-06",
+    "P2-10"
+   ],
+   "goal": "Complete bounded expedition and conflict methods driven by observed stores and threats.",
+   "accept": [
+    "Preparation evaluates time to permission and safe return",
+    "Retreat releases reservations and preserves truthful commitments",
+    "Rumored stockpiles remain uncertain and cannot become exact hidden inventories"
+   ],
+   "refs": "AI 03,07\u201311; GDD 7\u20139",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P3-08",
+   "phase": "P3",
+   "title": "Standard calendar and terminal policies",
+   "depends": [
+    "P3-01",
+    "P2-17"
+   ],
+   "goal": "Install the exact 60-minute calendar, protection cutoff and terminal damage policy.",
+   "accept": [
+    "All listed boundaries occur at exact Standard ticks",
+    "Healing is disabled and downing bypassed during terminal pressure",
+    "Forced elimination at tick 36000 precedes winner evaluation"
+   ],
+   "refs": "TIME 01; END 01\u201305",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P3-09",
+   "phase": "P3",
+   "title": "Refuge contraction and population routes",
+   "depends": [
+    "P3-03",
+    "P3-08"
+   ],
+   "goal": "Implement staged shrinking geometry and congestion fixtures for all 100 contestants.",
+   "accept": [
+    "No forced bracket assignment or teleports resolve traffic",
+    "All collision and damage semantics remain active off-camera",
+    "Opposing routes and simultaneous arrivals recover without deadlock"
+   ],
+   "refs": "FINALE 01; LAW 04",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A2"
+  },
+  {
+   "id": "P3-10",
+   "phase": "P3",
+   "title": "Migration and final survival policies",
+   "depends": [
+    "P3-07",
+    "P3-08",
+    "P3-09"
+   ],
+   "goal": "Implement forecasted travel deadlines, supplies, route alternatives and final conflict decisions.",
+   "accept": [
+    "Late departure is explained by evaluated tradeoffs or recorded failure",
+    "Agents never reason from hidden occupancy or unrealized future clan membership",
+    "Passive coalitions still resolve by legal terminal rules"
+   ],
+   "refs": "FINALE 01; END 04; GDD 3,7",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P3-11",
+   "phase": "P3",
+   "title": "Compose complete Standard host",
+   "depends": [
+    "P3-05",
+    "P3-06",
+    "P3-07",
+    "P3-08",
+    "P3-09",
+    "P3-10"
+   ],
+   "goal": "Register the production population, world, recipes and director in the common host.",
+   "accept": [
+    "100 contestants plus 36 wildlife use production providers",
+    "Catalog and geometry hashes agree in client and lab",
+    "No prototype conditional bypasses a required rule"
+   ],
+   "refs": "TP 3,18,20",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P3-12",
+   "phase": "P3",
+   "title": "Custom commands and scenario provenance",
+   "depends": [
+    "P3-01",
+    "P3-08"
+   ],
+   "goal": "Implement unrestricted supported law durations/instant changes, approved resource placement and finite/open-ended Custom endings.",
+   "accept": [
+    "Every supported Custom command still passes range, schema and quantity validation",
+    "Importing unknown scenario content cannot create Standard records",
+    "Arbitrary scripts, resurrection and unsupported world editing remain outside this command API"
+   ],
+   "refs": "GDD 2.3,11,12.4,20.2",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P3-13",
+   "phase": "P3",
+   "title": "Commandments and voluntary whispers",
+   "depends": [
+    "P3-12",
+    "P2-07"
+   ],
+   "goal": "Implement the two authored social commandments and three structured whispers: consider truce, inspect a marked place, seek a known resource.",
+   "accept": [
+    "Whispers propose goals and can be refused for reasons",
+    "A marked location reveals the marker only, not its hidden contents",
+    "Social commandments cannot bypass or redefine hard laws"
+   ],
+   "refs": "GDD 10.1,11; TP 6\u20137",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P3-14",
+   "phase": "P3",
+   "title": "Custom presets and scenario catalogs",
+   "depends": [
+    "P3-12",
+    "P3-13"
+   ],
+   "goal": "Author validated sandbox presets, two commandment texts and schema-complete scenario examples.",
+   "accept": [
+    "Every preset declares mode, ending and intervention policy",
+    "Imported scenarios are data, never executable code",
+    "User-visible text accurately describes voluntary bot response"
+   ],
+   "refs": "GDD 12.4,20.2",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P3-15",
+   "phase": "P3",
+   "title": "Compose Custom host and modes",
+   "depends": [
+    "P3-11",
+    "P3-14"
+   ],
+   "goal": "Wire supported Custom systems while preserving the ordinary Standard provider path.",
+   "accept": [
+    "Custom features remain unreachable from a Standard command envelope",
+    "Disabled Custom modules leave Standard hashes unchanged",
+    "Mode transition is atomic and journaled"
+   ],
+   "refs": "TP 3,15; GDD 2.3",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P3-16",
+   "phase": "P3",
+   "title": "Standard and Custom persistence audit",
+   "depends": [
+    "P3-15",
+    "P2-19"
+   ],
+   "goal": "Persist new geometry, pressure, recipes and modes; complete scenario export/import.",
+   "accept": [
+    "Full-population random-tick save/load preserves subsequent hashes",
+    "A scenario reproduces initial conditions and is distinguished from exact replay",
+    "Unknown schemas fail safely without overwriting a valid career store"
+   ],
+   "refs": "DATA 01; TP 15; GDD 12.4",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "Scenario JSON export/import via File System Access or download (TP v2.0 \u00a715).",
+   "lane": "A5"
+  },
+  {
+   "id": "P3-17",
+   "phase": "P3",
+   "title": "Standard finale and Custom controls",
+   "depends": [
+    "P3-15",
+    "P3-16"
+   ],
+   "goal": "Implement readable mass-event priority, refuge timeline, mode setup and bounded Custom tools.",
+   "accept": [
+    "Dense finale preserves selection, priority labels and law boundaries",
+    "Custom command acknowledgements expose refusals accurately",
+    "Finite and open-ended runs display the correct end policy"
+   ],
+   "refs": "PRESENT 01; GDD 13\u201314",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "React.",
+   "lane": "A4"
+  },
+  {
+   "id": "P3-18",
+   "phase": "P3",
+   "title": "Full Standard invariant and 100-seed suite",
+   "depends": [
+    "P3-16",
+    "P3-17"
+   ],
+   "goal": "Run all non-Story GDD acceptance scenes and 100 varied Standard seeds with full production providers.",
+   "accept": [
+    "Every run terminates by tick 36000 with no illegal damage, duplication or deadlock",
+    "Baseline target of at least 95 percent pre-cutoff winners is reported separately from absolute invariants",
+    "All-down, simultaneous-death and passive-coalition fixtures are included"
+   ],
+   "refs": "GDD 24; Gate G3",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "P3-19",
+   "phase": "P3",
+   "title": "Full-population performance and fairness review",
+   "depends": [
+    "P3-18"
+   ],
+   "goal": "Profile 136 and 137 actors, simultaneous laws, dense camps and full refuge traffic.",
+   "accept": [
+    "P95 CPU/GPU and resident memory are measured on identified hardware",
+    "AI urgency and hidden-state isolation still pass under budgets",
+    "Unmeasured target-hardware claims remain blocked, with reproducible capture instructions"
+   ],
+   "refs": "TP 18; PERF-OPS-BASE; GDD 24.2",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "P3-20",
+   "phase": "P3",
+   "title": "Integrate and request G3 approval",
+   "depends": [
+    "P3-19"
+   ],
+   "goal": "Publish the complete Standard and Custom candidate with full traceability and authorized next-wave options.",
+   "accept": [
+    "All P3 changes are reviewed on the merged baseline",
+    "Unresolved correctness or performance gates remain explicit blockers",
+    "Jani may authorize bounded P4 and P5 packets against accepted G3"
+   ],
+   "refs": "Gate G3",
+   "gate": "G3",
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P4-01",
+   "phase": "P4",
+   "title": "Freeze presentation and chronicle contracts",
+   "depends": [
+    "P3-20"
+   ],
+   "goal": "Freeze appearance recipes, thread projections, dossier queries, notes and text/HTML export envelopes.",
+   "accept": [
+    "Observer data remains separate from core state and memories",
+    "Thread facts retain event references",
+    "Asset and text pipeline versions are recorded"
+   ],
+   "refs": "GDD 12\u201314; TP 13\u201314",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P4-02",
+   "phase": "P4",
+   "title": "Production character kit refinement",
+   "depends": [
+    "P4-01",
+    "P3-02"
+   ],
+   "goal": "Refine the procedural kit to three builds, four heads, ten headwear choices and six accessory categories.",
+   "accept": [
+    "All 100 appearance recipes render coherently without clipping at supported scales",
+    "Personal identity survives clan changes and low light",
+    "Scripted asset generation and optional GLB export are reproducible"
+   ],
+   "refs": "GDD 14.1; PRESENT 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "Three.js procedural kit refinement; update the readability renderer glyphs in step (TP v2.0 \u00a713).",
+   "lane": "A4"
+  },
+  {
+   "id": "P4-03",
+   "phase": "P4",
+   "title": "Animation blend and action readability polish",
+   "depends": [
+    "P4-02",
+    "P1-28"
+   ],
+   "goal": "Polish the twelve shared states, interruptions, tools and carrying without expanding gameplay.",
+   "accept": [
+    "Rest, intentional wait, blocked movement and idle remain distinct",
+    "Interrupted combat/revival has no ghost motion completion",
+    "Close/wide action captures satisfy the human readability checklist"
+   ],
+   "refs": "GDD 14.3; PRESENT 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "Three.js code-driven motions (TP v2.0 \u00a713).",
+   "lane": "A4"
+  },
+  {
+   "id": "P4-04",
+   "phase": "P4",
+   "title": "World materials light and weather polish",
+   "depends": [
+    "P4-01",
+    "P3-17"
+   ],
+   "goal": "Implement production palette, terrain transitions, fire cues and weather while bounding lights and overdraw.",
+   "accept": [
+    "Day/night readability and law borders pass all prescribed views",
+    "Cosmetic light budget never changes sensory illumination",
+    "Dense vegetation and camp captures include GPU evidence"
+   ],
+   "refs": "GDD 14.4; TP 13,18",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "P4-05",
+   "phase": "P4",
+   "title": "Interface accessibility and camera polish",
+   "depends": [
+    "P4-03",
+    "P4-04"
+   ],
+   "goal": "Complete text scaling, contrast, color-independent clan cues, remapping and gentle camera options.",
+   "accept": [
+    "Critical controls work with keyboard and pointer",
+    "100 and 150 percent scale captures have no critical clipping",
+    "Reduce motion and visual intensity preserve semantic information"
+   ],
+   "refs": "GDD 13,14,19; PRESENT 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "P4-06",
+   "phase": "P4",
+   "title": "Core contextual dialogue catalog",
+   "depends": [
+    "P4-01",
+    "P3-02"
+   ],
+   "goal": "Author the GDD 100 situations with three appropriate tones and source-linked placeholders.",
+   "accept": [
+    "All 300 core lines validate required factual fields",
+    "Unknown motive or history is not fabricated",
+    "Situation coverage includes failed plans, waiting, gratitude, dissent and retreat"
+   ],
+   "refs": "GDD 14.5,31; TP 12",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P4-07",
+   "phase": "P4",
+   "title": "Intent cues and tutorial text audit",
+   "depends": [
+    "P4-06"
+   ],
+   "goal": "Complete every action intent, icon key, reason explanation and concise onboarding copy.",
+   "accept": [
+    "Every shipping action has its required presentation contract",
+    "Text does not expose hidden information or implementation jargon",
+    "Refusals and knowledge gaps are understandable without numeric score knowledge"
+   ],
+   "refs": "GDD 15.2,31; TP 12",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P4-08",
+   "phase": "P4",
+   "title": "Sound palette and dialogue presentation",
+   "depends": [
+    "P4-06",
+    "P4-07",
+    "P4-05"
+   ],
+   "goal": "Integrate synthesized or licensed sound cues, spatial mix and contextual speech display.",
+   "accept": [
+    "Offscreen alerts prioritize useful events without constant spam",
+    "No voice recording or music dependency blocks the core release",
+    "Source provenance and volume accessibility are recorded"
+   ],
+   "refs": "GDD 14.5; TP 13",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "P4-09",
+   "phase": "P4",
+   "title": "Six evidence-based chronicle threads",
+   "depends": [
+    "P4-01",
+    "P3-16"
+   ],
+   "goal": "Implement Bond, Rivalry, Exodus, Ascent, Betrayal and Reconciliation state machines.",
+   "accept": [
+    "Every transition links verified events and can remain unresolved",
+    "Reconciliation requires a dispute, repair attempt and later cooperation",
+    "Narrative selection never creates an authoritative event or motive"
+   ],
+   "refs": "GDD 12.3\u201312.4; TP 14\u201315",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A5"
+  },
+  {
+   "id": "P4-10",
+   "phase": "P4",
+   "title": "Dossiers epithets and personal notes",
+   "depends": [
+    "P4-09",
+    "P2-20"
+   ],
+   "goal": "Add linked career encounters, earned epithets, bookmarks and explicitly attributed player notes.",
+   "accept": [
+    "No epithet or prior run gives Standard skill or relationship buffs",
+    "Notes remain player text and never bot memory",
+    "Dossier links identify the exact source run and event"
+   ],
+   "refs": "GDD 12.1\u201312.5",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A5"
+  },
+  {
+   "id": "P4-11",
+   "phase": "P4",
+   "title": "Saga text and HTML export",
+   "depends": [
+    "P4-10"
+   ],
+   "goal": "Export factual run summaries, law changes, contributions, thread states and optional notes.",
+   "accept": [
+    "HTML escapes user text and unsupported links",
+    "Interrupted actions and unresolved threads are labeled honestly",
+    "Export opens offline and retains stable source-event references"
+   ],
+   "refs": "GDD 12.4; TP 15",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A5"
+  },
+  {
+   "id": "P4-12",
+   "phase": "P4",
+   "title": "Chronicle dossier and export UI",
+   "depends": [
+    "P4-10",
+    "P4-11",
+    "P4-08"
+   ],
+   "goal": "Build event-linked dossiers, thread navigation, epithet controls and Saga export flows.",
+   "accept": [
+    "A viewer can follow a causal chain to its real events",
+    "Missing historical files show unavailable evidence rather than invented summaries",
+    "Export errors preserve the run and offer a useful retry"
+   ],
+   "refs": "GDD 12\u201314",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "P4-13",
+   "phase": "P4",
+   "title": "Presentation and narrative fidelity review",
+   "depends": [
+    "P4-12"
+   ],
+   "goal": "Review all prescribed scenes, 100 identities, 300 lines, six threads and export security fixtures.",
+   "accept": [
+    "Automated schema checks and human visual checks are reported separately",
+    "No critical clipping, fake motive or duplicated commendation passes",
+    "Source asset and dialogue licenses are documented where needed"
+   ],
+   "refs": "PRESENT 01; GDD 12,14,24",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "PRESENT 01 = readability fixtures (automated) + Playwright 3D screenshot matrix (automated) + human review (TP v2.0 \u00a720).",
+   "lane": "A7"
+  },
+  {
+   "id": "P4-14",
+   "phase": "P4",
+   "title": "Integrate and request G4 approval",
+   "depends": [
+    "P4-13"
+   ],
+   "goal": "Publish the content and presentation alpha with evidence and repair backlog.",
+   "accept": [
+    "Every content family is complete and versioned",
+    "G4 approval is recorded against the integrated candidate",
+    "Story work remains separately gated and release does not start before required gates"
+   ],
+   "refs": "Gate G4",
+   "gate": "G4",
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P5-01",
+   "phase": "P5",
+   "title": "Freeze neutral guest and Story contracts",
+   "depends": [
+    "P3-20"
+   ],
+   "goal": "Freeze guest injection, fellowship, healing, persecution and Accord interfaces without instantiating the episode.",
+   "accept": [
+    "Guest G001 is outside the 100-person competitive roster",
+    "Arrival atomically changes provenance to Story",
+    "Disabled registration consumes no guest RNG and creates no events"
+   ],
+   "refs": "GDD 16.4,17; STORY 01\u201302",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P5-02",
+   "phase": "P5",
+   "title": "Neutral guest lifecycle",
+   "depends": [
+    "P5-01"
+   ],
+   "goal": "Implement a nonreligious test guest with ordinary needs, movement, damage and departure.",
+   "accept": [
+    "Guest uses the same laws, collision and action validators",
+    "Save/load preserves lifecycle and cannot add a second guest",
+    "Disabled-module paired runs are identical"
+   ],
+   "refs": "STORY 01\u201302; TP 16",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P5-03",
+   "phase": "P5",
+   "title": "Teaching source catalog and encounters",
+   "depends": [
+    "P5-02"
+   ],
+   "goal": "Author eight Gospel teaching themes and six encounters with passage references and fictional-world context.",
+   "accept": [
+    "Canonical quotations come only from reviewed source IDs and licensed text",
+    "Simulation awareness is clearly fictional framing",
+    "Authored episode works without an LLM and avoids guaranteed conversion or death"
+   ],
+   "refs": "GDD 17.3\u201317.5,17.11; STORY 11",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P5-04",
+   "phase": "P5",
+   "title": "Guest autonomous teaching and aid policy",
+   "depends": [
+    "P5-03"
+   ],
+   "goal": "Implement Christ guest priorities, timed gatherings, ordinary aid and threat-sensitive conduct.",
+   "accept": [
+    "Hunger, danger and interruption cancel attendance or work appropriately",
+    "Guest supplies and inventory are conserved",
+    "No mechanical obedience or sermon loop traps listeners"
+   ],
+   "refs": "STORY 03\u201304; GDD 17.5\u201317.6",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P5-05",
+   "phase": "P5",
+   "title": "Individual teaching reception and fellowship",
+   "depends": [
+    "P5-04",
+    "P2-07"
+   ],
+   "goal": "Implement receptive, skeptical, opportunistic and indifferent responses and voluntary cross-clan fellowship.",
+   "accept": [
+    "Individual needs, values and evidence determine response",
+    "More than eight followers do not merge victory teams or information stores",
+    "Repeated lessons retain source and cannot become firsthand miracles"
+   ],
+   "refs": "STORY 03\u201305,11; GDD 17.6\u201317.7",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A3"
+  },
+  {
+   "id": "P5-06",
+   "phase": "P5",
+   "title": "Limited guest healing action",
+   "depends": [
+    "P5-01",
+    "P1-24"
+   ],
+   "goal": "Implement the single six-second validated healing encounter per visit.",
+   "accept": [
+    "Only completion consumes the visit use and persists it",
+    "Patient reaches at least 75 HP, clears the permitted wound and may revive from downed, never eliminated",
+    "Terminal policy rejects healing without removing storm damage"
+   ],
+   "refs": "STORY 08; GDD 17.8",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P5-07",
+   "phase": "P5",
+   "title": "Interruptible persecution action",
+   "depends": [
+    "P5-01",
+    "P1-24"
+   ],
+   "goal": "Implement the twenty-second action against the downed guest using ordinary hostile legality.",
+   "accept": [
+    "Truce, initiator invalidation, guest revival or prior bleed-out cancels it",
+    "No custody subsystem or deferred lethal callback is introduced",
+    "Actual death cause remains factual and yields no guest K/A reward"
+   ],
+   "refs": "STORY 06\u201307; GDD 17.9",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P5-08",
+   "phase": "P5",
+   "title": "Opposition mediation and aftermath policies",
+   "depends": [
+    "P5-05",
+    "P5-07"
+   ],
+   "goal": "Implement bounded opposition, defense, mediation and factual aftermath reactions.",
+   "accept": [
+    "Opposition emerges from recorded concerns and is never mandatory",
+    "Ordinary aggression is not relabeled persecution",
+    "Surviving, dying and never-spawned guests each have appropriate authored outcomes"
+   ],
+   "refs": "STORY 06\u201307,09; GDD 17.9\u201317.10",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P5-09",
+   "phase": "P5",
+   "title": "Coexistence calendar and Accord ledger",
+   "depends": [
+    "P5-01",
+    "P3-08",
+    "P2-06"
+   ],
+   "goal": "Implement preselected Coexistence, public Accord signatures, withdrawals and qualifying useful-aid graph.",
+   "accept": [
+    "Fog stops at fifty minutes, terminal pressure is off, and one clan does not end the run early",
+    "Acceptance closes at 59:30; withdrawals must commit strictly before 60:00",
+    "Full qualifying set is public; no hidden subset optimization or religious requirement"
+   ],
+   "refs": "STORY 10,12; GDD 17.10",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A1"
+  },
+  {
+   "id": "P5-10",
+   "phase": "P5",
+   "title": "Story ending evaluator and conditional coda",
+   "depends": [
+    "P5-08",
+    "P5-09",
+    "P5-06"
+   ],
+   "goal": "Implement Shared Peace, Unresolved and competitive Story outcome presentation from finalized facts.",
+   "accept": [
+    "Shared Peace requires at least six actors, three clans and useful aid across three distinct unordered pairs",
+    "Coda occurs only after result and changes no resources, lives or records",
+    "Never-spawned and alive guest endings require no death event"
+   ],
+   "refs": "STORY 09\u201310,12",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P5-11",
+   "phase": "P5",
+   "title": "Compose optional Story providers",
+   "depends": [
+    "P5-10"
+   ],
+   "goal": "Register feature-gated Story providers and guest action handlers in Sim.Host.",
+   "accept": [
+    "Standard with the episode disabled is byte-equivalent under paired inputs",
+    "Story arrival retains all 100 contestant identities",
+    "Feature flags and source-catalog hash are in provenance"
+   ],
+   "refs": "STORY 01\u201302; TP 3,16",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P5-12",
+   "phase": "P5",
+   "title": "Story saves chronicle and career separation",
+   "depends": [
+    "P5-11",
+    "P4-09"
+   ],
+   "goal": "Persist guest, fellowship, healing, persecution, Accord and aftermath fields and expose factual chronicle entries.",
+   "accept": [
+    "Mid-action random checkpoint reproduces exact continuation",
+    "Story never increments Standard competitive totals",
+    "Teachings and fellowship entries retain event and passage IDs"
+   ],
+   "refs": "STORY 01\u201312; DATA 01",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A5"
+  },
+  {
+   "id": "P5-13",
+   "phase": "P5",
+   "title": "Story setup guest inspection and Accord UI",
+   "depends": [
+    "P5-11",
+    "P5-12"
+   ],
+   "goal": "Implement opt-in setup, guest card, voluntary fellowship cues, public Accord and reduced-intensity presentation.",
+   "accept": [
+    "Spawning is never required to continue core modes",
+    "Guest identity and cross-clan fellowship remain visually distinct",
+    "Public qualifying set matches evaluator output at every displayed snapshot"
+   ],
+   "refs": "GDD 17,19; STORY 12",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "P5-14",
+   "phase": "P5",
+   "title": "All Story scenes and independent portrayal review",
+   "depends": [
+    "P5-12",
+    "P5-13",
+    "P5-03"
+   ],
+   "goal": "Run STORY 01\u201312, disabled-module equivalence, source checks and a fresh portrayal/readability review.",
+   "accept": [
+    "No forced conversion, invented scripture or mandatory persecution passes",
+    "All interruption and simultaneous-boundary fixtures execute",
+    "A missing human content review remains HUMAN_REQUIRED; it is never fabricated"
+   ],
+   "refs": "Gate GS; GDD 17.12,24",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "P5-15",
+   "phase": "P5",
+   "title": "Integrate and request GS approval",
+   "depends": [
+    "P5-14"
+   ],
+   "goal": "Publish the independently reviewed shipping Story candidate and its isolated enablement record.",
+   "accept": [
+    "All Story acceptance evidence belongs to the exact merged baseline",
+    "G4 and GS remain separate gate records",
+    "P6 opens only after Jani approves it and both prerequisites are accepted"
+   ],
+   "refs": "Gate GS",
+   "gate": "GS",
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P6-01",
+   "phase": "P6",
+   "title": "Freeze beta scope and candidate identity",
+   "depends": [
+    "P4-14",
+    "P5-15"
+   ],
+   "goal": "Freeze release content, supported platform, schemas and the severity-based defect policy.",
+   "accept": [
+    "No new feature enters beta without a separately approved scope change",
+    "Candidate identity contains build, contract, content and geometry hashes",
+    "Every remaining release blocker has one owner and reproduction"
+   ],
+   "refs": "TP 20\u201321; Gate GR preparation",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "P6-02",
+   "phase": "P6",
+   "title": "Eight-minute first-run lesson",
+   "depends": [
+    "P6-01",
+    "P4-07"
+   ],
+   "goal": "Author the eight-person eight-minute lesson with selection, intentions, announced law and a visible consequential choice.",
+   "accept": [
+    "Tutorial uses supported real mechanics and never writes Standard wins",
+    "Guidance can pause or be replayed without breaking the clock",
+    "All scheduled law changes honor the declared tutorial notice policy"
+   ],
+   "refs": "GDD 13.3,20.2",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P6-03",
+   "phase": "P6",
+   "title": "Onboarding and return-player flows",
+   "depends": [
+    "P6-02"
+   ],
+   "goal": "Integrate the lesson, mode selection, save recovery, roster archive and next-run navigation.",
+   "accept": [
+    "New and returning users can reach a playable mode without developer tools",
+    "Keyboard focus and text scaling remain correct throughout",
+    "Failed load or export offers recovery without losing the last valid data"
+   ],
+   "refs": "GDD 13,19; TP 14\u201315",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "P6-04",
+   "phase": "P6",
+   "title": "Persistence fault injection fixes",
+   "depends": [
+    "P6-01",
+    "P5-12"
+   ],
+   "goal": "Harden snapshot, journal and career recovery against tested interruption points and disk failures.",
+   "accept": [
+    "Process termination across write/flush/rename/result stages preserves one valid recoverable state",
+    "Disk-full and corrupt inputs never acknowledge a failed save",
+    "Repeated recovery cannot duplicate career credit"
+   ],
+   "refs": "DATA 01; TP 15",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A5"
+  },
+  {
+   "id": "P6-05",
+   "phase": "P6",
+   "title": "Schema fuzz and architecture enforcement",
+   "depends": [
+    "P6-04"
+   ],
+   "goal": "Run bounded malformed fixture/scenario/save fuzzing and semantic assembly-boundary analysis.",
+   "accept": [
+    "Malformed project inputs yield documented errors without loading partial state",
+    "Sim assemblies contain no forbidden Godot, wall-clock or floating consequential path",
+    "Catalog-hash changes and reason-code omissions require explicit review"
+   ],
+   "refs": "TP 19\u201321; DSL-FUZZ,ARCH-BOUNDARIES",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "ESLint import boundaries + Vitest architecture test replace assembly-reference tests (TP v2.0 \u00a721).",
+   "lane": "A7"
+  },
+  {
+   "id": "P6-06",
+   "phase": "P6",
+   "title": "Long-run soak and final regression",
+   "depends": [
+    "P6-05",
+    "P6-03"
+   ],
+   "goal": "Run all 51 GDD scenes, project regressions, 100-seed Standard, Custom modes and Story matrices on the candidate.",
+   "accept": [
+    "All required cases have executed status with linked evidence",
+    "Observer toggles and varied checkpoint frequencies preserve authoritative hashes",
+    "Soak records memory trends, unhandled failures and recovery fidelity"
+   ],
+   "refs": "GDD 24; Gate GR",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "P6-07",
+   "phase": "P6",
+   "title": "Target hardware visual and performance repair",
+   "depends": [
+    "P6-06"
+   ],
+   "goal": "Fix measured client hot spots, visual defects and accessibility regressions within the frozen scope.",
+   "accept": [
+    "Optimizations preserve all visible semantic cues and core hashes",
+    "Reference captures cover dense camp and 100-person finale",
+    "No unmeasured performance claim is used to close a defect"
+   ],
+   "refs": "PRESENT 01; TP 18",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "P6-08",
+   "phase": "P6",
+   "title": "Reference hardware budget certification",
+   "depends": [
+    "P6-07"
+   ],
+   "goal": "Capture final CPU, GPU, memory, frame pacing and actual 1x/2x/4x delivery on recorded Windows hardware.",
+   "accept": [
+    "Core/AI/main/GPU P95 budgets and aggregate CPU windows are reported independently",
+    "Required 1x behavior meets the accepted target or remains blocked",
+    "Any revised tuning/performance target has evidence and explicit design approval"
+   ],
+   "refs": "GDD 24.2; TP 18",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "Jani's PC via templates/JANI_PC_CHECKLIST.md; two machines if available (TP v2.0 \u00a718).",
+   "lane": "A7"
+  },
+  {
+   "id": "P6-09",
+   "phase": "P6",
+   "title": "Offline packaging and clean-PC validation",
+   "depends": [
+    "P6-08"
+   ],
+   "goal": "Build a reproducible Windows distribution and test it without editor, SDK or network.",
+   "accept": [
+    "First launch, tutorial, Standard save/reload and Story opt-in work offline",
+    "Native SQLite and runtime dependencies are present",
+    "Distribution excludes credentials, developer caches and unsupported test profiles"
+   ],
+   "refs": "TP 21; Gate GR",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "Static build + service worker; optional Tauri/Electron wrapper; clean-PC = fresh browser profile plus clean Windows machine if wrapped (TP v2.0 \u00a721).",
+   "lane": "A7"
+  },
+  {
+   "id": "P6-10",
+   "phase": "P6",
+   "title": "Credits licenses and player documentation",
+   "depends": [
+    "P6-01",
+    "P4-13",
+    "P5-14"
+   ],
+   "goal": "Complete controls, factual mode descriptions, credits, asset provenance and third-party notices.",
+   "accept": [
+    "Every distributed asset and quoted text has recorded permission or license basis",
+    "Documentation matches actual supported mechanics and hardware evidence",
+    "Local LLM remains clearly optional and absent when deferred"
+   ],
+   "refs": "GDD 19\u201320; TP 21",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "P6-11",
+   "phase": "P6",
+   "title": "Final player and release evidence review",
+   "depends": [
+    "P6-09",
+    "P6-10"
+   ],
+   "goal": "Repeat required comprehension checks after material UX changes and audit the complete release evidence index.",
+   "accept": [
+    "Critical/high functional defects are closed and independently reproduced as fixed",
+    "Human-required checks contain real participant evidence",
+    "Installer/source hashes match the tested integrated candidate"
+   ],
+   "refs": "GDD 24.3; Gate GR",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "P6-12",
+   "phase": "P6",
+   "title": "Integrate release candidate and request acceptance",
+   "depends": [
+    "P6-11"
+   ],
+   "goal": "Deliver the source, executable, manifests, known limitations and signed gate report to Jani.",
+   "accept": [
+    "All required gates are passed on compatible accepted baselines with regressions rechecked",
+    "Release candidate is reviewable and remains private",
+    "Store upload, public publishing and purchases require their own explicit instruction"
+   ],
+   "refs": "Gate GR",
+   "gate": "GR",
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  },
+  {
+   "id": "PX-01",
+   "phase": "PX",
+   "title": "Authorize optional conversation experiment",
+   "depends": [
+    "P2-26"
+   ],
+   "goal": "Define a separate optional gate and bounded model/runtime benchmark without changing the core release dependency graph.",
+   "accept": [
+    "Jani explicitly opts into PX before any model download or implementation",
+    "Model license, size and tested hardware are recorded",
+    "Core and Story remain fully usable with PX deferred"
+   ],
+   "refs": "GDD 16,24.4; TP 17",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": "In-browser WebGPU inference candidate; optional and deferred (TP v2.0 \u00a716\u201317).",
+   "lane": "A0"
+  },
+  {
+   "id": "PX-02",
+   "phase": "PX",
+   "title": "Read-only conversation evidence packet",
+   "depends": [
+    "PX-01",
+    "P2-20"
+   ],
+   "goal": "Build size-bounded actor/run memory packets from verified records, with source IDs and visible unknowns.",
+   "accept": [
+    "Packet includes no hidden current-world facts the selected actor cannot know",
+    "No output can write simulation state or canonical memory",
+    "Historical facts remain attributed to their original run"
+   ],
+   "refs": "GDD 16.2; TP 17",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A5"
+  },
+  {
+   "id": "PX-03",
+   "phase": "PX",
+   "title": "Conversation prompts and factual fallback",
+   "depends": [
+    "PX-02"
+   ],
+   "goal": "Author prompt boundaries, approved scripture IDs, refusal/fallback text and 100 factual/adversarial probes.",
+   "accept": [
+    "Quotation text is rendered from approved source IDs, not model invention",
+    "Uncertain claims are omitted or labeled and never canonized",
+    "Prompt-injected commands have no state-changing capability"
+   ],
+   "refs": "STORY 11; GDD 24.4",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A6"
+  },
+  {
+   "id": "PX-04",
+   "phase": "PX",
+   "title": "Paused local runtime and interview UI",
+   "depends": [
+    "PX-03"
+   ],
+   "goal": "Integrate a separately running local inference process with cancel, timeout, memory budget and clear model status.",
+   "accept": [
+    "Resume or subject change cancels and rejects stale responses",
+    "Model failure leaves core play and authored dialogue intact",
+    "Real hardware latency/memory evidence determines whether the experiment is usable"
+   ],
+   "refs": "TP 17; Gate GL",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A4"
+  },
+  {
+   "id": "PX-05",
+   "phase": "PX",
+   "title": "Conversation grounding and isolation review",
+   "depends": [
+    "PX-04"
+   ],
+   "goal": "Run all 100 probes, runtime failure cases and enabled/disabled deterministic core comparisons.",
+   "accept": [
+    "No false quotation is presented as scripture",
+    "Core hashes remain equal and generated text never becomes memory",
+    "Evidence states actual model/runtime/license/hardware and all misses"
+   ],
+   "refs": "GDD 24.4; Gate GL",
+   "gate": null,
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A7"
+  },
+  {
+   "id": "PX-06",
+   "phase": "PX",
+   "title": "Integrate optional module or record defer",
+   "depends": [
+    "PX-05"
+   ],
+   "goal": "Publish the isolated optional result and request GL approval or explicitly defer it.",
+   "accept": [
+    "Failure can defer PX without blocking GR",
+    "Shipping enablement requires explicit Jani approval",
+    "No untested model binary is silently bundled with the game"
+   ],
+   "refs": "Gate GL",
+   "gate": "GL",
+   "status": "PLANNED",
+   "complexity": "unrated",
+   "webAdaptation": null,
+   "lane": "A0"
+  }
+ ]
+}

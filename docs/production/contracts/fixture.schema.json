@@ -1,0 +1,518 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thelastclan.invalid/schemas/fixture-v1.json",
+  "title": "The Last Clan fixture envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "gate",
+    "evidenceStatus",
+    "profile",
+    "map",
+    "setup",
+    "schedule",
+    "maxTicks",
+    "assertions"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Za-z0-9_-]+$"
+    },
+    "gate": {
+      "enum": [
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "GS",
+        "GR",
+        "GL"
+      ]
+    },
+    "evidenceStatus": {
+      "enum": [
+        "SCHEMA_EXAMPLE_UNEXECUTED",
+        "IMPLEMENTED_UNVERIFIED",
+        "VERIFIED"
+      ]
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "definitions",
+        "contestantCount",
+        "writeCareer"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "Fixture",
+            "Prototype8",
+            "Trial24",
+            "Standard100"
+          ]
+        },
+        "definitions": {
+          "type": "string"
+        },
+        "contestantCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "writeCareer": {
+          "const": false
+        }
+      }
+    },
+    "map": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recipeId",
+        "seed"
+      ],
+      "properties": {
+        "recipeId": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      }
+    },
+    "setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actors",
+        "precommittedLaws"
+      ],
+      "properties": {
+        "actors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "positionMm",
+              "vitalsMilli",
+              "inventory"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^(C[0-9]{3}|G001|W[0-9]{3})$"
+              },
+              "positionMm": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "vitalsMilli": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "health",
+                  "fullness",
+                  "fatigue",
+                  "exposure",
+                  "stamina"
+                ],
+                "properties": {
+                  "health": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  },
+                  "fullness": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  },
+                  "fatigue": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  },
+                  "exposure": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  },
+                  "stamina": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  }
+                }
+              },
+              "inventory": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "profileOverride": {
+                "type": "string"
+              },
+              "initialGoal": {
+                "type": "string"
+              },
+              "knownFacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "subject",
+                    "observedTick",
+                    "source"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "observedTick": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "source": {
+                      "enum": [
+                        "Self",
+                        "DirectObservation",
+                        "PublicNotice",
+                        "Report"
+                      ]
+                    },
+                    "sourceActor": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "precommittedLaws": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "lawId",
+              "startTick",
+              "endTick"
+            ],
+            "properties": {
+              "lawId": {
+                "enum": [
+                  "Truce",
+                  "BuildingsProtected",
+                  "PropertyProtected",
+                  "Sanctuary",
+                  "ColdFront",
+                  "BountifulGround",
+                  "StormWarning",
+                  "Herald"
+                ]
+              },
+              "startTick": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "endTick": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "centerMm": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "radiusMm": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "targetId": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schedule": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "atTick",
+          "sequence",
+          "expectedRulesVersion",
+          "operation",
+          "payload",
+          "expectAck"
+        ],
+        "properties": {
+          "atTick": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedRulesVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "operation": {
+            "const": "ScheduleLaw"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "lawId",
+              "startTick",
+              "endTick"
+            ],
+            "properties": {
+              "lawId": {
+                "enum": [
+                  "Truce",
+                  "BuildingsProtected",
+                  "PropertyProtected",
+                  "Sanctuary",
+                  "ColdFront",
+                  "BountifulGround",
+                  "StormWarning",
+                  "Herald"
+                ]
+              },
+              "startTick": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "endTick": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "centerMm": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "radiusMm": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "targetId": {
+                "type": "string"
+              }
+            }
+          },
+          "expectAck": {
+            "enum": [
+              "Accepted",
+              "Rejected"
+            ]
+          },
+          "expectedReasonId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "maxTicks": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 360000
+    },
+    "assertions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "match",
+              "minimum"
+            ],
+            "properties": {
+              "kind": {
+                "const": "EventCountGte"
+              },
+              "match": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "actorId": {
+                    "type": "string"
+                  },
+                  "targetId": {
+                    "type": "string"
+                  },
+                  "reasonId": {
+                    "type": "string"
+                  },
+                  "fromTick": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "throughTick": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              },
+              "minimum": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "match",
+              "count"
+            ],
+            "properties": {
+              "kind": {
+                "const": "EventCountEq"
+              },
+              "match": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "actorId": {
+                    "type": "string"
+                  },
+                  "targetId": {
+                    "type": "string"
+                  },
+                  "reasonId": {
+                    "type": "string"
+                  },
+                  "fromTick": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "throughTick": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "name"
+            ],
+            "properties": {
+              "kind": {
+                "const": "Invariant"
+              },
+              "name": {
+                "enum": [
+                  "NoIllegalEffects",
+                  "ConserveInventory",
+                  "NoUnexplainedStallOver100Ticks",
+                  "GuestExcludedFromContestantWins"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "variant",
+              "startTick",
+              "advanceTicks"
+            ],
+            "properties": {
+              "kind": {
+                "const": "HashEqualVariant"
+              },
+              "variant": {
+                "enum": [
+                  "SaveReload",
+                  "ObserverToggle",
+                  "Checkpoint10sVs60s"
+                ]
+              },
+              "startTick": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "advanceTicks": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,97 @@
+# The Last Clan — web build CI (TP v2.0 §21; W0-01).
+#
+# Jobs
+#   verify  — build, lint, vitest, kit planning tools, fixture subset, workboard check.
+#   screens — Playwright 3D screenshots via /capture. BLOCKED_RENDER until W0-10 ships
+#             the web shell and /capture route; the job exists so the gate evidence can
+#             point at it, and it is skipped (never green) until then.
+#
+# Nothing here has run on a GitHub runner yet: no repository was provided at W0-01
+# (see state/STATUS.md "Continuity"). The workflow was validated locally with the
+# same commands; CI execution itself is BLOCKED_TOOL until a repository exists.
+name: ci
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: "build · lint · test · fixtures · workboard"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node (version from .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Set up Python (kit planning tools)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record environment
+        run: |
+          echo "node $(node --version) · npm $(npm --version) · python $(python3 --version)" | tee environment.txt
+          uname -a >> environment.txt
+
+      - name: Install (npm ci, lockfile is authoritative)
+        run: npm ci --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Lint (ESLint boundaries included)
+        run: npm run lint
+
+      - name: "Test (vitest: architecture boundaries, clanlab stub)"
+        run: npm test
+
+      - name: Kit planning tools (python unittest)
+        run: npm run test:tools
+
+      # The fixture subset runs the three example fixtures through clanlab. Until W0-05/W0-06
+      # ship the validator and runner, clanlab reports NOT_IMPLEMENTED with exit 3 (never PASS).
+      # continue-on-error keeps the step visible as a warning instead of hiding it; remove it at W0-06.
+      - name: "Fixture subset (clanlab validate contracts/examples) — NOT_IMPLEMENTED until W0-05/W0-06"
+        continue-on-error: true
+        run: npm run fixtures
+
+      - name: Workboard check (tools/check_workboard.py)
+        run: npm run check:workboard
+
+      - name: Upload environment record
+        uses: actions/upload-artifact@v4
+        with:
+          name: environment
+          path: environment.txt
+          if-no-files-found: error
+
+  screens:
+    name: "Playwright 3D screenshots (BLOCKED_RENDER until W0-10)"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    # BLOCKED_RENDER: no web shell, no /capture route and no Playwright spec exist before W0-10.
+    # W0-10 replaces this condition with a real run; until then the job is skipped, not passed.
+    if: ${{ false }}
+    needs: verify
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Placeholder
+        run: |
+          echo 'W0-10 adds npm ci, npx playwright install --with-deps chromium, npm run screens, and uploads screenshots with capture metadata'

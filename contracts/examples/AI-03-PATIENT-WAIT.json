@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "id": "AI-03-PATIENT-WAIT",
+  "gate": "G1",
+  "evidenceStatus": "SCHEMA_EXAMPLE_UNEXECUTED",
+  "profile": {
+    "kind": "Fixture",
+    "definitions": "Prototype8",
+    "contestantCount": 2,
+    "writeCareer": false
+  },
+  "map": {
+    "recipeId": "valley-wait",
+    "seed": 4107
+  },
+  "setup": {
+    "actors": [
+      {
+        "id": "C003",
+        "positionMm": [
+          0,
+          0,
+          0
+        ],
+        "vitalsMilli": {
+          "health": 100000,
+          "fullness": 85000,
+          "fatigue": 10000,
+          "exposure": 0,
+          "stamina": 100000
+        },
+        "inventory": {
+          "berries": 2
+        },
+        "profileOverride": "patient-wait-test",
+        "initialGoal": "AcquireKnownStoredFood",
+        "knownFacts": [
+          {
+            "kind": "KnownStore",
+            "subject": "R001",
+            "observedTick": 0,
+            "source": "DirectObservation"
+          }
+        ]
+      },
+      {
+        "id": "C006",
+        "positionMm": [
+          20000,
+          0,
+          0
+        ],
+        "vitalsMilli": {
+          "health": 100000,
+          "fullness": 85000,
+          "fatigue": 10000,
+          "exposure": 0,
+          "stamina": 100000
+        },
+        "inventory": {
+          "berries": 4
+        }
+      }
+    ],
+    "precommittedLaws": [
+      {
+        "lawId": "PropertyProtected",
+        "startTick": 0,
+        "endTick": 1200
+      }
+    ]
+  },
+  "schedule": [],
+  "maxTicks": 2400,
+  "assertions": [
+    {
+      "kind": "EventCountGte",
+      "match": {
+        "type": "DecisionChosen",
+        "actorId": "C003",
+        "reasonId": "WaitingForLaw",
+        "throughTick": 1200
+      },
+      "minimum": 1
+    },
+    {
+      "kind": "Invariant",
+      "name": "NoIllegalEffects"
+    }
+  ],
+  "notes": "Future behavioral golden for P1-19. The fixture content compiler must define patient-wait-test and valley-wait with a known protected store R001 and an affordable alternative for the paired immediate-need case. The positive wait event and legal-effects invariant are both required. This kit validates syntax, not runtime behavior."
+}

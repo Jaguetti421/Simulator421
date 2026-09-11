@@ -1,0 +1,12 @@
+== npm ci ==
+npm error Run "npm help ci" for more info
+npm error A complete log of this run can be found in: /home/claude/.npm/_logs/2026-09-11T15_58_49_564Z-debug-0.log
+npm ci exit=1
+== npm test ==
+npm test exit=127
+== npm run lint ==
+sh: 1: eslint: not found
+npm run lint exit=127
+== npm run build ==
+    Entry point of type library 'node' specified in compilerOptions
+npm run build exit=2

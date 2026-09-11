@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "id": "LAW-NOTICE-REJECTION",
+  "gate": "G1",
+  "evidenceStatus": "SCHEMA_EXAMPLE_UNEXECUTED",
+  "profile": {
+    "kind": "Fixture",
+    "definitions": "Prototype8",
+    "contestantCount": 1,
+    "writeCareer": false
+  },
+  "map": {
+    "recipeId": "bootstrap-flat",
+    "seed": 4107
+  },
+  "setup": {
+    "actors": [
+      {
+        "id": "C003",
+        "positionMm": [
+          0,
+          0,
+          0
+        ],
+        "vitalsMilli": {
+          "health": 100000,
+          "fullness": 85000,
+          "fatigue": 10000,
+          "exposure": 0,
+          "stamina": 100000
+        },
+        "inventory": {
+          "berries": 2
+        }
+      }
+    ],
+    "precommittedLaws": []
+  },
+  "schedule": [
+    {
+      "atTick": 1,
+      "sequence": 1,
+      "expectedRulesVersion": 0,
+      "operation": "ScheduleLaw",
+      "payload": {
+        "lawId": "Truce",
+        "startTick": 101,
+        "endTick": 1301
+      },
+      "expectAck": "Rejected",
+      "expectedReasonId": "NoticeTooShort"
+    }
+  ],
+  "maxTicks": 100,
+  "assertions": [
+    {
+      "kind": "EventCountGte",
+      "match": {
+        "type": "CommandRejected",
+        "reasonId": "NoticeTooShort"
+      },
+      "minimum": 1
+    },
+    {
+      "kind": "EventCountEq",
+      "match": {
+        "type": "LawActivated"
+      },
+      "count": 0
+    },
+    {
+      "kind": "Invariant",
+      "name": "NoIllegalEffects"
+    }
+  ],
+  "notes": "P1-12/P2-14 implement the public command validator. atTick 1 plus only 100 ticks notice must reject. A rejected attempt is allowed evidence; no illegal effect may occur."
+}

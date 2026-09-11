@@ -1,0 +1,16 @@
+{
+  "name": "@lastclan/content",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The Last Clan content: versioned JSON definitions compiled at build time into immutable catalogs (TP v1.1 §12).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}

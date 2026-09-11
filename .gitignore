@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+# build output
+dist/
+*.tsbuildinfo
+# tool caches and logs
+.eslintcache
+.vite/
+.vitest/
+coverage/
+npm-debug.log*
+*.log
+# python
+__pycache__/
+*.pyc
+# OS / editor
+.DS_Store
+Thumbs.db
+# evidence outputs are committed only where a card requires a checked-in reproducible artifact
+/handoffs/**/tmp/
+# archives produced for the round-trip are presented from the outputs folder, never committed
+/lastclan-*.zip

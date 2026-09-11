@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "lib": ["ES2023"],
+    "types": ["node"]
+  },
+  "references": [
+    { "path": "../sim" },
+    { "path": "../content" }
+  ],
+  "include": ["**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}
