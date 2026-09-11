@@ -51,6 +51,8 @@ Every session ends with: tests run and results recorded; `state/STATUS.md` updat
 
 At a phase end, the integration packet produces `GATE_EVIDENCE.md`, the build, `PLAYTEST_BRIEF.md` and, if GPU or human checks are pending, `JANI_PC_CHECKLIST.md`; then you stop with: "Jani, phase <X> is ready for your playtest. Waiting for your feedback before starting <next phase>."
 
-## Environment observed in this Project's sandbox (verify at W0-01)
+## Environment observed in this Project's sandbox (verified at W0-01, 11 September 2026)
 
-Node 22, npm 10, git, Python 3.12; npm registry reachable; github.com and api.github.com reachable; no browsers, no Playwright browsers, no WebGL context (headless-gl returns null), no `dotnet`; node-canvas (2D) works. Uploaded files are mounted under the uploads directory, not inlined into context. Treat this as observed once, not guaranteed; record the actual environment in W0-01.
+Node 22.22, npm 10.9, git 2.43, Python 3.12; npm registry, github.com and api.github.com reachable (all other hosts blocked by the egress proxy). **Browsers are installed:** Playwright's Chromium 141 set at `/opt/pw-browsers` (build 1194 = Playwright 1.56.x; newer browser builds cannot be downloaded here), and headless Chromium provides **WebGL2 through SwiftShader** (software rasterizer) plus `navigator.gpu`. No GPU device, no `dotnet`. node-canvas (2D) works; headless-gl returns null. 1 CPU, 3.9 GiB RAM. Uploaded files are mounted under the uploads directory, not inlined into context.
+
+Consequences (approved by Jani, 11 Sep 2026): 3D screenshots may be captured in the sandbox with Playwright 1.56.x and are labelled software-rendered; they are evidence for correctness and layout, never for frame budgets or GPU quality, which stay HUMAN_REQUIRED on Jani's PC. Wall-clock timings from this sandbox are diagnostics only. The full table lives in `state/STATUS.md`; re-verify whenever the sandbox changes.

@@ -3,11 +3,11 @@
 Owner: the developer. Updated 11 September 2026 (W0-01, session 1).
 
 - Kit: The_Last_Clan_Web_Kit_v1 (kit zip SHA-256 `11136c86390b4b146c6eb5de3f87125c25ffdabc18318f6c7e1204d7fa06f179`), imported frozen under `docs/production/` — 196/196 files verified against its MANIFEST.json; live copies at the repository root (see README.md "Layout").
-- Baseline: the W0-01 bootstrap commit `ed2766fec321584f9f021a1b8c591ffcef9e2ad6` (see state/ACCEPTED_BASELINE.json). No packet ACCEPTED yet.
+- Baseline: the W0-01 bootstrap commit `ed2766fec321584f9f021a1b8c591ffcef9e2ad6` (see state/ACCEPTED_BASELINE.json). W0-01 ACCEPTED on top of it; ACCEPTED_BASELINE.json is re-cut at the G0 tag (W0-11).
 - HEAD at session end: cannot be written here without changing itself (same circularity as the archive hash). The sidecar `lastclan-W0-01-a01.zip.sha256` lists both the archive SHA-256 and the HEAD commit; next session verifies `git rev-parse HEAD` against it and expects `git log --oneline` to show the two W0-01 commits on top of nothing.
-- Accepted packets: 0 / 133 shipping + 6 optional PX (W0: 0/11). Gates passed: none.
-- Current phase: W0. W0-01 is READY_FOR_REVIEW (fresh-context self-review pending — next session). Next build packet after acceptance: W0-02.
-- Continuity: **archive round-trip this session.** Jani created `https://github.com/Jaguetti421/Simulator421` (empty) during the session but no fine-grained token was available, so nothing was pushed; the remote `origin` is configured with the plain URL (no credentials). Next session: with a token, `git fetch` then push `main`; the token is used only via an environment variable and per-command header (AGENTS.md).
+- Accepted packets: 1 / 133 shipping + 6 optional PX (W0: 1/11). Gates passed: none.
+- Current phase: W0. **W0-01 ACCEPTED** (producer acceptance by Jani in chat, 11 Sep 2026; same-session review recorded in handoffs/W0-01/REVIEW.md — the fresh-context review was waived, see metrics). Next packet: **W0-02** (`python tools/next_work.py`).
+- Continuity: **archive round-trip still canonical.** Repository `https://github.com/Jaguetti421/Simulator421` (private, empty) is configured as `origin` with the plain URL. Jani supplied a fine-grained token in chat; with it `git ls-remote` succeeds (read) but `git push` was refused: `remote: Write access to repository not granted` (HTTP 403) — the token lacks *Contents: Read and write*. The token was used only through an environment variable and a per-command header; nothing credential-like is in any file. Next session: a token with write permission → push `main` first, then work.
 
 ## Environment observed in this sandbox (W0-01, 11 Sep 2026 — supersedes the AGENTS.md note)
 
@@ -48,11 +48,12 @@ Owner: the developer. Updated 11 September 2026 (W0-01, session 1).
 ## Session log (one line per session)
 | date | packet | session # for packet | status at end | tests added | fixtures authored/failing/passing | blocked checks | rework after self-review | human needed |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-09-11 | W0-01 | 1 | READY_FOR_REVIEW | 49 vitest (44 boundary cases, 5 clanlab) + 2 python (6 total in tools) | 0 / 0 / 0 | 2 (CI execution on a GitHub runner: BLOCKED_TOOL; GitHub push: not tested, no token) | n/a (review is next session) | yes — repository token |
+| 2026-09-11 | W0-01 | 1 | ACCEPTED (producer) | 49 vitest (44 boundary cases, 5 clanlab) + 2 python (6 total in tools) | 0 / 0 / 0 | 2 (CI runner execution: BLOCKED_TOOL; GitHub push: refused 403, token lacks write) | waived — fresh-context review replaced by Jani's explicit acceptance; same-session review found 3 Low, 0 material | yes — token permission |
 
 ## Risks and open questions
 - **Toolchain versions post-date the developer's training data** (TypeScript 6, ESLint 10, Vitest 5, Vite 8, Playwright 1.56 browsers). Everything used at W0-01 was executed and observed; nothing is assumed. Expect occasional API surprises in later packets — verify by running, not by memory.
 - **1 CPU / 3.9 GiB sandbox:** Vitest runs files serially (`fileParallelism: false`). The 137-actor workload (W0-07) and 100-seed batches (P3) will be slow here; wall-clock numbers from this sandbox are diagnostics only, never budget evidence.
 - **Software WebGL only:** 3D captures in the sandbox prove correctness and layout, not frame budgets. Reference-hardware evidence is Jani's PC (templates/JANI_PC_CHECKLIST.md).
-- **GitHub push unverified:** the remote exists; the first push happens when a token is supplied. Until then archives are canonical.
+- **GitHub push refused (403, no write permission on the token):** archives stay canonical until a token with Contents: Read and write is supplied. The token pasted in chat should be treated as exposed and replaced.
+- **W0-01 acceptance was producer acceptance, not a fresh-context review.** Recorded honestly in the metrics; later packets return to the fresh-context rule unless Jani says otherwise.
 - **Frozen kit vs live copies can drift:** intended. Live `design/`, `contracts/` may receive addenda; the frozen copy is the reference for "what was delivered".

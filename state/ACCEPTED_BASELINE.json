@@ -5,8 +5,8 @@
  "gitCommitNote": "First commit of the web build (W0-01 bootstrap). Nothing is ACCEPTED yet; this is the commit later packets build on.",
  "archiveSha256": null,
  "archiveSha256Note": "An archive cannot contain its own hash. Each session's archive SHA-256 is delivered in a sidecar .sha256 file and in chat; state/STATUS.md records the HEAD commit instead.",
- "status": "NO_IMPLEMENTATION_ACCEPTED",
- "acceptedPackets": [],
+ "status": "W0-01_ACCEPTED_NO_GAME_SYSTEM",
+ "acceptedPackets": ["W0-01"],
  "contractVersion": "DESIGN_V0_UNIMPLEMENTED",
  "repository": "https://github.com/Jaguetti421/Simulator421",
  "repositoryNote": "Created by Jani on 11 Sep 2026; not yet pushed (no token in the W0-01 session)."
