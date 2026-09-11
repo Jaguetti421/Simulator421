@@ -3,7 +3,8 @@
 Owner: the developer. Updated 11 September 2026 (W0-01, session 1).
 
 - Kit: The_Last_Clan_Web_Kit_v1 (kit zip SHA-256 `11136c86390b4b146c6eb5de3f87125c25ffdabc18318f6c7e1204d7fa06f179`), imported frozen under `docs/production/` — 196/196 files verified against its MANIFEST.json; live copies at the repository root (see README.md "Layout").
-- Baseline: the W0-01 bootstrap commit (see state/ACCEPTED_BASELINE.json). No packet ACCEPTED yet.
+- Baseline: the W0-01 bootstrap commit `ed2766fec321584f9f021a1b8c591ffcef9e2ad6` (see state/ACCEPTED_BASELINE.json). No packet ACCEPTED yet.
+- HEAD at session end: cannot be written here without changing itself (same circularity as the archive hash). The sidecar `lastclan-W0-01-a01.zip.sha256` lists both the archive SHA-256 and the HEAD commit; next session verifies `git rev-parse HEAD` against it and expects `git log --oneline` to show the two W0-01 commits on top of nothing.
 - Accepted packets: 0 / 133 shipping + 6 optional PX (W0: 0/11). Gates passed: none.
 - Current phase: W0. W0-01 is READY_FOR_REVIEW (fresh-context self-review pending — next session). Next build packet after acceptance: W0-02.
 - Continuity: **archive round-trip this session.** Jani created `https://github.com/Jaguetti421/Simulator421` (empty) during the session but no fine-grained token was available, so nothing was pushed; the remote `origin` is configured with the plain URL (no credentials). Next session: with a token, `git fetch` then push `main`; the token is used only via an environment variable and per-command header (AGENTS.md).

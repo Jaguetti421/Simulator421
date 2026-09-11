@@ -1,12 +1,23 @@
+Fresh clone of commit ed2766fec321584f9f021a1b8c591ffcef9e2ad6 — 2026-09-11T15:59:10Z
 == npm ci ==
-npm error Run "npm help ci" for more info
-npm error A complete log of this run can be found in: /home/claude/.npm/_logs/2026-09-11T15_58_49_564Z-debug-0.log
-npm ci exit=1
+added 138 packages in 5s
+npm ci exit=0
 == npm test ==
-npm test exit=127
+ Test Files  2 passed (2)
+      Tests  49 passed (49)
+npm test exit=0
 == npm run lint ==
-sh: 1: eslint: not found
-npm run lint exit=127
+
+npm run lint exit=0
 == npm run build ==
-    Entry point of type library 'node' specified in compilerOptions
-npm run build exit=2
+
+npm run build exit=0
+== npm run test:tools ==
+OK
+npm run test:tools exit=0
+== npm run check:workboard ==
+ "status": "PASS",
+exit=0
+== npm run fixtures (stub; exit 3 expected) ==
+{"tool":"clanlab","version":"0.0.0-w0-01-stub","command":"validate","status":"NO
+exit=3
