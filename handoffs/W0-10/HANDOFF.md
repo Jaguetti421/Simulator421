@@ -41,7 +41,7 @@ Contract proposals or deferred work outside scope:
 
 Remaining risks, reproduction and exact next action:
 - Software WebGL proves layout and correctness, never frame budget or GPU quality. **The two PNGs in `evidence/` are the artefacts for your visual review**; nothing automated in this packet certifies that eight identities are recognisable to a person.
-- CI's `screens` job is enabled but has never run on the GitHub runner — it installs Chromium itself, which the sandbox did not have to do. The first push after this one is its first real execution.
+- CI's `screens` job has now **executed on the GitHub runner and passed** (run `34686381154` for `0f11e88`, 12 Sep 09:38 UTC): both jobs green — `build · lint · test · fixtures · workboard` and `Playwright browser suite: shell, worker hash parity, persistence, /capture`. Chromium installs there without the preinstalled browsers the sandbox has, so the browser evidence is reproducible outside this machine.
 - Reproduce: `npm run verify`, then `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers npm run test:e2e`.
 - Next action: review, then **W0-11** (integration, gate evidence and the G0 stop for your playtest).
 
