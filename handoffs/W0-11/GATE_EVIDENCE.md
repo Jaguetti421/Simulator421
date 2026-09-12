@@ -1,7 +1,7 @@
 # Gate evidence — G0
 
 Candidate baseline / build / content / geometry / contract hashes:
-- **Baseline commit:** `3796038db9cff95d8048e76f3ef7e04fdb218b4b`, tagged `w0-baseline`. Branch `main`, GitHub `Jaguetti421/Simulator421`.
+- **Baseline:** tag **`w0-baseline`** — the tag is the identifier, because the commit it points at is the one that contains this document. `git rev-parse w0-baseline` resolves it. Branch `main`, GitHub `Jaguetti421/Simulator421`.
 - **Contract:** version 0, 16 records, recordsDigest sha256:291f9b94ce3a4e8ed1b25bddb7258cca73353fed2c451cbe3fb2331e8c253521.
 - **Content:** none. No content catalog exists (first content packets are P1); every summary that touches content records `Unavailable` with that packet named.
 - **Geometry:** none. No map compiler exists (P1); map recipe and seed are recorded, the compiled digest is `Unavailable`.
@@ -37,7 +37,7 @@ Known limitations, severity, ownership and reproduction:
 8. **Timing numbers are sandbox diagnostics** (low, but easy to misread). Reference-hardware measurement is Jani's checklist step 3.
 
 Playable/source package and exact review path for Jani:
-- Repository `main` at `3796038db9cff95d8048e76f3ef7e04fdb218b4b`, tag `w0-baseline`.
+- Repository `main` at `w0-baseline`, tag `w0-baseline`.
 - `npm ci && npm run build`, then serve `apps/web/dist-site` and open `index.html` (the shell) or `capture.html?fixture=PRESENT-READ-01&tick=300&camera=45,30,220` (a capture).
 - The two PNGs in `handoffs/W0-10/evidence/` and one in `handoffs/W0-09/evidence/` are the images to look at first.
 - `PLAYTEST_BRIEF.md` and `JANI_PC_CHECKLIST.md` in this folder.

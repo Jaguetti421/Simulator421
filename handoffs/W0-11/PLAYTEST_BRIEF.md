@@ -1,4 +1,4 @@
-# Playtest brief — W0 / G0 / build `3796038` (tag `w0-baseline`)
+# Playtest brief — W0 / G0 / build `w0-baseline`
 
 **What you are looking at.** The web foundation, not the game. A synthetic workload of 137 actors (100 contestants, 36 wildlife, one guest) moves around an 800 m island under a fixed 10 Hz tick, and two law regions install on schedule. There are **no goals, no decisions, no combat, no crafting, no economy, no clans and no terrain** — stage 4 of the tick loop runs and decides nothing, on purpose. What is real: the tick transaction, determinism across Node and the browser, pause and speed, saves that restore and continue identically, and two renderers (a 2D readability view and a 3D tabletop scene). A look takes ten minutes; there is nothing to win.
 
@@ -31,4 +31,4 @@ Open the printed URL in a Chromium-based browser. Seed **4107** is baked in. If 
 4. **Bugs.** What, at which tick, and what you expected instead.
 5. **Anything you wanted to do and couldn't** — including things that are obviously P1 work; it tells me what to sequence first.
 
-**Return to the developer:** this file with answers, plus any screenshots. Seed 4107 and build `3796038` stay attached.
+**Return to the developer:** this file with answers, plus any screenshots. Seed 4107 and the tag `w0-baseline` stay attached.

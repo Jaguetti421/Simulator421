@@ -1,4 +1,4 @@
-# Jani's PC checklist — W0 / build `3796038` (tag `w0-baseline`)
+# Jani's PC checklist — W0 / build `w0-baseline`
 
 Checks this sandbox cannot run. **Two of the five are genuinely blocked here; the rest ran and are listed so you can confirm them on real hardware rather than take my word.** Results go in `handoffs/W0-11/evidence/jani/`; I attach them to GATE_EVIDENCE.md next session.
 
