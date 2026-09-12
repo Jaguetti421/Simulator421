@@ -1,0 +1,10 @@
+clanlab run 0.1.0-w0-06 — fixture handoffs/W0-06/evidence/demo/W0-06-DEMO-FAIL.json
+fixture sha256 sha256:340c553ae40b08644f046ba8fa311ec0a8c43fba68b5b230fd56bac9eace9237 (909 bytes)
+fixture W0-06-DEMO-FAIL — gate G0, profile Fixture, seed 4107, maxTicks 100
+host tape sha256:dbfe0adcc41848652d24ec2b6a47c60e01f06d92406ae002dc59927a00e77c29 — 2 event(s) produced by the developer writing this packet's evidence, by hand
+  declared source: hand-authored for the W0-06 handoff evidence; no simulation exists at W0-06
+  event type actor.moved: 2
+assertion 0 EventCountGte: Passed (observed 2, expected >= 1)
+assertion 1 EventCountGte: Failed (observed 0, expected >= 1)
+  no assertion passes on an empty match: 0 events matched (type=actor.eliminated, ticks 1..50), needed at least 1
+result Failed: 1 passed, 1 failed, 0 blocked, 0 skipped check(s)

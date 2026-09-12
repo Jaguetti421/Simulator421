@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CLANLAB_VERSION, PLANNED_COMMANDS, runCli } from "./run.js";
 
 /** Commands that have shipped; the rest must still report NOT_IMPLEMENTED. */
-const IMPLEMENTED_COMMANDS = ["validate"];
+const IMPLEMENTED_COMMANDS = ["validate", "run", "inspect"];
 
 function capture() {
   const out: string[] = [];
@@ -10,7 +10,7 @@ function capture() {
   return { io: { out: (l: string) => out.push(l), err: (l: string) => err.push(l) }, out, err };
 }
 
-describe("clanlab stub CLI (W0-01)", () => {
+describe("clanlab CLI dispatch", () => {
   it("prints usage and exits 0 with no arguments or --help", () => {
     for (const argv of [[], ["--help"], ["-h"]]) {
       const c = capture();
@@ -47,9 +47,16 @@ describe("clanlab stub CLI (W0-01)", () => {
     }
   });
 
-  it("names the three W0 lab packets", () => {
-    expect(Object.keys(PLANNED_COMMANDS)).toEqual(["validate", "run", "render"]);
-    expect(Object.values(PLANNED_COMMANDS).map((p) => p.implementedBy)).toEqual(["W0-05", "W0-06", "W0-09"]);
+  it("names every planned lab command and the packet that ships it", () => {
+    expect(Object.keys(PLANNED_COMMANDS)).toEqual(["validate", "run", "inspect", "batch", "replay", "render"]);
+    expect(Object.values(PLANNED_COMMANDS).map((p) => p.implementedBy)).toEqual([
+      "W0-05",
+      "W0-06",
+      "W0-06",
+      "P3 (seed batches)",
+      "W0-08 (snapshots and hashes)",
+      "W0-09",
+    ]);
   });
 
   it("validate is implemented (W0-05): it reports usage errors, not NOT_IMPLEMENTED", () => {
@@ -61,5 +68,33 @@ describe("clanlab stub CLI (W0-01)", () => {
     const opt = capture();
     expect(runCli(["validate", "--fixture"], opt.io)).toBe(2);
     expect(opt.err.join("\n")).toContain("--fixture needs a path");
+  });
+
+  it("run and inspect are implemented (W0-06): they report usage errors, not NOT_IMPLEMENTED", () => {
+    const noFixture = capture();
+    expect(runCli(["run"], noFixture.io)).toBe(2);
+    expect(noFixture.err.join("\n")).toContain("no fixture paths given");
+    expect(noFixture.out.join("\n")).not.toContain("NOT_IMPLEMENTED");
+
+    const badOption = capture();
+    expect(runCli(["run", "--fixture", "x.json", "--frobnicate"], badOption.io)).toBe(2);
+    expect(badOption.err.join("\n")).toContain("unknown option --frobnicate");
+
+    const badCeiling = capture();
+    expect(runCli(["run", "--fixture", "x.json", "--log-max-bytes", "12"], badCeiling.io)).toBe(2);
+    expect(badCeiling.err.join("\n")).toContain("at least 1024");
+
+    const noBundle = capture();
+    expect(runCli(["inspect"], noBundle.io)).toBe(2);
+    expect(noBundle.err.join("\n")).toContain("no bundle directory given");
+  });
+
+  it("documents every exit code it can return, including BLOCKED", () => {
+    const c = capture();
+    runCli(["--help"], c.io);
+    const help = c.out.join("\n");
+    for (const line of ["0  every requested supported check passed", "1  failed", "2  usage error", "3  the command is planned", "4  blocked"]) {
+      expect(help).toContain(line);
+    }
   });
 });

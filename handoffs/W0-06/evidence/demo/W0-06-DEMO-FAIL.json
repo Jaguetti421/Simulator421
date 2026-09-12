@@ -1,0 +1,21 @@
+{
+ "schemaVersion": 1,
+ "id": "W0-06-DEMO-FAIL",
+ "gate": "G0",
+ "evidenceStatus": "SCHEMA_EXAMPLE_UNEXECUTED",
+ "profile": { "kind": "Fixture", "definitions": "Prototype8", "contestantCount": 1, "writeCareer": false },
+ "map": { "recipeId": "bootstrap-flat", "seed": 4107 },
+ "setup": {
+  "actors": [
+   { "id": "C003", "positionMm": [0, 0, 0], "vitalsMilli": { "health": 100000, "fullness": 85000, "fatigue": 10000, "exposure": 0, "stamina": 100000 }, "inventory": {} }
+  ],
+  "precommittedLaws": []
+ },
+ "schedule": [],
+ "maxTicks": 100,
+ "assertions": [
+  { "kind": "EventCountGte", "match": { "type": "actor.moved" }, "minimum": 1 },
+  { "kind": "EventCountGte", "match": { "type": "actor.eliminated", "fromTick": 1, "throughTick": 50 }, "minimum": 1 }
+ ],
+ "notes": "W0-06 harness demonstration. The tape contains actor.moved only, so assertion 0 passes and assertion 1 must fail and write a bundle."
+}

@@ -1,0 +1,145 @@
+{
+ "tool": "clanlab",
+ "command": "run",
+ "schemaVersion": 1,
+ "identity": {
+  "build": {
+   "tool": "clanlab",
+   "version": "0.1.0-w0-06",
+   "sourceDigest": "sha256:f3ef077e0459e09e3ec611e03eb61ea716dc3e62668f83c618d610a44553d380",
+   "sourceKind": "dist",
+   "files": 16
+  },
+  "contract": {
+   "version": 0,
+   "recordsDigest": "sha256:291f9b94ce3a4e8ed1b25bddb7258cca73353fed2c451cbe3fb2331e8c253521",
+   "records": 16,
+   "reasonIds": 13
+  },
+  "content": {
+   "status": "Unavailable",
+   "reason": "no compiled content catalog exists yet, so item, goal and profile-override IDs were not checked",
+   "availableFrom": "content packets (P1+)"
+  },
+  "fixtureDslVersion": 1
+ },
+ "host": {
+  "kind": "tape",
+  "id": "tape:dbfe0adcc418",
+  "watermark": "FakeSim",
+  "gateEligible": false,
+  "simulated": false,
+  "unsupportedSystems": [
+   "tick loop (W0-07)",
+   "actors, movement, needs, crafting, combat (P1+)",
+   "runtime law validation and effects (P1-12, P2-14)",
+   "snapshots, restore and canonical hashes (W0-08)",
+   "careers (never written by a fixture)"
+  ],
+  "unmatchableFields": [
+   {
+    "field": "reasonId",
+    "reason": "CommittedEvent at contract v0 has no reasonId field and its payload fields are closed, so no run can report the reason a command was rejected",
+    "availableFrom": "the packet that freezes the rejection event payload (P1-12, public command validator)"
+   }
+  ],
+  "finalTick": 31,
+  "tape": {
+   "path": "handoffs/W0-06/evidence/demo/tape.json",
+   "sha256": "sha256:dbfe0adcc41848652d24ec2b6a47c60e01f06d92406ae002dc59927a00e77c29",
+   "declaredSource": "hand-authored for the W0-06 handoff evidence; no simulation exists at W0-06",
+   "producedBy": "the developer writing this packet's evidence, by hand",
+   "fixtureId": "W0-06-DEMO-FAIL",
+   "events": 2,
+   "firstTick": 12,
+   "lastTick": 31
+  },
+  "note": "Events were read from a declared tape (the developer writing this packet's evidence, by hand); nothing was simulated. A tape run proves the harness and the assertions, never the game — it can never be gate evidence."
+ },
+ "counts": {
+  "fixtures": 1,
+  "requested": 2,
+  "executed": 2,
+  "passed": 1,
+  "failed": 1,
+  "blocked": 0,
+  "skippedChecks": 0,
+  "invalid": 0,
+  "unreadable": 0
+ },
+ "exitCode": 1,
+ "note": "At least one fixture failed, was invalid or could not be read. Details are in the run logs and the failure bundles named in artifacts.",
+ "runs": [
+  {
+   "file": "handoffs/W0-06/evidence/demo/W0-06-DEMO-FAIL.json",
+   "fixtureSha256": "sha256:340c553ae40b08644f046ba8fa311ec0a8c43fba68b5b230fd56bac9eace9237",
+   "id": "W0-06-DEMO-FAIL",
+   "gate": "G0",
+   "profile": "Fixture",
+   "seed": 4107,
+   "maxTicks": 100,
+   "geometry": {
+    "recipeId": "bootstrap-flat",
+    "seed": 4107,
+    "compiled": {
+     "status": "Unavailable",
+     "reason": "no map compiler exists yet, so the map recipe was not compiled and its geometry has no digest",
+     "availableFrom": "map compiler (P1)"
+    }
+   },
+   "status": "Failed",
+   "finalTick": 31,
+   "outcome": "at least one assertion failed",
+   "counts": {
+    "requested": 2,
+    "executed": 2,
+    "passed": 1,
+    "failed": 1,
+    "blocked": 0,
+    "skippedChecks": 0
+   },
+   "gateEvidence": {
+    "eligible": false,
+    "reason": "no host in this build simulates anything, so no run here is gate evidence (AGENTS.md: FakeSim never passes a production gate)"
+   },
+   "assertions": [
+    {
+     "index": 0,
+     "kind": "EventCountGte",
+     "evaluatedAtTick": 31,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": ">= 1",
+     "observed": 2
+    },
+    {
+     "index": 1,
+     "kind": "EventCountGte",
+     "evaluatedAtTick": 31,
+     "matchWindow": {
+      "fromTick": 1,
+      "throughTick": 50
+     },
+     "status": "Failed",
+     "expected": ">= 1",
+     "observed": 0,
+     "detail": "no assertion passes on an empty match: 0 events matched (type=actor.eliminated, ticks 1..50), needed at least 1",
+     "nearMiss": []
+    }
+   ],
+   "validationErrors": [],
+   "hostErrors": [],
+   "skippedChecks": [],
+   "artifacts": {
+    "log": "/tmp/w006out/fail/W0-06-DEMO-FAIL/run.log",
+    "fixture": "/tmp/w006out/fail/W0-06-DEMO-FAIL/fixture.json",
+    "events": "/tmp/w006out/fail/W0-06-DEMO-FAIL/events.json",
+    "bundle": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/bundle.json",
+    "verdictDigest": "sha256:19b0a04a49ab42a95a5c95400e695f92650b76f11b71ff61a14e91cc9435510d"
+   }
+  }
+ ]
+}

@@ -10,6 +10,8 @@ dist/
 coverage/
 npm-debug.log*
 *.log
+# ...but a run log that is committed handoff evidence is part of the record
+!/handoffs/**/*.log
 # python
 __pycache__/
 *.pyc
@@ -18,5 +20,7 @@ __pycache__/
 Thumbs.db
 # evidence outputs are committed only where a card requires a checked-in reproducible artifact
 /handoffs/**/tmp/
+# clanlab run evidence: logs and failure bundles are regenerated, never committed
+/clanlab-out/
 # archives produced for the round-trip are presented from the outputs folder, never committed
 /lastclan-*.zip

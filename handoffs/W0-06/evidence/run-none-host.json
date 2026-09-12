@@ -1,0 +1,283 @@
+{
+ "tool": "clanlab",
+ "command": "run",
+ "schemaVersion": 1,
+ "identity": {
+  "build": {
+   "tool": "clanlab",
+   "version": "0.1.0-w0-06",
+   "sourceDigest": "sha256:f3ef077e0459e09e3ec611e03eb61ea716dc3e62668f83c618d610a44553d380",
+   "sourceKind": "dist",
+   "files": 16
+  },
+  "contract": {
+   "version": 0,
+   "recordsDigest": "sha256:291f9b94ce3a4e8ed1b25bddb7258cca73353fed2c451cbe3fb2331e8c253521",
+   "records": 16,
+   "reasonIds": 13
+  },
+  "content": {
+   "status": "Unavailable",
+   "reason": "no compiled content catalog exists yet, so item, goal and profile-override IDs were not checked",
+   "availableFrom": "content packets (P1+)"
+  },
+  "fixtureDslVersion": 1
+ },
+ "host": {
+  "kind": "none",
+  "id": "none",
+  "watermark": "FakeSim",
+  "gateEligible": false,
+  "simulated": false,
+  "unsupportedSystems": [
+   "tick loop (W0-07)",
+   "actors, movement, needs, crafting, combat (P1+)",
+   "runtime law validation and effects (P1-12, P2-14)",
+   "snapshots, restore and canonical hashes (W0-08)",
+   "careers (never written by a fixture)"
+  ],
+  "unmatchableFields": [
+   {
+    "field": "reasonId",
+    "reason": "CommittedEvent at contract v0 has no reasonId field and its payload fields are closed, so no run can report the reason a command was rejected",
+    "availableFrom": "the packet that freezes the rejection event payload (P1-12, public command validator)"
+   }
+  ],
+  "finalTick": 0,
+  "note": "No simulation exists at W0-06. No world was constructed, no tick ran and no event was produced; every assertion is Blocked."
+ },
+ "counts": {
+  "fixtures": 3,
+  "requested": 6,
+  "executed": 0,
+  "passed": 0,
+  "failed": 0,
+  "blocked": 6,
+  "skippedChecks": 4,
+  "invalid": 0,
+  "unreadable": 0
+ },
+ "exitCode": 4,
+ "note": "Nothing failed, and nothing passed that was not evaluated: blocked checks are checks this build cannot run yet, and they keep the exit code nonzero.",
+ "runs": [
+  {
+   "file": "contracts/examples/AI-03-PATIENT-WAIT.json",
+   "fixtureSha256": "sha256:c7c3b3ad09094725b83351c6db3f743baa4cafb8a76c014f5de715db83c4bc32",
+   "id": "AI-03-PATIENT-WAIT",
+   "gate": "G1",
+   "profile": "Fixture",
+   "seed": 4107,
+   "maxTicks": 2400,
+   "geometry": {
+    "recipeId": "valley-wait",
+    "seed": 4107,
+    "compiled": {
+     "status": "Unavailable",
+     "reason": "no map compiler exists yet, so the map recipe was not compiled and its geometry has no digest",
+     "availableFrom": "map compiler (P1)"
+    }
+   },
+   "status": "Blocked",
+   "finalTick": 0,
+   "outcome": "no assertion failed, and at least one could not be evaluated by this host",
+   "counts": {
+    "requested": 2,
+    "executed": 0,
+    "passed": 0,
+    "failed": 0,
+    "blocked": 2,
+    "skippedChecks": 2
+   },
+   "gateEvidence": {
+    "eligible": false,
+    "reason": "no host in this build simulates anything, so no run here is gate evidence (AGENTS.md: FakeSim never passes a production gate)"
+   },
+   "assertions": [
+    {
+     "index": 0,
+     "kind": "EventCountGte",
+     "evaluatedAtTick": 0,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": 1200
+     },
+     "status": "Blocked",
+     "detail": "this assertion matches on reasonId=WaitingForLaw, and CommittedEvent at contract v0 has no reasonId field and its payload fields are closed, so no run can report the reason a command was rejected; reporting it as Failed would blame the game for a gap in the contract",
+     "availableFrom": "the packet that freezes the rejection event payload (P1-12, public command validator)"
+    },
+    {
+     "index": 1,
+     "kind": "Invariant",
+     "evaluatedAtTick": 0,
+     "status": "Blocked",
+     "detail": "invariant NoIllegalEffects needs a running simulation",
+     "availableFrom": "W0-07 (tick loop and production invariants)"
+    }
+   ],
+   "validationErrors": [],
+   "hostErrors": [],
+   "skippedChecks": [
+    {
+     "code": "ContentCatalogUnavailable",
+     "path": "/setup/actors/0",
+     "message": "item, goal and profile-override IDs cannot be checked before a compiled content catalog exists",
+     "availableFrom": "content packets (P1+)"
+    },
+    {
+     "code": "ContentCatalogUnavailable",
+     "path": "/setup/actors/1",
+     "message": "item, goal and profile-override IDs cannot be checked before a compiled content catalog exists",
+     "availableFrom": "content packets (P1+)"
+    }
+   ],
+   "artifacts": {
+    "log": "/tmp/w006out/none/AI-03-PATIENT-WAIT/run.log",
+    "fixture": "/tmp/w006out/none/AI-03-PATIENT-WAIT/fixture.json",
+    "events": null,
+    "bundle": null
+   }
+  },
+  {
+   "file": "contracts/examples/LAW-NOTICE-REJECTION.json",
+   "fixtureSha256": "sha256:bc621bc2ea88fdb7ab70e2f1bbc4b324e3b67c8f4e6975ec1ee8c7ede637b31f",
+   "id": "LAW-NOTICE-REJECTION",
+   "gate": "G1",
+   "profile": "Fixture",
+   "seed": 4107,
+   "maxTicks": 100,
+   "geometry": {
+    "recipeId": "bootstrap-flat",
+    "seed": 4107,
+    "compiled": {
+     "status": "Unavailable",
+     "reason": "no map compiler exists yet, so the map recipe was not compiled and its geometry has no digest",
+     "availableFrom": "map compiler (P1)"
+    }
+   },
+   "status": "Blocked",
+   "finalTick": 0,
+   "outcome": "no assertion failed, and at least one could not be evaluated by this host",
+   "counts": {
+    "requested": 3,
+    "executed": 0,
+    "passed": 0,
+    "failed": 0,
+    "blocked": 3,
+    "skippedChecks": 1
+   },
+   "gateEvidence": {
+    "eligible": false,
+    "reason": "no host in this build simulates anything, so no run here is gate evidence (AGENTS.md: FakeSim never passes a production gate)"
+   },
+   "assertions": [
+    {
+     "index": 0,
+     "kind": "EventCountGte",
+     "evaluatedAtTick": 0,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Blocked",
+     "detail": "this assertion matches on reasonId=NoticeTooShort, and CommittedEvent at contract v0 has no reasonId field and its payload fields are closed, so no run can report the reason a command was rejected; reporting it as Failed would blame the game for a gap in the contract",
+     "availableFrom": "the packet that freezes the rejection event payload (P1-12, public command validator)"
+    },
+    {
+     "index": 1,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 0,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Blocked",
+     "detail": "host \"none\" produced no event stream: nothing was simulated, so this assertion was not evaluated",
+     "availableFrom": "W0-07 (tick kernel), or pass --events <tape> to judge assertions against a declared event tape"
+    },
+    {
+     "index": 2,
+     "kind": "Invariant",
+     "evaluatedAtTick": 0,
+     "status": "Blocked",
+     "detail": "invariant NoIllegalEffects needs a running simulation",
+     "availableFrom": "W0-07 (tick loop and production invariants)"
+    }
+   ],
+   "validationErrors": [],
+   "hostErrors": [],
+   "skippedChecks": [
+    {
+     "code": "ContentCatalogUnavailable",
+     "path": "/setup/actors/0",
+     "message": "item, goal and profile-override IDs cannot be checked before a compiled content catalog exists",
+     "availableFrom": "content packets (P1+)"
+    }
+   ],
+   "artifacts": {
+    "log": "/tmp/w006out/none/LAW-NOTICE-REJECTION/run.log",
+    "fixture": "/tmp/w006out/none/LAW-NOTICE-REJECTION/fixture.json",
+    "events": null,
+    "bundle": null
+   }
+  },
+  {
+   "file": "contracts/examples/SAVE-BOOTSTRAP-01.json",
+   "fixtureSha256": "sha256:96492dcd7bcf0960dec03f7920f718001551bfb7d8a69d9cff6a318c702c4cc4",
+   "id": "SAVE-BOOTSTRAP-01",
+   "gate": "G0",
+   "profile": "Fixture",
+   "seed": 4107,
+   "maxTicks": 700,
+   "geometry": {
+    "recipeId": "bootstrap-flat",
+    "seed": 4107,
+    "compiled": {
+     "status": "Unavailable",
+     "reason": "no map compiler exists yet, so the map recipe was not compiled and its geometry has no digest",
+     "availableFrom": "map compiler (P1)"
+    }
+   },
+   "status": "Blocked",
+   "finalTick": 0,
+   "outcome": "no assertion failed, and at least one could not be evaluated by this host",
+   "counts": {
+    "requested": 1,
+    "executed": 0,
+    "passed": 0,
+    "failed": 0,
+    "blocked": 1,
+    "skippedChecks": 1
+   },
+   "gateEvidence": {
+    "eligible": false,
+    "reason": "no host in this build simulates anything, so no run here is gate evidence (AGENTS.md: FakeSim never passes a production gate)"
+   },
+   "assertions": [
+    {
+     "index": 0,
+     "kind": "HashEqualVariant",
+     "evaluatedAtTick": 0,
+     "status": "Blocked",
+     "detail": "hash variant SaveReload needs snapshot, restore and canonical hashes",
+     "availableFrom": "W0-08 (snapshot, restore and canonical hashes)"
+    }
+   ],
+   "validationErrors": [],
+   "hostErrors": [],
+   "skippedChecks": [
+    {
+     "code": "ContentCatalogUnavailable",
+     "path": "/setup/actors/0",
+     "message": "item, goal and profile-override IDs cannot be checked before a compiled content catalog exists",
+     "availableFrom": "content packets (P1+)"
+    }
+   ],
+   "artifacts": {
+    "log": "/tmp/w006out/none/SAVE-BOOTSTRAP-01/run.log",
+    "fixture": "/tmp/w006out/none/SAVE-BOOTSTRAP-01/fixture.json",
+    "events": null,
+    "bundle": null
+   }
+  }
+ ]
+}

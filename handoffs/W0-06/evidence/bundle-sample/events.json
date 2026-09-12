@@ -1,0 +1,10 @@
+{
+ "tapeVersion": 1,
+ "source": "hand-authored for the W0-06 handoff evidence; no simulation exists at W0-06",
+ "producedBy": "the developer writing this packet's evidence, by hand",
+ "fixtureId": "W0-06-DEMO-FAIL",
+ "events": [
+  { "schemaVersion": 0, "runId": "run-w0-06-demo", "branchId": "branch-main", "sequence": 1, "tick": 12, "stage": 10, "type": "actor.moved", "actorId": "C003", "causalParents": [], "status": "Factual", "payload": { "kind": "actor.moved.v0", "version": 0, "fields": {} } },
+  { "schemaVersion": 0, "runId": "run-w0-06-demo", "branchId": "branch-main", "sequence": 2, "tick": 31, "stage": 10, "type": "actor.moved", "actorId": "C003", "causalParents": [1], "status": "Factual", "payload": { "kind": "actor.moved.v0", "version": 0, "fields": {} } }
+ ]
+}

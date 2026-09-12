@@ -130,7 +130,7 @@
    ],
    "refs": "TP v1.1 \u00a719\u201321; contracts/FIXTURE_DSL.md (CLI contract)",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "S",
    "webAdaptation": null
   },

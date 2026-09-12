@@ -1,0 +1,70 @@
+{
+ "file": "handoffs/W0-06/evidence/demo/W0-06-DEMO-FAIL.json",
+ "fixtureSha256": "sha256:340c553ae40b08644f046ba8fa311ec0a8c43fba68b5b230fd56bac9eace9237",
+ "id": "W0-06-DEMO-FAIL",
+ "gate": "G0",
+ "profile": "Fixture",
+ "seed": 4107,
+ "maxTicks": 100,
+ "geometry": {
+  "recipeId": "bootstrap-flat",
+  "seed": 4107,
+  "compiled": {
+   "status": "Unavailable",
+   "reason": "no map compiler exists yet, so the map recipe was not compiled and its geometry has no digest",
+   "availableFrom": "map compiler (P1)"
+  }
+ },
+ "status": "Failed",
+ "finalTick": 31,
+ "outcome": "at least one assertion failed",
+ "counts": {
+  "requested": 2,
+  "executed": 2,
+  "passed": 1,
+  "failed": 1,
+  "blocked": 0,
+  "skippedChecks": 0
+ },
+ "gateEvidence": {
+  "eligible": false,
+  "reason": "no host in this build simulates anything, so no run here is gate evidence (AGENTS.md: FakeSim never passes a production gate)"
+ },
+ "assertions": [
+  {
+   "index": 0,
+   "kind": "EventCountGte",
+   "evaluatedAtTick": 31,
+   "matchWindow": {
+    "fromTick": 0,
+    "throughTick": null
+   },
+   "status": "Passed",
+   "expected": ">= 1",
+   "observed": 2
+  },
+  {
+   "index": 1,
+   "kind": "EventCountGte",
+   "evaluatedAtTick": 31,
+   "matchWindow": {
+    "fromTick": 1,
+    "throughTick": 50
+   },
+   "status": "Failed",
+   "expected": ">= 1",
+   "observed": 0,
+   "detail": "no assertion passes on an empty match: 0 events matched (type=actor.eliminated, ticks 1..50), needed at least 1",
+   "nearMiss": []
+  }
+ ],
+ "validationErrors": [],
+ "hostErrors": [],
+ "skippedChecks": [],
+ "artifacts": {
+  "log": "clanlab-out/W0-06-DEMO-FAIL/run.log",
+  "fixture": "clanlab-out/W0-06-DEMO-FAIL/fixture.json",
+  "events": "clanlab-out/W0-06-DEMO-FAIL/events.json",
+  "bundle": null
+ }
+}
