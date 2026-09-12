@@ -243,7 +243,7 @@
    ],
    "refs": "Gate G0 (state/gates.json); TP v2.0 \u00a72; templates/",
    "gate": "G0",
-   "status": "READY_FOR_REVIEW",
+   "status": "ACCEPTED",
    "complexity": "S",
    "webAdaptation": null
   },

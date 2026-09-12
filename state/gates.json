@@ -4,9 +4,9 @@
   {
    "id": "G0",
    "phase": "W0",
-   "status": "PLANNED",
-   "candidateBaseline": null,
-   "janiApproval": null,
+   "status": "APPROVED",
+   "candidateBaseline": "w0-baseline",
+   "janiApproval": "Producer accepted in chat, 12 September 2026: \"Accepted and continue. I'll have to postpone testing and do it later.\" All six G0 criteria executed and passed; the human checks below were deferred by the producer, not satisfied.",
    "criteria": [
     "Node headless kernel and browser Worker produce identical canonical hashes on the synthetic 137-actor workload.",
     "clanlab validates, runs and bundles failures for the example fixtures; a readability PNG renders in the sandbox.",
@@ -14,7 +14,12 @@
     "IndexedDB save/recover and exactly-once finalization smoke pass in Node adapters and in the browser adapter; no duplicate result.",
     "Static build serves offline; operation counters, tick timing and the environment are recorded; ADR 001 (web now, wrapper later) is written.",
     "Unavailable checks are BLOCKED_RENDER / BLOCKED_TOOL / HUMAN_REQUIRED, never PASS."
-   ]
+   ],
+   "deferredHumanChecks": [
+    "Visual judgement of the eight procedural identities at tabletop distance (JANI_PC_CHECKLIST.md step 2). Not a G0 criterion; it is the question that decides whether the procedural kit reaches G1 (Addendum D06).",
+    "GPU frame timing at 1920x1080 with 137 actors on reference hardware (JANI_PC_CHECKLIST.md step 3). Every timing number in this repository came from a 1-CPU sandbox with software rendering and is a diagnostic only."
+   ],
+   "carryTo": "G1"
   },
   {
    "id": "G1",
