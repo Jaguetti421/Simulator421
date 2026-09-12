@@ -69,7 +69,7 @@
    ],
    "refs": "TP v2.0 \u00a74; TP v1.1 \u00a74, \u00a715; GDD 15.4",
    "gate": null,
-   "status": "READY_FOR_REVIEW",
+   "status": "ACCEPTED",
    "complexity": "S",
    "webAdaptation": null
   },
@@ -89,7 +89,7 @@
    ],
    "refs": "contracts/INTERFACES.md; TP v1.1 \u00a73, \u00a712; TP v2.0 \u00a73",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "M",
    "webAdaptation": null
   },

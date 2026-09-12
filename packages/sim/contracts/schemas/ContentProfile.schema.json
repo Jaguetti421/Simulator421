@@ -1,0 +1,102 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ContentProfile",
+ "type": "object",
+ "$comment": "record ContentProfile",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "profileId": {
+   "type": "string",
+   "enum": [
+    "Fixture",
+    "Prototype8",
+    "Trial24",
+    "Standard100"
+   ],
+   "description": "Declared content profile (TP v1.1 §12)"
+  },
+  "declaredActorIds": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+    "maxLength": 8,
+    "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+   },
+   "maxItems": 128,
+   "description": "Exactly the actors this profile runs"
+  },
+  "declaredRecipeIds": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+    "maxLength": 64,
+    "description": "Recipe"
+   },
+   "maxItems": 64
+  },
+  "capabilities": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+    "maxLength": 64,
+    "description": "Capability, e.g. social.treaty or story.guest"
+   },
+   "maxItems": 64
+  },
+  "provenance": {
+   "type": "object",
+   "$comment": "record ContentProvenance",
+   "properties": {
+    "sourceManifestHash": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{8}$",
+     "maxLength": 8,
+     "description": "Hash of the authored definition set"
+    },
+    "catalogHash": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{8}$",
+     "maxLength": 8,
+     "description": "Hash of the compiled catalog"
+    },
+    "compilerVersion": {
+     "type": "string",
+     "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+     "maxLength": 64,
+     "description": "Content compiler version"
+    }
+   },
+   "required": [
+    "sourceManifestHash",
+    "catalogHash",
+    "compilerVersion"
+   ],
+   "additionalProperties": false
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "profileId",
+  "declaredActorIds",
+  "declaredRecipeIds",
+  "capabilities",
+  "provenance"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Standard100 declares exactly 100 contestants",
+  "Trial24 declares exactly 24 contestants",
+  "Prototype8 declares exactly 8 contestants",
+  "Standard100 declares exactly the 28 GDD recipes",
+  "declared actor IDs are unique"
+ ],
+ "description": "Which game is being run. A fixture profile can never certify a full-game gate."
+}

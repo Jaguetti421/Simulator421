@@ -1,0 +1,89 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActionResult",
+ "type": "object",
+ "$comment": "record ActionResult",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "planId": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Plan this result answers"
+  },
+  "actionDefId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Action definition"
+  },
+  "tick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick at which this outcome was decided"
+  },
+  "outcome": {
+   "type": "string",
+   "enum": [
+    "Started",
+    "Progressed",
+    "Completed",
+    "Failed",
+    "Interrupted"
+   ]
+  },
+  "durationTicks": {
+   "type": "integer",
+   "minimum": 1,
+   "description": "Quantized duration, present once the action has started"
+  },
+  "remainingTicks": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Work left, for Started/Progressed/Interrupted"
+  },
+  "reasonId": {
+   "type": "string",
+   "enum": [
+    "WaitingForLaw",
+    "RouteBlocked",
+    "BudgetExhausted",
+    "NoKnownRoute",
+    "MissingProcedure",
+    "ReservationLost",
+    "InsufficientTime",
+    "TargetUnobserved",
+    "MembershipLocked",
+    "StaleRules",
+    "InsufficientInfluence",
+    "NoticeTooShort",
+    "ProfileUnsupported"
+   ],
+   "description": "Why the action failed or was interrupted"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "planId",
+  "actionDefId",
+  "tick",
+  "outcome"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Failed and Interrupted results carry a reasonId",
+  "Completed results carry no reasonId"
+ ],
+ "description": "Typed outcome of an action request; a failure is always explainable."
+}

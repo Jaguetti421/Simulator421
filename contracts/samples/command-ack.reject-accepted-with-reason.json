@@ -1,0 +1,9 @@
+{
+ "schemaVersion": 0,
+ "runId": "run-2026-09-12-a",
+ "clientSequence": 45,
+ "status": "Accepted",
+ "assignedTick": 12001,
+ "reasonId": "StaleRules",
+ "resultingRulesVersion": 8
+}

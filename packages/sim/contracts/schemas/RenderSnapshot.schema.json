@@ -1,0 +1,242 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "RenderSnapshot",
+ "type": "object",
+ "$comment": "record RenderSnapshot",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "runId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Run"
+  },
+  "confirmedTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "The completed tick this snapshot describes; never a partial tick"
+  },
+  "bufferOwner": {
+   "type": "string",
+   "enum": [
+    "Worker",
+    "Main"
+   ],
+   "description": "Who owns the transferred buffer right now"
+  },
+  "transformLayout": {
+   "type": "object",
+   "$comment": "record TransformLayout",
+   "properties": {
+    "actorCount": {
+     "type": "integer",
+     "minimum": 0,
+     "maximum": 1024,
+     "description": "Number of actor records in the buffer"
+    },
+    "strideBytes": {
+     "type": "integer",
+     "minimum": 4,
+     "description": "Bytes per actor record"
+    },
+    "byteLength": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "Total byte length of the transferred buffer"
+    },
+    "fields": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "$comment": "record TransformField",
+      "properties": {
+       "name": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+        "maxLength": 64,
+        "description": "Field name, e.g. positionXMm"
+       },
+       "offsetBytes": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "type": {
+        "type": "string",
+        "enum": [
+         "int32",
+         "uint32",
+         "int16",
+         "uint16",
+         "uint8"
+        ],
+        "description": "Integer element type; no floats cross this boundary"
+       }
+      },
+      "required": [
+       "name",
+       "offsetBytes",
+       "type"
+      ],
+      "additionalProperties": false
+     },
+     "maxItems": 32
+    }
+   },
+   "required": [
+    "actorCount",
+    "strideBytes",
+    "byteLength",
+    "fields"
+   ],
+   "additionalProperties": false,
+   "x-refinements": [
+    "byteLength equals actorCount × strideBytes",
+    "every field fits inside the stride"
+   ]
+  },
+  "identityViews": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record IdentityView",
+    "properties": {
+     "actorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+     },
+     "entityId": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Runtime entity slot"
+     },
+     "displayNameKey": {
+      "type": "string",
+      "maxLength": 64,
+      "description": "Text key; never an identifier"
+     },
+     "clanId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Clan the actor belongs to"
+     },
+     "alive": {
+      "type": "boolean",
+      "description": "Whether the actor is still in the match"
+     }
+    },
+    "required": [
+     "actorId",
+     "entityId",
+     "displayNameKey",
+     "alive"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 1024,
+   "description": "Small JSON; changes rarely"
+  },
+  "actionViews": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record ActionView",
+    "properties": {
+     "entityId": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Runtime entity slot"
+     },
+     "actionDefId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Action in progress"
+     },
+     "remainingTicks": {
+      "type": "integer",
+      "minimum": 0
+     }
+    },
+    "required": [
+     "entityId"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 1024
+  },
+  "lawViews": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record LawView",
+    "properties": {
+     "lawId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Law"
+     },
+     "lawVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Law version"
+     },
+     "announcedTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "When it was announced"
+     },
+     "effectiveTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "When it takes effect"
+     },
+     "active": {
+      "type": "boolean",
+      "description": "Whether it is in force at confirmedTick"
+     }
+    },
+    "required": [
+     "lawId",
+     "lawVersion",
+     "announcedTick",
+     "effectiveTick",
+     "active"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 64
+  },
+  "observerHash": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{8}$",
+   "maxLength": 8,
+   "description": "Observer-domain hash of this snapshot"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "runId",
+  "confirmedTick",
+  "bufferOwner",
+  "transformLayout",
+  "identityViews",
+  "actionViews",
+  "lawViews",
+  "observerHash"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "a snapshot handed to the main thread is owned by the main thread",
+  "identity and action views do not exceed the actor count in the layout"
+ ],
+ "description": "Read model for the renderer. No mutation callback, no live array, no float in the buffer."
+}

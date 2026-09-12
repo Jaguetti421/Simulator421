@@ -1,0 +1,118 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "RouteResult",
+ "type": "object",
+ "$comment": "record RouteResult",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "requestTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick of the originating request"
+  },
+  "status": {
+   "type": "string",
+   "enum": [
+    "Complete",
+    "Partial",
+    "BudgetExhausted",
+    "NoKnownRoute"
+   ]
+  },
+  "pathVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Version of the graph the path was computed against"
+  },
+  "waypointsMm": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record PositionMm",
+    "properties": {
+     "xMm": {
+      "type": "integer",
+      "description": "East–west millimetres"
+     },
+     "yMm": {
+      "type": "integer",
+      "description": "North–south millimetres"
+     },
+     "zMm": {
+      "type": "integer",
+      "description": "Height millimetres"
+     }
+    },
+    "required": [
+     "xMm",
+     "yMm",
+     "zMm"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 256,
+   "description": "Empty unless Complete or Partial"
+  },
+  "certifiedPortalId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Portal certified as nearer, required for Partial"
+  },
+  "progressMeasureMm": {
+   "type": "integer",
+   "description": "Stable progress measure toward the destination, required for Partial"
+  },
+  "reasonId": {
+   "type": "string",
+   "enum": [
+    "WaitingForLaw",
+    "RouteBlocked",
+    "BudgetExhausted",
+    "NoKnownRoute",
+    "MissingProcedure",
+    "ReservationLost",
+    "InsufficientTime",
+    "TargetUnobserved",
+    "MembershipLocked",
+    "StaleRules",
+    "InsufficientInfluence",
+    "NoticeTooShort",
+    "ProfileUnsupported"
+   ],
+   "description": "Why no usable path was returned"
+  },
+  "unitsSpent": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Search budget consumed"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "requestTick",
+  "status",
+  "pathVersion",
+  "waypointsMm",
+  "unitsSpent"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Complete and Partial results carry waypoints",
+  "Partial results certify a nearer portal and a progress measure",
+  "BudgetExhausted and NoKnownRoute carry a reasonId and no waypoints",
+  "Complete results carry no reasonId"
+ ]
+}

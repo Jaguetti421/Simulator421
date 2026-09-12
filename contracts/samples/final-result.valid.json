@@ -1,0 +1,47 @@
+{
+ "schemaVersion": 0,
+ "runId": "run-2026-09-12-a",
+ "branchId": "branch-main",
+ "resultKey": "run-2026-09-12-a.branch-main.36000",
+ "payloadHash": "bf9cf968",
+ "mode": "Standard",
+ "finalizedTick": 36000,
+ "profileId": "Prototype8",
+ "roster": [
+  {
+   "actorId": "C001",
+   "outcome": "Winner"
+  },
+  {
+   "actorId": "C017",
+   "outcome": "Eliminated",
+   "eliminatedTick": 21440,
+   "eliminatedByActorId": "C001"
+  },
+  {
+   "actorId": "C042",
+   "outcome": "Withdrawn",
+   "eliminatedTick": 30000
+  }
+ ],
+ "eventRange": {
+  "firstSequence": 1,
+  "lastSequence": 90312,
+  "rangeHash": "56c4abe8"
+ },
+ "contributorFacts": [
+  {
+   "actorId": "C001",
+   "kind": "Kill",
+   "episodeId": 88,
+   "tick": 21440,
+   "subjectActorId": "C017"
+  },
+  {
+   "actorId": "C042",
+   "kind": "Withdrawal",
+   "episodeId": 91,
+   "tick": 30000
+  }
+ ]
+}

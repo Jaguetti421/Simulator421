@@ -1,0 +1,15 @@
+{
+ "schemaVersion": 0,
+ "runId": "run-2026-09-12-a",
+ "clientSequence": 41,
+ "issuedAtTick": 12000,
+ "expectedRulesVersion": 7,
+ "operation": "law.propose",
+ "payload": {
+  "kind": "law.propose.v0",
+  "version": 0,
+  "fields": {}
+ },
+ "requestedEffectiveTick": 12600,
+ "influenceCostMilli": 4500
+}

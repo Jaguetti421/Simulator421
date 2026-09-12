@@ -1,0 +1,108 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "CommandAck",
+ "type": "object",
+ "$comment": "record CommandAck",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "runId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Run this ack belongs to"
+  },
+  "clientSequence": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "The sequence number being answered"
+  },
+  "status": {
+   "type": "string",
+   "enum": [
+    "Accepted",
+    "Rejected"
+   ],
+   "description": "Outcome of admission control"
+  },
+  "assignedTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick at which an accepted command executes"
+  },
+  "reasonId": {
+   "type": "string",
+   "enum": [
+    "WaitingForLaw",
+    "RouteBlocked",
+    "BudgetExhausted",
+    "NoKnownRoute",
+    "MissingProcedure",
+    "ReservationLost",
+    "InsufficientTime",
+    "TargetUnobserved",
+    "MembershipLocked",
+    "StaleRules",
+    "InsufficientInfluence",
+    "NoticeTooShort",
+    "ProfileUnsupported"
+   ],
+   "description": "Why a rejected command was refused"
+  },
+  "reasonDetail": {
+   "type": "object",
+   "$comment": "record ReasonDetail",
+   "properties": {
+    "fields": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "$comment": "record ReasonField",
+      "properties": {
+       "name": {
+        "type": "string",
+        "maxLength": 64
+       },
+       "value": {
+        "type": "string",
+        "maxLength": 256
+       }
+      },
+      "required": [
+       "name",
+       "value"
+      ],
+      "additionalProperties": false
+     },
+     "maxItems": 32
+    }
+   },
+   "required": [
+    "fields"
+   ],
+   "additionalProperties": false
+  },
+  "resultingRulesVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Rules version in force after admission control"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "runId",
+  "clientSequence",
+  "status",
+  "resultingRulesVersion"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Accepted acks carry assignedTick and no reasonId",
+  "Rejected acks carry reasonId and no assignedTick"
+ ],
+ "description": "The only truthful answer to a command; a UI that shows success without one is a defect."
+}

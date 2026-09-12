@@ -1,0 +1,14 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C042",
+ "tick": 12003,
+ "candidates": [
+  {
+   "candidateId": "goal.gather.firewood",
+   "scoreMilli": 620,
+   "considerations": []
+  }
+ ],
+ "chosenCandidateId": "goal.hunt.deer",
+ "evidenceRefs": []
+}

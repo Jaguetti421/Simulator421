@@ -1,5 +1,5 @@
 /**
- * Architecture boundaries (W0-01; extended by W0-04 and P6-05).
+ * Architecture boundaries (W0-01; extended by W0-04).
  *
  * Lints synthetic source text *as if* it lived at a given repository path,
  * using the real eslint.config.js, and asserts which boundary rules fire.
@@ -38,6 +38,14 @@ const SIM_TEST_FILE = "packages/sim/core/__boundary_probe__.test.ts";
 const LAB_FILE = "packages/lab/render/__boundary_probe__.ts";
 const CONTENT_FILE = "packages/content/compiler/__boundary_probe__.ts";
 const WEB_FILE = "apps/web/src/__boundary_probe__.ts";
+const AI_FILE = "packages/sim/ai/__boundary_probe__.ts";
+const AI_TEST_FILE = "packages/sim/ai/__boundary_probe__.test.ts";
+const CONTRACTS_FILE = "packages/sim/contracts/__boundary_probe__.ts";
+const CORE_FILE = "packages/sim/core/__boundary_probe__.ts";
+const HOST_FILE = "packages/sim/host/__boundary_probe__.ts";
+const OBSERVER_FILE = "packages/sim/observer/__boundary_probe__.ts";
+const PERSISTENCE_FILE = "packages/sim/persistence/__boundary_probe__.ts";
+const SPATIAL_FILE = "packages/sim/spatial/__boundary_probe__.ts";
 
 describe("eslint.config.js is the configuration under test", () => {
   it("resolves a config for a packages/sim file that carries the boundary rules", async () => {
@@ -192,4 +200,95 @@ describe("apps/web is the only place rendering, DOM and floats are allowed", () 
     );
     expect(messages).toEqual([]);
   });
+});
+
+// ---------------------------------------------------------------------------
+// W0-04 acceptance 2: the compile-time dependency direction of INTERFACES.md
+// ---------------------------------------------------------------------------
+
+/** `import X from "<specifier>"` as a one-line probe module. */
+const importing = (specifier: string): string => `import { X } from "${specifier}";\nexport const y = X;`;
+
+describe("packages/sim/ai cannot reach core, spatial or any implementation", () => {
+  it.each([
+    ["core by relative path", "../core/tick.js"],
+    ["core deep path", "../core/actions/gather.js"],
+    ["spatial", "../spatial/index.js"],
+    ["observer", "../observer/feed.js"],
+    ["persistence", "../persistence/sections.js"],
+    ["host", "../host/index.js"],
+    ["story", "../story/guest.js"],
+    ["core via the package subpath", "@lastclan/sim/core"],
+  ])("%s → no-restricted-imports", async (_label, specifier) => {
+    const messages = await lintAt(AI_FILE, importing(specifier));
+    expect(ruleIds(messages)).toContain("no-restricted-imports");
+    expect(messages.some((m) => (m.message ?? "").includes("dependency direction"))).toBe(true);
+  });
+
+  it.each([
+    ["primitives", "../primitives/index.js"],
+    ["contracts", "../contracts/index.js"],
+    ["a sibling file inside ai", "./beliefs.js"],
+  ])("may import %s", async (_label, specifier) => {
+    expect(await lintAt(AI_FILE, importing(specifier))).toEqual([]);
+  });
+
+  it("the same direction applies inside ai tests — a test cannot invert the layering either", async () => {
+    const messages = await lintAt(AI_TEST_FILE, importing("../core/tick.js"));
+    expect(ruleIds(messages)).toContain("no-restricted-imports");
+  });
+});
+
+describe("the rest of the dependency-direction table (contracts/INTERFACES.md)", () => {
+  it.each([
+    ["primitives may not import contracts", "packages/sim/primitives/__boundary_probe__.ts", "../contracts/index.js"],
+    ["primitives may not import core", "packages/sim/primitives/__boundary_probe__.ts", "../core/tick.js"],
+    ["contracts may not import core", CONTRACTS_FILE, "../core/tick.js"],
+    ["contracts may not import ai", CONTRACTS_FILE, "../ai/decide.js"],
+    ["core may not import ai", CORE_FILE, "../ai/decide.js"],
+    ["core may not import spatial implementation", CORE_FILE, "../spatial/grid.js"],
+    ["core may not import persistence", CORE_FILE, "../persistence/sections.js"],
+    ["spatial may not import core", SPATIAL_FILE, "../core/tick.js"],
+    ["observer may not import core", OBSERVER_FILE, "../core/tick.js"],
+    ["persistence may not import core", PERSISTENCE_FILE, "../core/tick.js"],
+  ])("%s", async (_label, file, specifier) => {
+    const messages = await lintAt(file, importing(specifier));
+    expect(ruleIds(messages)).toContain("no-restricted-imports");
+  });
+
+  it.each([
+    ["core may import contracts", CORE_FILE, "../contracts/index.js"],
+    ["spatial may import primitives", SPATIAL_FILE, "../primitives/index.js"],
+    ["observer may import contracts", OBSERVER_FILE, "../contracts/index.js"],
+    ["persistence may import primitives", PERSISTENCE_FILE, "../primitives/index.js"],
+    ["host may import core", HOST_FILE, "../core/tick.js"],
+    ["host may import ai", HOST_FILE, "../ai/decide.js"],
+    ["host may import persistence", HOST_FILE, "../persistence/sections.js"],
+  ])("%s", async (_label, file, specifier) => {
+    expect(await lintAt(file, importing(specifier))).toEqual([]);
+  });
+});
+
+describe("the render/DOM and purity bans survive the per-module rules", () => {
+  it.each([CONTRACTS_FILE, CORE_FILE, AI_FILE, SPATIAL_FILE, OBSERVER_FILE, PERSISTENCE_FILE, HOST_FILE])(
+    "%s still rejects three, node:fs, Math.random, float literals and DOM types",
+    async (file) => {
+      const ids = ruleIds(
+        await lintAt(
+          file,
+          [
+            'import * as THREE from "three";',
+            'import { readFileSync } from "node:fs";',
+            "export function f(el: HTMLElement): number {",
+            "  void [THREE, readFileSync, el, window.innerWidth, Date.now()];",
+            "  return Math.random() + 0.5;",
+            "}",
+          ].join("\n"),
+        ),
+      );
+      for (const rule of ["no-restricted-imports", "@typescript-eslint/no-restricted-types", "no-restricted-globals", "no-restricted-properties", "no-restricted-syntax"]) {
+        expect(ids, `${file} / ${rule}`).toContain(rule);
+      }
+    },
+  );
 });

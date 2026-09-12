@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C042",
+ "tick": 12003,
+ "candidates": [
+  {
+   "candidateId": "goal.gather.firewood",
+   "scoreMilli": 620,
+   "considerations": [
+    {
+     "id": "need.exposure",
+     "valueMilli": 480,
+     "weightMilli": 800
+    },
+    {
+     "id": "distance.to.resource",
+     "valueMilli": 310,
+     "weightMilli": 500
+    }
+   ]
+  },
+  {
+   "candidateId": "goal.hunt.deer",
+   "scoreMilli": 410,
+   "considerations": [
+    {
+     "id": "need.food",
+     "valueMilli": 350,
+     "weightMilli": 900
+    }
+   ],
+   "rejectedReasonId": "TargetUnobserved"
+  }
+ ],
+ "chosenCandidateId": "goal.gather.firewood",
+ "evidenceRefs": [
+  {
+   "factId": 5511,
+   "ageTicks": 14
+  },
+  {
+   "factId": 5498,
+   "ageTicks": 122
+  }
+ ]
+}

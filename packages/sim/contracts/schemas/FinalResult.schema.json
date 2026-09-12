@@ -1,0 +1,227 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "FinalResult",
+ "type": "object",
+ "$comment": "record FinalResult",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "runId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Run"
+  },
+  "branchId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Branch"
+  },
+  "resultKey": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Unique key making career finalization idempotent (TP v1.1 §15)"
+  },
+  "payloadHash": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{8}$",
+   "maxLength": 8,
+   "description": "Canonical hash of this result payload"
+  },
+  "mode": {
+   "type": "string",
+   "enum": [
+    "Standard",
+    "CustomPractice"
+   ],
+   "description": "Mode provenance; sticky once set"
+  },
+  "finalizedTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick at which the match ended"
+  },
+  "profileId": {
+   "type": "string",
+   "enum": [
+    "Fixture",
+    "Prototype8",
+    "Trial24",
+    "Standard100"
+   ],
+   "description": "Content profile the run used"
+  },
+  "roster": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record RosterEntry",
+    "properties": {
+     "actorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+     },
+     "outcome": {
+      "type": "string",
+      "enum": [
+       "Winner",
+       "Eliminated",
+       "Withdrawn",
+       "Survived"
+      ]
+     },
+     "eliminatedTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Tick of elimination or withdrawal"
+     },
+     "eliminatedByActorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "Who eliminated them, when an actor did"
+     },
+     "lastPositionMm": {
+      "type": "object",
+      "$comment": "record LastPosition",
+      "properties": {
+       "xMm": {
+        "type": "integer",
+        "description": "East–west"
+       },
+       "yMm": {
+        "type": "integer",
+        "description": "North–south"
+       },
+       "zMm": {
+        "type": "integer",
+        "description": "Height"
+       }
+      },
+      "required": [
+       "xMm",
+       "yMm",
+       "zMm"
+      ],
+      "additionalProperties": false
+     }
+    },
+    "required": [
+     "actorId",
+     "outcome"
+    ],
+    "additionalProperties": false,
+    "x-refinements": [
+     "Eliminated and Withdrawn entries carry the tick",
+     "Winners and survivors are not eliminated"
+    ]
+   },
+   "maxItems": 128
+  },
+  "eventRange": {
+   "type": "object",
+   "$comment": "record FinalEventRange",
+   "properties": {
+    "firstSequence": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "First event of the run"
+    },
+    "lastSequence": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "Last event of the run"
+    },
+    "rangeHash": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{8}$",
+     "maxLength": 8,
+     "description": "Canonical hash of the event range"
+    }
+   },
+   "required": [
+    "firstSequence",
+    "lastSequence",
+    "rangeHash"
+   ],
+   "additionalProperties": false
+  },
+  "contributorFacts": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record ContributorFact",
+    "properties": {
+     "actorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "Kill",
+       "Assist",
+       "Rescue",
+       "Withdrawal",
+       "Notable"
+      ]
+     },
+     "episodeId": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Life or combat episode"
+     },
+     "tick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "When it happened"
+     },
+     "subjectActorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "The other actor involved"
+     }
+    },
+    "required": [
+     "actorId",
+     "kind",
+     "episodeId",
+     "tick"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 1024
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "runId",
+  "branchId",
+  "resultKey",
+  "payloadHash",
+  "mode",
+  "finalizedTick",
+  "profileId",
+  "roster",
+  "eventRange",
+  "contributorFacts"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "a match has at most one winner",
+  "roster actor IDs are unique",
+  "a Fixture profile cannot produce a Standard result"
+ ],
+ "description": "The immutable package career finalization consumes exactly once."
+}

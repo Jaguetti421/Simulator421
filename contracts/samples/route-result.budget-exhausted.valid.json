@@ -1,0 +1,10 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C042",
+ "requestTick": 12004,
+ "status": "BudgetExhausted",
+ "pathVersion": 4,
+ "waypointsMm": [],
+ "reasonId": "BudgetExhausted",
+ "unitsSpent": 1000
+}

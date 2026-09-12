@@ -68,6 +68,38 @@ const SIM_BANNED_TYPES = [
   "Location", "XMLHttpRequest", "WebSocket", "Performance", "Date", "DOMRect",
 ];
 
+/**
+ * Compile-time dependency direction inside packages/sim (contracts/INTERFACES.md).
+ * Each key may import only what its row allows; every other sim module is banned.
+ * `host` is the composition root and may import everything.
+ */
+const SIM_MODULE_MAY_IMPORT = {
+  primitives: [],
+  contracts: ["primitives"],
+  core: ["primitives", "contracts"],
+  spatial: ["primitives", "contracts"],
+  ai: ["primitives", "contracts"],
+  story: ["primitives", "contracts"],
+  observer: ["primitives", "contracts"],
+  persistence: ["primitives", "contracts"],
+  host: ["primitives", "contracts", "core", "spatial", "ai", "story", "observer", "persistence"],
+};
+const SIM_MODULES = Object.keys(SIM_MODULE_MAY_IMPORT);
+
+/** Import patterns that reach sim module `m` from anywhere (relative or package path). */
+function simModulePatterns(m) {
+  return [`**/${m}`, `**/${m}/**`, `@lastclan/sim/${m}`, `@lastclan/sim/${m}/*`];
+}
+
+/** The no-restricted-imports patterns that enforce one module's row of the table. */
+function simDirectionPatterns(self) {
+  const allowed = new Set([self, ...SIM_MODULE_MAY_IMPORT[self]]);
+  return SIM_MODULES.filter((m) => !allowed.has(m)).map((m) => ({
+    group: simModulePatterns(m),
+    message: `packages/sim/${self} may not import packages/sim/${m} (dependency direction, contracts/INTERFACES.md). Allowed: ${SIM_MODULE_MAY_IMPORT[self].join(", ") || "nothing but the platform base library"}.`,
+  }));
+}
+
 /** Math members that produce floats or entropy. Integer-safe members (abs, max, min, floor, trunc, sign, imul, clz32) stay allowed. */
 const FLOAT_OR_ENTROPY_MATH = [
   "random", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "sinh", "cosh", "tanh",
@@ -97,25 +129,34 @@ const noRenderOrAppImports = {
   ],
 };
 
-/** Applied to packages/sim production code only (tests may use Node and vitest). */
+/**
+ * The composed import rule for one module inside packages/sim. Production files
+ * get the full set (no render/app, no Node built-ins, no lab/content, no vitest)
+ * plus the dependency direction; test files keep the render/app ban and the
+ * direction but may use Node and vitest. Composing them into ONE rule matters:
+ * ESLint merges by later-wins per rule key, so a second block for the same key
+ * would silently replace the first instead of adding to it.
+ */
+function simImportPatterns(self, { isTest }) {
+  const patterns = [{ group: RENDER_AND_APP_IMPORT_GROUPS, message: BOUNDARY_MSG }, ...simDirectionPatterns(self)];
+  if (!isTest) {
+    patterns.push(
+      {
+        group: ["node:*", ...NODE_BUILTIN_MODULES, ...NODE_BUILTIN_MODULES.map((m) => `${m}/*`)],
+        message: "packages/sim runs unchanged in a Web Worker and in Node: no Node built-ins (AGENTS.md).",
+      },
+      {
+        group: ["@lastclan/lab", "@lastclan/content", "**/packages/lab/**", "**/packages/content/**"],
+        message: "packages/sim is the lowest layer: it never imports lab, content tooling or apps (INTERFACES.md).",
+      },
+      { group: ["vitest", "vitest/*"], message: "vitest is a test-only import." },
+    );
+  }
+  return ["error", { patterns }];
+}
+
+/** Determinism rules for every packages/sim production file (imports are composed above). */
 const simPurity = {
-  "no-restricted-imports": [
-    "error",
-    {
-      patterns: [
-        { group: RENDER_AND_APP_IMPORT_GROUPS, message: BOUNDARY_MSG },
-        {
-          group: ["node:*", ...NODE_BUILTIN_MODULES, ...NODE_BUILTIN_MODULES.map((m) => `${m}/*`)],
-          message: "packages/sim runs unchanged in a Web Worker and in Node: no Node built-ins (AGENTS.md).",
-        },
-        {
-          group: ["@lastclan/lab", "@lastclan/content", "**/packages/lab/**", "**/packages/content/**"],
-          message: "packages/sim is the lowest layer: it never imports lab, content tooling or apps (INTERFACES.md).",
-        },
-        { group: ["vitest", "vitest/*"], message: "vitest is a test-only import." },
-      ],
-    },
-  ],
   "no-restricted-globals": [
     "error",
     ...SIM_BANNED_GLOBALS.map((name) => ({
@@ -204,19 +245,32 @@ export default defineConfig([
     rules: noMathRandom,
   },
 
-  // packages/sim production code: pure, deterministic, integer-only.
-  {
-    files: ["packages/sim/**/*.ts"],
-    ignores: ["packages/sim/**/*.test.ts"],
+  // packages/sim production code: pure, deterministic, integer-only, and inside
+  // the dependency direction of contracts/INTERFACES.md. One block per module so
+  // each file gets a single composed no-restricted-imports rule.
+  ...SIM_MODULES.map((m) => ({
+    files: [`packages/sim/${m}/**/*.ts`],
+    ignores: [`packages/sim/${m}/**/*.test.ts`],
     languageOptions: { globals: {} },
-    rules: simPurity,
+    rules: { ...simPurity, "no-restricted-imports": simImportPatterns(m, { isTest: false }) },
+  })),
+
+  // The package entry (packages/sim/*.ts) composes the modules, like host.
+  {
+    files: ["packages/sim/*.ts"],
+    ignores: ["packages/sim/*.test.ts"],
+    languageOptions: { globals: {} },
+    rules: { ...simPurity, "no-restricted-imports": simImportPatterns("host", { isTest: false }) },
   },
 
-  // packages/sim tests run in Node under vitest; Node globals allowed, boundaries still enforced.
-  {
-    files: ["packages/sim/**/*.test.ts"],
+  // packages/sim tests run in Node under vitest: Node and vitest allowed; the
+  // render/app ban and the dependency direction still apply, so a test cannot
+  // smuggle in a layer inversion either.
+  ...SIM_MODULES.map((m) => ({
+    files: [`packages/sim/${m}/**/*.test.ts`],
     languageOptions: { globals: { ...globals.node } },
-  },
+    rules: { "no-restricted-imports": simImportPatterns(m, { isTest: true }) },
+  })),
 
   // Browser app: DOM allowed; render-only floats allowed (AGENTS.md).
   {

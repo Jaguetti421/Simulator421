@@ -1,0 +1,22 @@
+{
+ "schemaVersion": 0,
+ "runId": "run-2026-09-12-a",
+ "confirmedTick": 12001,
+ "bufferOwner": "Main",
+ "transformLayout": {
+  "actorCount": 3,
+  "strideBytes": 16,
+  "byteLength": 32,
+  "fields": [
+   {
+    "name": "entityId",
+    "offsetBytes": 0,
+    "type": "uint32"
+   }
+  ]
+ },
+ "identityViews": [],
+ "actionViews": [],
+ "lawViews": [],
+ "observerHash": "1a47e90b"
+}

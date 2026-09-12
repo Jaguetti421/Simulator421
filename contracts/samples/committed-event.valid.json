@@ -1,0 +1,19 @@
+{
+ "schemaVersion": 0,
+ "runId": "run-2026-09-12-a",
+ "branchId": "branch-main",
+ "sequence": 90312,
+ "tick": 12001,
+ "stage": 10,
+ "type": "law.installed",
+ "actorId": "C017",
+ "causalParents": [
+  90298
+ ],
+ "status": "Factual",
+ "payload": {
+  "kind": "law.installed.v0",
+  "version": 0,
+  "fields": {}
+ }
+}

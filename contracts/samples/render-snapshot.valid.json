@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 0,
+ "runId": "run-2026-09-12-a",
+ "confirmedTick": 12001,
+ "bufferOwner": "Main",
+ "transformLayout": {
+  "actorCount": 3,
+  "strideBytes": 16,
+  "byteLength": 48,
+  "fields": [
+   {
+    "name": "entityId",
+    "offsetBytes": 0,
+    "type": "uint32"
+   },
+   {
+    "name": "positionXMm",
+    "offsetBytes": 4,
+    "type": "int32"
+   },
+   {
+    "name": "positionYMm",
+    "offsetBytes": 8,
+    "type": "int32"
+   },
+   {
+    "name": "headingMilliturns",
+    "offsetBytes": 12,
+    "type": "uint16"
+   },
+   {
+    "name": "actionProgressMilli",
+    "offsetBytes": 14,
+    "type": "uint16"
+   }
+  ]
+ },
+ "identityViews": [
+  {
+   "actorId": "C001",
+   "entityId": 0,
+   "displayNameKey": "contestant.C001",
+   "clanId": "clan.north",
+   "alive": true
+  },
+  {
+   "actorId": "C042",
+   "entityId": 1,
+   "displayNameKey": "contestant.C042",
+   "alive": true
+  },
+  {
+   "actorId": "C017",
+   "entityId": 2,
+   "displayNameKey": "contestant.C017",
+   "clanId": "clan.north",
+   "alive": false
+  }
+ ],
+ "actionViews": [
+  {
+   "entityId": 0,
+   "actionDefId": "action.gather",
+   "remainingTicks": 11
+  },
+  {
+   "entityId": 1
+  }
+ ],
+ "lawViews": [
+  {
+   "lawId": "law.truce",
+   "lawVersion": 2,
+   "announcedTick": 10800,
+   "effectiveTick": 12600,
+   "active": false
+  }
+ ],
+ "observerHash": "1a47e90b"
+}

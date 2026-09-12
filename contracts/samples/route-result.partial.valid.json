@@ -1,0 +1,22 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C042",
+ "requestTick": 12003,
+ "status": "Partial",
+ "pathVersion": 4,
+ "waypointsMm": [
+  {
+   "xMm": 120000,
+   "yMm": 340000,
+   "zMm": 1200
+  },
+  {
+   "xMm": 128000,
+   "yMm": 352000,
+   "zMm": 1180
+  }
+ ],
+ "certifiedPortalId": "portal.ridge.east",
+ "progressMeasureMm": 14200,
+ "unitsSpent": 780
+}

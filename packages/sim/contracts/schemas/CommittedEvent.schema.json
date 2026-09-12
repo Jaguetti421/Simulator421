@@ -1,0 +1,126 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "CommittedEvent",
+ "type": "object",
+ "$comment": "record CommittedEvent",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "runId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Run"
+  },
+  "branchId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Branch within the run"
+  },
+  "sequence": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Monotonic event sequence, never reused"
+  },
+  "tick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick at which the event committed"
+  },
+  "stage": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 10,
+   "description": "Tick transaction stage 1–10 (TP v1.1 §4)"
+  },
+  "type": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Event type, e.g. actor.eliminated"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Primary actor"
+  },
+  "targetActorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Target actor"
+  },
+  "causalParents": {
+   "type": "array",
+   "items": {
+    "type": "integer",
+    "minimum": 0,
+    "description": "Parent event sequence"
+   },
+   "maxItems": 8,
+   "description": "Events this one followed from"
+  },
+  "status": {
+   "type": "string",
+   "enum": [
+    "Factual",
+    "Reported"
+   ],
+   "description": "Factual = the simulation did it; Reported = someone claims it"
+  },
+  "payload": {
+   "type": "object",
+   "$comment": "record EventPayload",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+     "maxLength": 64,
+     "description": "Payload kind"
+    },
+    "version": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "Payload schema version"
+    },
+    "fields": {
+     "type": "object",
+     "$comment": "record EventPayloadFields",
+     "properties": {},
+     "required": [],
+     "additionalProperties": false,
+     "description": "Frozen per event type by the packet that emits it"
+    }
+   },
+   "required": [
+    "kind",
+    "version",
+    "fields"
+   ],
+   "additionalProperties": false
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "runId",
+  "branchId",
+  "sequence",
+  "tick",
+  "stage",
+  "type",
+  "causalParents",
+  "status",
+  "payload"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Reported events name the actor who reported them"
+ ],
+ "description": "The append-only record of what happened. Typed payloads; meaning never lives only in prose."
+}

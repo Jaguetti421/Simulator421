@@ -1,0 +1,95 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "PlayerCommand",
+ "type": "object",
+ "$comment": "record PlayerCommand",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "runId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Run this command belongs to"
+  },
+  "clientSequence": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Client-assigned, strictly increasing per run"
+  },
+  "issuedAtTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick the client believed current when issuing"
+  },
+  "expectedRulesVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Rules version the client believed current"
+  },
+  "operation": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Operation ID, e.g. law.propose"
+  },
+  "payload": {
+   "type": "object",
+   "$comment": "record OperationPayload",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+     "maxLength": 64,
+     "description": "Payload kind, unique per operation and version"
+    },
+    "version": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "Payload schema version"
+    },
+    "fields": {
+     "type": "object",
+     "$comment": "record OperationPayloadFields",
+     "properties": {},
+     "required": [],
+     "additionalProperties": false,
+     "description": "Frozen per operation by the packet that implements it; empty at v0"
+    }
+   },
+   "required": [
+    "kind",
+    "version",
+    "fields"
+   ],
+   "additionalProperties": false
+  },
+  "requestedEffectiveTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick the player wants the effect to begin"
+  },
+  "influenceCostMilli": {
+   "type": "integer",
+   "description": "Influence the client expects to spend, in thousandths"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "runId",
+  "clientSequence",
+  "issuedAtTick",
+  "expectedRulesVersion",
+  "operation",
+  "payload"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "requestedEffectiveTick, when present, is not before issuedAtTick"
+ ],
+ "description": "A player write request. The journal assigns the execution tick; the client never does."
+}

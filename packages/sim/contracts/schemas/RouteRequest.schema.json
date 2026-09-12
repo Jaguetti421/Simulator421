@@ -1,0 +1,96 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "RouteRequest",
+ "type": "object",
+ "$comment": "record RouteRequest",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "requestTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick the request was made"
+  },
+  "fromMm": {
+   "type": "object",
+   "$comment": "record PositionMm",
+   "properties": {
+    "xMm": {
+     "type": "integer",
+     "description": "East–west millimetres"
+    },
+    "yMm": {
+     "type": "integer",
+     "description": "North–south millimetres"
+    },
+    "zMm": {
+     "type": "integer",
+     "description": "Height millimetres"
+    }
+   },
+   "required": [
+    "xMm",
+    "yMm",
+    "zMm"
+   ],
+   "additionalProperties": false
+  },
+  "toMm": {
+   "type": "object",
+   "$comment": "record PositionMm",
+   "properties": {
+    "xMm": {
+     "type": "integer",
+     "description": "East–west millimetres"
+    },
+    "yMm": {
+     "type": "integer",
+     "description": "North–south millimetres"
+    },
+    "zMm": {
+     "type": "integer",
+     "description": "Height millimetres"
+    }
+   },
+   "required": [
+    "xMm",
+    "yMm",
+    "zMm"
+   ],
+   "additionalProperties": false
+  },
+  "graphScope": {
+   "type": "string",
+   "enum": [
+    "ActorKnown",
+    "Public"
+   ],
+   "description": "Which graph the search may consult"
+  },
+  "budgetUnits": {
+   "type": "integer",
+   "minimum": 1,
+   "description": "Deterministic per-tick search budget"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "requestTick",
+  "fromMm",
+  "toMm",
+  "graphScope",
+  "budgetUnits"
+ ],
+ "additionalProperties": false
+}

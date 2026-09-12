@@ -1,0 +1,137 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActionRequest",
+ "type": "object",
+ "$comment": "record ActionRequest",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "planId": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Plan this request belongs to"
+  },
+  "actionDefId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Action definition from the compiled catalog"
+  },
+  "targetActorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Target actor, when the action has one"
+  },
+  "targetEntityId": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Target entity slot, when the target is not an actor"
+  },
+  "targetPositionMm": {
+   "type": "object",
+   "$comment": "record PositionMm",
+   "properties": {
+    "xMm": {
+     "type": "integer",
+     "description": "East–west millimetres"
+    },
+    "yMm": {
+     "type": "integer",
+     "description": "North–south millimetres"
+    },
+    "zMm": {
+     "type": "integer",
+     "description": "Height millimetres"
+    }
+   },
+   "required": [
+    "xMm",
+    "yMm",
+    "zMm"
+   ],
+   "additionalProperties": false
+  },
+  "requestedTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick at which the actor asks to begin"
+  },
+  "expectedLawVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Law version the plan was built against"
+  },
+  "dependencies": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record DependencyRef",
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "Law",
+       "Content",
+       "Route",
+       "Reservation",
+       "Ownership",
+       "Membership"
+      ]
+     },
+     "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Dependency identifier"
+     },
+     "version": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Version observed when the action was planned"
+     }
+    },
+    "required": [
+     "kind",
+     "id",
+     "version"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 32,
+   "description": "Everything whose change invalidates this action"
+  },
+  "leaseHandles": {
+   "type": "array",
+   "items": {
+    "type": "integer",
+    "minimum": 0,
+    "description": "Lease handle"
+   },
+   "maxItems": 16,
+   "description": "Reservations already held"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "planId",
+  "actionDefId",
+  "requestedTick",
+  "expectedLawVersion",
+  "dependencies",
+  "leaseHandles"
+ ],
+ "additionalProperties": false,
+ "description": "A request to begin an action. It grants no mutation access; Core decides."
+}

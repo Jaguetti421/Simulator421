@@ -1,0 +1,59 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "StateSectionDescriptor",
+ "type": "object",
+ "$comment": "record StateSectionDescriptor",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "sectionId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Stable section identifier"
+  },
+  "sectionVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Section format version"
+  },
+  "required": {
+   "type": "boolean",
+   "description": "Whether a snapshot without this section is invalid"
+  },
+  "hashDomain": {
+   "type": "string",
+   "enum": [
+    "Authoritative",
+    "Observer"
+   ],
+   "description": "Which hash domain this section contributes to"
+  },
+  "byteLength": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Captured payload length"
+  },
+  "contributionHash": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{8}$",
+   "maxLength": 8,
+   "description": "This section's contribution to the canonical hash"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "sectionId",
+  "sectionVersion",
+  "required",
+  "hashDomain",
+  "byteLength",
+  "contributionHash"
+ ],
+ "additionalProperties": false,
+ "description": "What a state section codec declares about itself; the codec interface is in ports.ts."
+}

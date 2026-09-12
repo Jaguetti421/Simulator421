@@ -1,0 +1,14 @@
+{
+ "schemaVersion": 0,
+ "episodeId": 88,
+ "victimActorId": "C017",
+ "sourceActorId": "C001",
+ "amountMilli": 12500,
+ "damageClass": "Melee",
+ "contactTick": 21440,
+ "permission": {
+  "allowed": true,
+  "ruleId": "law.truce",
+  "ruleVersion": 2
+ }
+}

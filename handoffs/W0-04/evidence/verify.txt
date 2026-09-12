@@ -1,0 +1,17 @@
+> lastclan@0.0.0 verify
+> npm run build && npm run lint && npm test && npm run test:tools && npm run check:workboard
+> lastclan@0.0.0 build
+> tsc -b tsconfig.json
+> lastclan@0.0.0 lint
+> eslint .
+> lastclan@0.0.0 test
+> vitest run
+ Test Files  10 passed (10)
+      Tests  233 passed (233)
+> lastclan@0.0.0 test:tools
+> python3 -m unittest discover -s tools -p test_tools.py -v
+Ran 6 tests in 0.092s
+OK
+> lastclan@0.0.0 check:workboard
+> python3 tools/check_workboard.py
+ "status": "PASS",

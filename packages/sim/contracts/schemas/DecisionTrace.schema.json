@@ -1,0 +1,164 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "DecisionTrace",
+ "type": "object",
+ "$comment": "record DecisionTrace",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "tick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick of the decision"
+  },
+  "candidates": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record CandidateTrace",
+    "properties": {
+     "candidateId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Candidate goal or action"
+     },
+     "scoreMilli": {
+      "type": "integer",
+      "description": "Final score in thousandths"
+     },
+     "considerations": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "$comment": "record Consideration",
+       "properties": {
+        "id": {
+         "type": "string",
+         "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+         "maxLength": 64,
+         "description": "Consideration identifier"
+        },
+        "valueMilli": {
+         "type": "integer",
+         "description": "Normalized input value in thousandths"
+        },
+        "weightMilli": {
+         "type": "integer",
+         "description": "Weight applied, in thousandths"
+        }
+       },
+       "required": [
+        "id",
+        "valueMilli",
+        "weightMilli"
+       ],
+       "additionalProperties": false
+      },
+      "maxItems": 32
+     },
+     "rejectedReasonId": {
+      "type": "string",
+      "enum": [
+       "WaitingForLaw",
+       "RouteBlocked",
+       "BudgetExhausted",
+       "NoKnownRoute",
+       "MissingProcedure",
+       "ReservationLost",
+       "InsufficientTime",
+       "TargetUnobserved",
+       "MembershipLocked",
+       "StaleRules",
+       "InsufficientInfluence",
+       "NoticeTooShort",
+       "ProfileUnsupported"
+      ],
+      "description": "Why this candidate was not eligible"
+     }
+    },
+    "required": [
+     "candidateId",
+     "scoreMilli",
+     "considerations"
+    ],
+    "additionalProperties": false,
+    "description": "Only candidates actually evaluated appear here."
+   },
+   "maxItems": 64
+  },
+  "chosenCandidateId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Chosen candidate; absent when nothing was eligible"
+  },
+  "noChoiceReasonId": {
+   "type": "string",
+   "enum": [
+    "WaitingForLaw",
+    "RouteBlocked",
+    "BudgetExhausted",
+    "NoKnownRoute",
+    "MissingProcedure",
+    "ReservationLost",
+    "InsufficientTime",
+    "TargetUnobserved",
+    "MembershipLocked",
+    "StaleRules",
+    "InsufficientInfluence",
+    "NoticeTooShort",
+    "ProfileUnsupported"
+   ],
+   "description": "Why nothing was chosen"
+  },
+  "evidenceRefs": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record EvidenceRef",
+    "properties": {
+     "factId": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Fact used"
+     },
+     "ageTicks": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How old the fact was when used"
+     }
+    },
+    "required": [
+     "factId",
+     "ageTicks"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 64
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "tick",
+  "candidates",
+  "evidenceRefs"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Either a candidate was chosen or the absence has a reason",
+  "The chosen candidate is among the evaluated candidates"
+ ],
+ "description": "Why an actor did what it did — the evidence the observer UI and clanlab explain from."
+}

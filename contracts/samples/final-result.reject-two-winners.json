@@ -1,0 +1,26 @@
+{
+ "schemaVersion": 0,
+ "runId": "run-2026-09-12-a",
+ "branchId": "branch-main",
+ "resultKey": "run-2026-09-12-a.branch-main.36000",
+ "payloadHash": "bf9cf968",
+ "mode": "Standard",
+ "finalizedTick": 36000,
+ "profileId": "Prototype8",
+ "roster": [
+  {
+   "actorId": "C001",
+   "outcome": "Winner"
+  },
+  {
+   "actorId": "C002",
+   "outcome": "Winner"
+  }
+ ],
+ "eventRange": {
+  "firstSequence": 1,
+  "lastSequence": 90312,
+  "rangeHash": "56c4abe8"
+ },
+ "contributorFacts": []
+}

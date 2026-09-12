@@ -1,0 +1,250 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActorKnowledgeView",
+ "type": "object",
+ "$comment": "record ActorKnowledgeView",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "tick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick this view describes"
+  },
+  "self": {
+   "type": "object",
+   "$comment": "record SelfState",
+   "properties": {
+    "healthMilli": {
+     "type": "integer",
+     "description": "Health, 0–100000"
+    },
+    "staminaMilli": {
+     "type": "integer",
+     "description": "Stamina, 0–100000"
+    },
+    "fullnessMilli": {
+     "type": "integer",
+     "description": "Food fullness, 0–100000"
+    },
+    "fatigueMilli": {
+     "type": "integer",
+     "description": "Fatigue, 0–100000"
+    },
+    "exposureMilli": {
+     "type": "integer",
+     "description": "Exposure, 0–100000"
+    },
+    "moraleMilli": {
+     "type": "integer",
+     "description": "Morale, 0–100000"
+    },
+    "carriedUnits": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "Carry load in game weight units"
+    },
+    "positionMm": {
+     "type": "object",
+     "$comment": "record PositionMm",
+     "properties": {
+      "xMm": {
+       "type": "integer",
+       "description": "East–west millimetres"
+      },
+      "yMm": {
+       "type": "integer",
+       "description": "North–south millimetres"
+      },
+      "zMm": {
+       "type": "integer",
+       "description": "Height millimetres"
+      }
+     },
+     "required": [
+      "xMm",
+      "yMm",
+      "zMm"
+     ],
+     "additionalProperties": false
+    }
+   },
+   "required": [
+    "healthMilli",
+    "staminaMilli",
+    "fullnessMilli",
+    "fatigueMilli",
+    "exposureMilli",
+    "moraleMilli",
+    "carriedUnits",
+    "positionMm"
+   ],
+   "additionalProperties": false
+  },
+  "publicNotices": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record PublicNotice",
+    "properties": {
+     "noticeId": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Notice identifier"
+     },
+     "kind": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Notice kind, e.g. law.announced"
+     },
+     "announcedTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Tick the notice was announced"
+     },
+     "effectiveTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Tick the announced effect begins"
+     },
+     "lawId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Law the notice concerns"
+     },
+     "lawVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Law version"
+     }
+    },
+    "required": [
+     "noticeId",
+     "kind",
+     "announcedTick"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 64
+  },
+  "facts": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record EvidenceRecord",
+    "properties": {
+     "factId": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Stable fact identifier within the run"
+     },
+     "kind": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Fact kind, e.g. actor.position or resource.seen"
+     },
+     "subjectActorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "Actor the fact is about"
+     },
+     "subjectEntityId": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Entity the fact is about"
+     },
+     "observedTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Tick at which this was observed or reported"
+     },
+     "source": {
+      "type": "string",
+      "enum": [
+       "Observed",
+       "Heard",
+       "Reported",
+       "PublicNotice"
+      ],
+      "description": "How the actor came to believe this"
+     },
+     "reportedByActorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "Who reported it, for Reported facts"
+     },
+     "uncertaintyMilli": {
+      "type": "integer",
+      "description": "Uncertainty in thousandths; 0 = certain"
+     },
+     "expiryTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Tick after which the fact is stale"
+     },
+     "positionMm": {
+      "type": "object",
+      "$comment": "record PositionMm",
+      "properties": {
+       "xMm": {
+        "type": "integer",
+        "description": "East–west millimetres"
+       },
+       "yMm": {
+        "type": "integer",
+        "description": "North–south millimetres"
+       },
+       "zMm": {
+        "type": "integer",
+        "description": "Height millimetres"
+       }
+      },
+      "required": [
+       "xMm",
+       "yMm",
+       "zMm"
+      ],
+      "additionalProperties": false
+     }
+    },
+    "required": [
+     "factId",
+     "kind",
+     "observedTick",
+     "source",
+     "uncertaintyMilli"
+    ],
+    "additionalProperties": false,
+    "x-refinements": [
+     "Reported facts name the reporter"
+    ]
+   },
+   "maxItems": 512
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "tick",
+  "self",
+  "publicNotices",
+  "facts"
+ ],
+ "additionalProperties": false,
+ "description": "Everything an actor may reason from. There is no other door to world state."
+}

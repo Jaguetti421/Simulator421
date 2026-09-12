@@ -1,0 +1,28 @@
+{
+ "schemaVersion": 0,
+ "profileId": "Prototype8",
+ "declaredActorIds": [
+  "C001",
+  "C002",
+  "C003",
+  "C004",
+  "C005",
+  "C006",
+  "C007",
+  "C008"
+ ],
+ "declaredRecipeIds": [
+  "recipe.firewood",
+  "recipe.shelter",
+  "recipe.bandage"
+ ],
+ "capabilities": [
+  "core.survival",
+  "core.combat"
+ ],
+ "provenance": {
+  "sourceManifestHash": "811c9dc5",
+  "catalogHash": "e40c292c",
+  "compilerVersion": "content-compiler.v0"
+ }
+}

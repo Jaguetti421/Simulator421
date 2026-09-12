@@ -1,0 +1,12 @@
+== mutant 1: ai is allowed to import core (direction table weakened) ==
+      Tests  4 failed | 76 passed (80)
+== mutant 2: the 'no false successful UI state' refinement removed from CommandAck ==
+      Tests  1 failed | 43 passed (44)
+      Tests  1 failed | 28 passed (29)
+== mutant 3: records become open (unknown fields allowed) ==
+      Tests  3 failed | 41 passed (44)
+      Tests  2 failed | 27 passed (29)
+== restored ==
+      Tests  44 passed (44)
+      Tests  29 passed (29)
+      Tests  80 passed (80)

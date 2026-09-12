@@ -1,0 +1,15 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C042",
+ "requestTick": 12005,
+ "status": "Partial",
+ "pathVersion": 4,
+ "waypointsMm": [
+  {
+   "xMm": 120000,
+   "yMm": 340000,
+   "zMm": 1200
+  }
+ ],
+ "unitsSpent": 900
+}

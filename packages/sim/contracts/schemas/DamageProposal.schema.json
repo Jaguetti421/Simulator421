@@ -1,0 +1,122 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "DamageProposal",
+ "type": "object",
+ "$comment": "record DamageProposal",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "episodeId": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Combat or hazard episode"
+  },
+  "victimActorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Who would take the damage"
+  },
+  "sourceActorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Attacking actor, when there is one"
+  },
+  "sourceHazardId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Hazard source, e.g. exposure or storm"
+  },
+  "amountMilli": {
+   "type": "integer",
+   "description": "Proposed damage in thousandths of an HP"
+  },
+  "damageClass": {
+   "type": "string",
+   "enum": [
+    "Melee",
+    "Ranged",
+    "Fall",
+    "Hazard",
+    "Starvation",
+    "Exposure",
+    "Storm"
+   ]
+  },
+  "contactTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick of contact"
+  },
+  "permission": {
+   "type": "object",
+   "$comment": "record PermissionEvidence",
+   "properties": {
+    "allowed": {
+     "type": "boolean",
+     "description": "Whether the rule permitted this at the contact tick"
+    },
+    "ruleId": {
+     "type": "string",
+     "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+     "maxLength": 64,
+     "description": "Rule consulted"
+    },
+    "ruleVersion": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "Rule version consulted"
+    },
+    "reasonId": {
+     "type": "string",
+     "enum": [
+      "WaitingForLaw",
+      "RouteBlocked",
+      "BudgetExhausted",
+      "NoKnownRoute",
+      "MissingProcedure",
+      "ReservationLost",
+      "InsufficientTime",
+      "TargetUnobserved",
+      "MembershipLocked",
+      "StaleRules",
+      "InsufficientInfluence",
+      "NoticeTooShort",
+      "ProfileUnsupported"
+     ],
+     "description": "Why permission was refused"
+    }
+   },
+   "required": [
+    "allowed",
+    "ruleId",
+    "ruleVersion"
+   ],
+   "additionalProperties": false,
+   "x-refinements": [
+    "A refusal names its reason"
+   ]
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "episodeId",
+  "victimActorId",
+  "amountMilli",
+  "damageClass",
+  "contactTick",
+  "permission"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Damage has exactly one source: an actor or a hazard",
+  "Proposed damage is positive"
+ ],
+ "description": "A proposal, not an application: stage 7 resolves support first, then damage (Addendum D01)."
+}

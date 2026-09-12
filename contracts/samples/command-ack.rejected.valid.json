@@ -1,0 +1,24 @@
+{
+ "schemaVersion": 0,
+ "runId": "run-2026-09-12-a",
+ "clientSequence": 42,
+ "status": "Rejected",
+ "reasonId": "NoticeTooShort",
+ "reasonDetail": {
+  "fields": [
+   {
+    "name": "requestedEffectiveTick",
+    "value": "12010"
+   },
+   {
+    "name": "earliestAllowedTick",
+    "value": "12600"
+   },
+   {
+    "name": "minimumNoticeTicks",
+    "value": "600"
+   }
+  ]
+ },
+ "resultingRulesVersion": 8
+}

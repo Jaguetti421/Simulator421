@@ -1,0 +1,256 @@
+{
+ "$comment": "Compiled from the implemented definitions in packages/sim/contracts. Do not edit by hand; run node tools/gen_contract_artifacts.mjs. Schema hashes are FNV-1a/32 of the emitted schema text and are reviewed deliberately: a changed hash means a changed contract.",
+ "contractVersion": 0,
+ "contractVersionName": "design version 0",
+ "frozenAt": "W0-04",
+ "changeProcedure": [
+  "An incompatible change needs a reviewed contract-change record naming the records affected, the consumers affected and the migration.",
+  "Bump the record's schemaVersion range; decoders reject versions they do not implement rather than guessing.",
+  "Add or update the golden samples in contracts/samples and regenerate this file; a changed schema hash must be explained in the packet handoff.",
+  "Adding a reason is an ordinary additive change: a new ID with player text and required debug fields, never a renumbered code.",
+  "A stub reason never stands in for an unimplemented action."
+ ],
+ "records": [
+  {
+   "name": "PlayerCommand",
+   "schemaFile": "packages/sim/contracts/schemas/PlayerCommand.schema.json",
+   "schemaHash": "5a215614"
+  },
+  {
+   "name": "CommandAck",
+   "schemaFile": "packages/sim/contracts/schemas/CommandAck.schema.json",
+   "schemaHash": "14a1a1b5"
+  },
+  {
+   "name": "JournaledCommand",
+   "schemaFile": "packages/sim/contracts/schemas/JournaledCommand.schema.json",
+   "schemaHash": "8c6382ec"
+  },
+  {
+   "name": "ActionRequest",
+   "schemaFile": "packages/sim/contracts/schemas/ActionRequest.schema.json",
+   "schemaHash": "57f5e9dc"
+  },
+  {
+   "name": "ActionResult",
+   "schemaFile": "packages/sim/contracts/schemas/ActionResult.schema.json",
+   "schemaHash": "aea87c41"
+  },
+  {
+   "name": "ActorKnowledgeView",
+   "schemaFile": "packages/sim/contracts/schemas/ActorKnowledgeView.schema.json",
+   "schemaHash": "8e1e0ef7"
+  },
+  {
+   "name": "RouteRequest",
+   "schemaFile": "packages/sim/contracts/schemas/RouteRequest.schema.json",
+   "schemaHash": "b4141b27"
+  },
+  {
+   "name": "RouteResult",
+   "schemaFile": "packages/sim/contracts/schemas/RouteResult.schema.json",
+   "schemaHash": "208ed993"
+  },
+  {
+   "name": "DamageProposal",
+   "schemaFile": "packages/sim/contracts/schemas/DamageProposal.schema.json",
+   "schemaHash": "51f11945"
+  },
+  {
+   "name": "DecisionTrace",
+   "schemaFile": "packages/sim/contracts/schemas/DecisionTrace.schema.json",
+   "schemaHash": "0d4b8813"
+  },
+  {
+   "name": "CommittedEvent",
+   "schemaFile": "packages/sim/contracts/schemas/CommittedEvent.schema.json",
+   "schemaHash": "d5e92ac2"
+  },
+  {
+   "name": "EventRange",
+   "schemaFile": "packages/sim/contracts/schemas/EventRange.schema.json",
+   "schemaHash": "ca8c6e1d"
+  },
+  {
+   "name": "RenderSnapshot",
+   "schemaFile": "packages/sim/contracts/schemas/RenderSnapshot.schema.json",
+   "schemaHash": "bd50c253"
+  },
+  {
+   "name": "StateSectionDescriptor",
+   "schemaFile": "packages/sim/contracts/schemas/StateSectionDescriptor.schema.json",
+   "schemaHash": "965f3855"
+  },
+  {
+   "name": "ContentProfile",
+   "schemaFile": "packages/sim/contracts/schemas/ContentProfile.schema.json",
+   "schemaHash": "93b11f5b"
+  },
+  {
+   "name": "FinalResult",
+   "schemaFile": "packages/sim/contracts/schemas/FinalResult.schema.json",
+   "schemaHash": "068b63a3"
+  }
+ ],
+ "mandatoryV0ReasonIds": [
+  "WaitingForLaw",
+  "RouteBlocked",
+  "BudgetExhausted",
+  "NoKnownRoute",
+  "MissingProcedure",
+  "ReservationLost",
+  "InsufficientTime",
+  "TargetUnobserved",
+  "MembershipLocked",
+  "StaleRules",
+  "InsufficientInfluence",
+  "NoticeTooShort",
+  "ProfileUnsupported"
+ ],
+ "reasons": [
+  {
+   "id": "WaitingForLaw",
+   "code": 1,
+   "playerTextKey": "reason.waiting_for_law",
+   "playerTextEn": "Waiting for the announced law to take effect.",
+   "requiredDebugFields": [
+    "lawId",
+    "lawVersion",
+    "effectiveTick"
+   ]
+  },
+  {
+   "id": "RouteBlocked",
+   "code": 2,
+   "playerTextKey": "reason.route_blocked",
+   "playerTextEn": "The way is blocked.",
+   "requiredDebugFields": [
+    "actorId",
+    "fromMm",
+    "toMm",
+    "blockingEdgeId",
+    "pathVersion"
+   ]
+  },
+  {
+   "id": "BudgetExhausted",
+   "code": 3,
+   "playerTextKey": "reason.budget_exhausted",
+   "playerTextEn": "Could not finish looking for a way in time.",
+   "requiredDebugFields": [
+    "actorId",
+    "budgetUnits",
+    "unitsSpent",
+    "requestTick"
+   ]
+  },
+  {
+   "id": "NoKnownRoute",
+   "code": 4,
+   "playerTextKey": "reason.no_known_route",
+   "playerTextEn": "No known way there.",
+   "requiredDebugFields": [
+    "actorId",
+    "destinationMm",
+    "knownGraphHash"
+   ]
+  },
+  {
+   "id": "MissingProcedure",
+   "code": 5,
+   "playerTextKey": "reason.missing_procedure",
+   "playerTextEn": "Does not know how to do that yet.",
+   "requiredDebugFields": [
+    "actorId",
+    "procedureId",
+    "recipeId"
+   ]
+  },
+  {
+   "id": "ReservationLost",
+   "code": 6,
+   "playerTextKey": "reason.reservation_lost",
+   "playerTextEn": "Someone else took it first.",
+   "requiredDebugFields": [
+    "actorId",
+    "reservationId",
+    "resourceId",
+    "winnerActorId"
+   ]
+  },
+  {
+   "id": "InsufficientTime",
+   "code": 7,
+   "playerTextKey": "reason.insufficient_time",
+   "playerTextEn": "Not enough time left to finish.",
+   "requiredDebugFields": [
+    "actorId",
+    "requiredTicks",
+    "remainingTicks"
+   ]
+  },
+  {
+   "id": "TargetUnobserved",
+   "code": 8,
+   "playerTextKey": "reason.target_unobserved",
+   "playerTextEn": "Cannot act on something not currently seen.",
+   "requiredDebugFields": [
+    "actorId",
+    "targetId",
+    "lastObservedTick"
+   ]
+  },
+  {
+   "id": "MembershipLocked",
+   "code": 9,
+   "playerTextKey": "reason.membership_locked",
+   "playerTextEn": "Clan membership is locked for the rest of the match.",
+   "requiredDebugFields": [
+    "actorId",
+    "clanId",
+    "lockTick"
+   ]
+  },
+  {
+   "id": "StaleRules",
+   "code": 10,
+   "playerTextKey": "reason.stale_rules",
+   "playerTextEn": "The rules changed before this could be applied.",
+   "requiredDebugFields": [
+    "expectedRulesVersion",
+    "actualRulesVersion"
+   ]
+  },
+  {
+   "id": "InsufficientInfluence",
+   "code": 11,
+   "playerTextKey": "reason.insufficient_influence",
+   "playerTextEn": "Not enough Influence for that.",
+   "requiredDebugFields": [
+    "requiredInfluence",
+    "availableInfluence"
+   ]
+  },
+  {
+   "id": "NoticeTooShort",
+   "code": 12,
+   "playerTextKey": "reason.notice_too_short",
+   "playerTextEn": "The announcement does not give enough notice.",
+   "requiredDebugFields": [
+    "requestedEffectiveTick",
+    "earliestAllowedTick",
+    "minimumNoticeTicks"
+   ]
+  },
+  {
+   "id": "ProfileUnsupported",
+   "code": 13,
+   "playerTextKey": "reason.profile_unsupported",
+   "playerTextEn": "Not available in this content profile.",
+   "requiredDebugFields": [
+    "profileId",
+    "requestedCapability"
+   ]
+  }
+ ]
+}

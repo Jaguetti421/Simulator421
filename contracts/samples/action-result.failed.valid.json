@@ -1,0 +1,9 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C042",
+ "planId": 316,
+ "actionDefId": "action.gather",
+ "tick": 12010,
+ "outcome": "Failed",
+ "reasonId": "ReservationLost"
+}

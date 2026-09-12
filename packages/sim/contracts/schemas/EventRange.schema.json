@@ -1,0 +1,33 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "EventRange",
+ "type": "object",
+ "$comment": "record EventRange",
+ "properties": {
+  "firstSequence": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "First event in the range, inclusive"
+  },
+  "lastSequence": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Last event in the range, inclusive"
+  },
+  "rangeHash": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{8}$",
+   "maxLength": 8,
+   "description": "Canonical hash of the range"
+  }
+ },
+ "required": [
+  "firstSequence",
+  "lastSequence",
+  "rangeHash"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "lastSequence is not before firstSequence"
+ ]
+}
