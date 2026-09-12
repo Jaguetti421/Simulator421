@@ -1,0 +1,104 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActionInterruption",
+ "type": "object",
+ "$comment": "record ActionInterruption",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "planId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Plan this action belonged to"
+  },
+  "tick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick of interruption"
+  },
+  "reasonId": {
+   "type": "string",
+   "enum": [
+    "WaitingForLaw",
+    "RouteBlocked",
+    "BudgetExhausted",
+    "NoKnownRoute",
+    "MissingProcedure",
+    "ReservationLost",
+    "InsufficientTime",
+    "TargetUnobserved",
+    "MembershipLocked",
+    "StaleRules",
+    "InsufficientInfluence",
+    "NoticeTooShort",
+    "ProfileUnsupported"
+   ],
+   "description": "Typed reason from the frozen registry"
+  },
+  "consumedInputs": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 1,
+    "description": "Whole items already consumed and not returned"
+   },
+   "maxProperties": 32
+  },
+  "unconsumedInputs": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 1,
+    "description": "Whole items returned to their source"
+   },
+   "maxProperties": 32
+  },
+  "retainedProgressMilli": {
+   "type": "integer",
+   "description": "Progress kept for a later resume, in thousandths"
+  },
+  "releasedReservations": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+    "maxLength": 64,
+    "description": "Reservation key released"
+   },
+   "maxItems": 16
+  },
+  "cooldownTicks": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Ticks before this actor may retry the same action"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "planId",
+  "tick",
+  "reasonId",
+  "consumedInputs",
+  "unconsumedInputs",
+  "retainedProgressMilli",
+  "releasedReservations",
+  "cooldownTicks"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "An item is either consumed or returned, never both"
+ ],
+ "description": "What an interruption did: exactly which inputs were spent, what progress survives, which leases were released, and how long before a retry."
+}

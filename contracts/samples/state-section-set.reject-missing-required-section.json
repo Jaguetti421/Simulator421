@@ -1,0 +1,14 @@
+{
+ "schemaVersion": 0,
+ "containerVersion": 1,
+ "sections": {
+  "world": 1
+ },
+ "requiredSections": [
+  "world",
+  "random"
+ ],
+ "authoritativeHash": "4d0bd28a",
+ "capturedAtTick": 600,
+ "journalSequence": 7
+}

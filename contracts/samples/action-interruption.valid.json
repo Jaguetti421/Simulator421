@@ -1,0 +1,18 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C003",
+ "planId": "plan.craft.axe",
+ "tick": 480,
+ "reasonId": "ReservationLost",
+ "consumedInputs": {
+  "item.flint": 1
+ },
+ "unconsumedInputs": {
+  "item.branch": 2
+ },
+ "retainedProgressMilli": 40000,
+ "releasedReservations": [
+  "station.workbench.01"
+ ],
+ "cooldownTicks": 30
+}

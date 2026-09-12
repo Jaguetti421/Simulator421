@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { contracts } from "@lastclan/sim";
 import { ACCESSORIES, assembleRecipe, BUILDS, HEADS, HEADWEAR, PROTOTYPE8_RECIPES, slotDifferences } from "./recipe.js";
 import type { AppearanceRecipe } from "./recipe.js";
 
@@ -9,6 +10,14 @@ const base = (): AppearanceRecipe => {
 };
 
 describe("the procedural identity kit", () => {
+  it("uses exactly the slot families the frozen AppearanceRecipe contract declares", () => {
+    const schema = contracts.toJsonSchema(contracts.CONTRACT_RECORDS["AppearanceRecipe"] as never, "AppearanceRecipe") as { properties: Record<string, { enum?: string[] }> };
+    expect(BUILDS).toEqual(schema.properties["build"]?.enum);
+    expect(HEADS).toEqual(schema.properties["head"]?.enum);
+    expect(HEADWEAR).toEqual(schema.properties["headwear"]?.enum);
+    expect(ACCESSORIES).toEqual(schema.properties["accessory"]?.enum);
+  });
+
   it("offers the GDD 14.1 slot counts: three builds, four heads, ten headwear, six accessories", () => {
     expect(BUILDS).toHaveLength(3);
     expect(HEADS).toHaveLength(4);

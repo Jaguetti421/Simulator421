@@ -90,6 +90,41 @@
    "name": "FinalResult",
    "schemaFile": "packages/sim/contracts/schemas/FinalResult.schema.json",
    "schemaHash": "068b63a3"
+  },
+  {
+   "name": "ActionResources",
+   "schemaFile": "packages/sim/contracts/schemas/ActionResources.schema.json",
+   "schemaHash": "7d69c058"
+  },
+  {
+   "name": "ActionExecution",
+   "schemaFile": "packages/sim/contracts/schemas/ActionExecution.schema.json",
+   "schemaHash": "86a206dd"
+  },
+  {
+   "name": "ActionInterruption",
+   "schemaFile": "packages/sim/contracts/schemas/ActionInterruption.schema.json",
+   "schemaHash": "64e6ab43"
+  },
+  {
+   "name": "ActionCompletion",
+   "schemaFile": "packages/sim/contracts/schemas/ActionCompletion.schema.json",
+   "schemaHash": "c5b4d753"
+  },
+  {
+   "name": "ActionFailure",
+   "schemaFile": "packages/sim/contracts/schemas/ActionFailure.schema.json",
+   "schemaHash": "04cec22b"
+  },
+  {
+   "name": "StateSectionSet",
+   "schemaFile": "packages/sim/contracts/schemas/StateSectionSet.schema.json",
+   "schemaHash": "678b4ffb"
+  },
+  {
+   "name": "AppearanceRecipe",
+   "schemaFile": "packages/sim/contracts/schemas/AppearanceRecipe.schema.json",
+   "schemaHash": "3b507efe"
   }
  ],
  "mandatoryV0ReasonIds": [

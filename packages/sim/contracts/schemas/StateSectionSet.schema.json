@@ -1,0 +1,70 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "StateSectionSet",
+ "type": "object",
+ "$comment": "record StateSectionSet",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "containerVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Save container format version"
+  },
+  "sections": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 0,
+    "description": "Section format version"
+   },
+   "maxProperties": 64,
+   "description": "Section ID to version"
+  },
+  "requiredSections": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+    "maxLength": 64,
+    "description": "Section that must be present for a restore to be attempted"
+   },
+   "maxItems": 64
+  },
+  "authoritativeHash": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{8}$",
+   "maxLength": 8,
+   "description": "Authoritative-domain hash of the whole set"
+  },
+  "capturedAtTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick the set was captured at"
+  },
+  "journalSequence": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Last journalled command sequence included"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "containerVersion",
+  "sections",
+  "requiredSections",
+  "authoritativeHash",
+  "capturedAtTick",
+  "journalSequence"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Every required section is present in the set",
+  "A set declares at least one section"
+ ],
+ "description": "The complete section set a save must contain, with the versions it was written at and the hash that must reproduce on restore."
+}

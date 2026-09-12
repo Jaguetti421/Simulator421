@@ -1,0 +1,10 @@
+{
+ "schemaVersion": 0,
+ "reasonId": "MissingProcedure",
+ "intentTemplateId": "text.intent.craft.axe",
+ "recoveryMethods": [
+  "method.learn.recipe",
+  "method.ask.clanmate"
+ ],
+ "retryable": true
+}

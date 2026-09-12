@@ -1,0 +1,94 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "AppearanceRecipe",
+ "type": "object",
+ "$comment": "record AppearanceRecipe",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "recipeId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Stable recipe identifier"
+  },
+  "build": {
+   "type": "string",
+   "enum": [
+    "slight",
+    "average",
+    "heavy"
+   ],
+   "description": "One of three builds (GDD 14.1)"
+  },
+  "head": {
+   "type": "string",
+   "enum": [
+    "round",
+    "long",
+    "square",
+    "narrow"
+   ],
+   "description": "One of four head families"
+  },
+  "headwear": {
+   "type": "string",
+   "enum": [
+    "none",
+    "band",
+    "hood",
+    "cap",
+    "horns",
+    "feather",
+    "crown",
+    "wrap",
+    "helm",
+    "braid"
+   ],
+   "description": "One of ten headwear variants"
+  },
+  "accessory": {
+   "type": "string",
+   "enum": [
+    "none",
+    "satchel",
+    "cloak",
+    "beads",
+    "belt",
+    "quiver"
+   ],
+   "description": "One of six accessory families"
+  },
+  "clanColorIndex": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 15,
+   "description": "Index into the limited clan palette"
+  },
+  "accentColorIndex": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 31,
+   "description": "Index into the personal accent palette"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "recipeId",
+  "build",
+  "head",
+  "headwear",
+  "accessory",
+  "clanColorIndex",
+  "accentColorIndex"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Appearance never carries stats: it selects from declared families only"
+ ],
+ "description": "Identity separated from implementation: the same recipe renders as primitives today and as a rigged kit later, with no data change."
+}

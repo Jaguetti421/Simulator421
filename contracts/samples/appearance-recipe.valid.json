@@ -1,0 +1,10 @@
+{
+ "schemaVersion": 0,
+ "recipeId": "P8-03",
+ "build": "heavy",
+ "head": "square",
+ "headwear": "helm",
+ "accessory": "belt",
+ "clanColorIndex": 2,
+ "accentColorIndex": 11
+}

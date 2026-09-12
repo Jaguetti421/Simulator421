@@ -303,8 +303,8 @@ describe("evidence, events, snapshots, profiles and results", () => {
 });
 
 describe("every declared record is complete enough to encode", () => {
-  it("all sixteen records are named, closed objects", () => {
-    expect(Object.keys(CONTRACT_RECORDS)).toHaveLength(16);
+  it("all twenty-three records are named, closed objects", () => {
+    expect(Object.keys(CONTRACT_RECORDS)).toHaveLength(23);
     for (const [name, shape] of Object.entries(CONTRACT_RECORDS)) {
       expect(shape.node.kind, name).toBe("object");
       expect(validate(shape, {}).ok, name).toBe(false); // nothing is valid by default

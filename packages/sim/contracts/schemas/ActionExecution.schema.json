@@ -1,0 +1,120 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActionExecution",
+ "type": "object",
+ "$comment": "record ActionExecution",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "planId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Plan this action belongs to"
+  },
+  "actionDefId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Action definition"
+  },
+  "durationTicks": {
+   "type": "integer",
+   "minimum": 1,
+   "description": "Total duration in ticks at normal rate"
+  },
+  "workPositionMm": {
+   "type": "object",
+   "$comment": "record PositionMm",
+   "properties": {
+    "xMm": {
+     "type": "integer",
+     "description": "East–west millimetres"
+    },
+    "yMm": {
+     "type": "integer",
+     "description": "North–south millimetres"
+    },
+    "zMm": {
+     "type": "integer",
+     "description": "Height millimetres"
+    }
+   },
+   "required": [
+    "xMm",
+    "yMm",
+    "zMm"
+   ],
+   "additionalProperties": false
+  },
+  "milestones": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record ProgressMilestone",
+    "properties": {
+     "atProgressMilli": {
+      "type": "integer",
+      "description": "Progress point, in thousandths of the action's duration"
+     },
+     "label": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Milestone identifier the presentation layer maps to a cue"
+     },
+     "committedEventType": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Committed event emitted at this milestone"
+     }
+    },
+    "required": [
+     "atProgressMilli",
+     "label"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 8,
+   "description": "Ordered progress milestones"
+  },
+  "animationCue": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Presentation cue; never the only evidence of a legal action (Addendum D06)"
+  },
+  "soundCue": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Presentation cue"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "planId",
+  "actionDefId",
+  "durationTicks",
+  "workPositionMm",
+  "milestones"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Milestones are strictly ordered by progress",
+  "Milestones lie inside the action"
+ ],
+ "description": "How an action runs: duration, where the actor stands, and the ordered points at which progress is observable."
+}

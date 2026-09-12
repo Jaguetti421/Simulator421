@@ -1,0 +1,22 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C003",
+ "planId": "plan.craft.axe",
+ "actionDefId": "action.craft",
+ "durationTicks": 120,
+ "workPositionMm": {
+  "xMm": 412000,
+  "yMm": 398000,
+  "zMm": 0
+ },
+ "milestones": [
+  {
+   "atProgressMilli": 60000,
+   "label": "milestone.b"
+  },
+  {
+   "atProgressMilli": 25000,
+   "label": "milestone.a"
+  }
+ ]
+}

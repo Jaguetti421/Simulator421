@@ -6,13 +6,12 @@
  * not art assets, and a rigged kit can replace the primitives later without
  * changing a recipe.
  *
- * **Contract note, deliberately not hidden:** TP v2.0 says "the `AppearanceRecipe`
- * contract from v1.1 is unchanged", but no such record exists in contract v0 —
- * the sixteen frozen records are commands, actions, knowledge, routes, damage,
- * traces, events, snapshots, sections, profiles and results. Rather than add a
- * seventeenth record from an app packet (which would change the contract digest
- * in every summary this build produces), the shape lives here, versioned, and
- * freezing it as a real contract record is proposed work for a contracts packet.
+ * **Contract status:** `AppearanceRecipe` is now a frozen contract record
+ * (P1-01), closing the gap W0-10 found — TP v2.0 referred to it as existing when
+ * it was not. The kit below is the app-side assembly of that record: the slot
+ * families here are checked against the contract's enums by a test, so the two
+ * cannot drift, and the colours stay app-side because the contract carries
+ * palette **indices** rather than hex strings.
  */
 export const APPEARANCE_RECIPE_VERSION = 1;
 

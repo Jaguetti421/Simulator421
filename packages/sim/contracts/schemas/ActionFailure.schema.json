@@ -1,0 +1,65 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActionFailure",
+ "type": "object",
+ "$comment": "record ActionFailure",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "reasonId": {
+   "type": "string",
+   "enum": [
+    "WaitingForLaw",
+    "RouteBlocked",
+    "BudgetExhausted",
+    "NoKnownRoute",
+    "MissingProcedure",
+    "ReservationLost",
+    "InsufficientTime",
+    "TargetUnobserved",
+    "MembershipLocked",
+    "StaleRules",
+    "InsufficientInfluence",
+    "NoticeTooShort",
+    "ProfileUnsupported"
+   ],
+   "description": "Typed reason from the frozen registry"
+  },
+  "intentTemplateId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Player-readable intent template identifier"
+  },
+  "recoveryMethods": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+    "maxLength": 64,
+    "description": "Method the actor may try instead"
+   },
+   "maxItems": 8
+  },
+  "retryable": {
+   "type": "boolean",
+   "description": "Whether the same action may be retried once its blocker clears"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "reasonId",
+  "intentTemplateId",
+  "recoveryMethods",
+  "retryable"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "A retryable failure offers at least one recovery method"
+ ],
+ "description": "The failure surface a player sees: a typed reason, a template to render it, and what could be tried instead."
+}

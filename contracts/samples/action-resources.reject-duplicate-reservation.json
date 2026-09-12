@@ -1,0 +1,24 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C003",
+ "planId": "plan.craft.axe",
+ "inputs": {
+  "item.flint": 1
+ },
+ "outputCapacity": 1,
+ "ownershipPolicy": "Personal",
+ "reservations": [
+  {
+   "key": "station.workbench.01",
+   "kind": "Station",
+   "heldByActorId": "C003",
+   "expiresAtTick": 620
+  },
+  {
+   "key": "station.workbench.01",
+   "kind": "Station",
+   "heldByActorId": "C003",
+   "expiresAtTick": 700
+  }
+ ]
+}

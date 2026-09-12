@@ -1,0 +1,19 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C003",
+ "planId": "plan.gather.berries",
+ "inputs": {
+  "item.branch": 2,
+  "item.flint": 1
+ },
+ "outputCapacity": 3,
+ "ownershipPolicy": "ClanShared",
+ "reservations": [
+  {
+   "key": "station.workbench.01",
+   "kind": "Station",
+   "heldByActorId": "C003",
+   "expiresAtTick": 620
+  }
+ ]
+}

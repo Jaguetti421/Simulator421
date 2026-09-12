@@ -190,7 +190,7 @@ describe("the machine summary", () => {
     expect(summary.identity.build.sourceDigest).toMatch(/^sha256:[0-9a-f]{64}$/u);
     expect(summary.identity.build.files).toBeGreaterThan(0);
     expect(summary.identity.contract.version).toBe(0);
-    expect(summary.identity.contract.records).toBe(16);
+    expect(summary.identity.contract.records).toBe(23);
     expect(summary.identity.contract.recordsDigest).toMatch(/^sha256:[0-9a-f]{64}$/u);
     expect(summary.identity.content.status).toBe("Unavailable");
     expect(summary.identity.content.availableFrom).toContain("content packets");

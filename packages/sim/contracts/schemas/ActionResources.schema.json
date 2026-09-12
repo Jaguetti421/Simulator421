@@ -1,0 +1,111 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActionResources",
+ "type": "object",
+ "$comment": "record ActionResources",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "planId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Plan this action belongs to"
+  },
+  "inputs": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 1,
+    "description": "Whole items required"
+   },
+   "maxProperties": 32,
+   "description": "Item definition ID to count"
+  },
+  "outputCapacity": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Whole items of free capacity required at the output location"
+  },
+  "ownershipPolicy": {
+   "type": "string",
+   "enum": [
+    "Personal",
+    "ClanShared",
+    "Unowned",
+    "Salvage"
+   ],
+   "description": "Who may take the output (GDD ownership rules)"
+  },
+  "reservations": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record ReservationKey",
+    "properties": {
+     "key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "Reservation key: station, slot, item stack or work position"
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "Station",
+       "Slot",
+       "ItemStack",
+       "WorkPosition",
+       "Route"
+      ]
+     },
+     "heldByActorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "Holder while the lease is live"
+     },
+     "expiresAtTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Tick the lease lapses if not renewed"
+     }
+    },
+    "required": [
+     "key",
+     "kind",
+     "heldByActorId",
+     "expiresAtTick"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 16,
+   "description": "Leases this action holds while it runs"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "planId",
+  "inputs",
+  "outputCapacity",
+  "ownershipPolicy",
+  "reservations"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "An action that produces nothing does not reserve output capacity",
+  "Reservation keys are unique within one action"
+ ],
+ "description": "What an action consumes, produces and holds. Reservation keys are explicit so interruption can release exactly what was taken."
+}

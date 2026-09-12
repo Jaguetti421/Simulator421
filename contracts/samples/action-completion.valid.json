@@ -1,0 +1,23 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C003",
+ "planId": "plan.craft.axe",
+ "tick": 600,
+ "atomic": true,
+ "outputs": {
+  "item.axe": 1
+ },
+ "outputEntityId": 123,
+ "knowledgeEffects": [
+  {
+   "actorId": "C003",
+   "factKind": "Procedure",
+   "subjectId": "recipe.axe",
+   "learnedAtTick": 600
+  }
+ ],
+ "committedEventTypes": [
+  "action.completed",
+  "item.created"
+ ]
+}

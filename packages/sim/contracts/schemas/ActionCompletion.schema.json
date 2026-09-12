@@ -1,0 +1,145 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActionCompletion",
+ "type": "object",
+ "$comment": "record ActionCompletion",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "planId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Plan this action belonged to"
+  },
+  "tick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick of completion"
+  },
+  "atomic": {
+   "type": "boolean",
+   "const": true,
+   "description": "Effects applied atomically"
+  },
+  "outputs": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 1,
+    "description": "Whole items produced"
+   },
+   "maxProperties": 32
+  },
+  "outputEntityId": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Container or station the outputs landed in"
+  },
+  "outputPositionMm": {
+   "type": "object",
+   "$comment": "record PositionMm",
+   "properties": {
+    "xMm": {
+     "type": "integer",
+     "description": "East–west millimetres"
+    },
+    "yMm": {
+     "type": "integer",
+     "description": "North–south millimetres"
+    },
+    "zMm": {
+     "type": "integer",
+     "description": "Height millimetres"
+    }
+   },
+   "required": [
+    "xMm",
+    "yMm",
+    "zMm"
+   ],
+   "additionalProperties": false
+  },
+  "knowledgeEffects": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "$comment": "record KnowledgeEffect",
+    "properties": {
+     "actorId": {
+      "type": "string",
+      "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+      "maxLength": 8,
+      "description": "Who learns"
+     },
+     "factKind": {
+      "type": "string",
+      "enum": [
+       "Location",
+       "Ownership",
+       "Procedure",
+       "Permission",
+       "Hazard"
+      ]
+     },
+     "subjectId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+      "maxLength": 64,
+      "description": "What the fact is about"
+     },
+     "learnedAtTick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "When it was learned"
+     }
+    },
+    "required": [
+     "actorId",
+     "factKind",
+     "subjectId",
+     "learnedAtTick"
+    ],
+    "additionalProperties": false
+   },
+   "maxItems": 32,
+   "description": "Who learned what, and when"
+  },
+  "committedEventTypes": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+    "maxLength": 64,
+    "description": "Committed event type emitted by this completion"
+   },
+   "maxItems": 8
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "actorId",
+  "planId",
+  "tick",
+  "atomic",
+  "outputs",
+  "knowledgeEffects",
+  "committedEventTypes"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "Outputs land somewhere: an entity or a position",
+  "A completion commits at least one event type"
+ ],
+ "description": "What a completed action produced, where it went, who learned from it, and which committed event types it emitted."
+}

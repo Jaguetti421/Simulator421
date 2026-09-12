@@ -28,6 +28,33 @@ export {
 export type { AnyShape, Infer, JsonSchema, SchemaNode, Shape, ValidationError, ValidationResult } from "./schema.js";
 
 export { ACTOR_ID_PATTERN, actorId, DURABLE_ID_PATTERN, durableId, entityId, HEX32_PATTERN, hash32, milli, mm, sequence, tick, TICK_STAGES, tickStage, version } from "./ids.js";
+
+/** P1-01: action lifecycle, the complete state-section set, and AppearanceRecipe. */
+export {
+  ActionCompletionShape,
+  ActionExecutionShape,
+  ActionFailureShape,
+  ActionInterruptionShape,
+  ActionResourcesShape,
+  AppearanceRecipeShape,
+  KnowledgeEffectShape,
+  LIFECYCLE_RECORDS,
+  ProgressMilestoneShape,
+  ReservationKeyShape,
+  StateSectionSetShape,
+} from "./lifecycle.js";
+export type {
+  ActionCompletion,
+  ActionExecution,
+  ActionFailure,
+  ActionInterruption,
+  ActionResources,
+  AppearanceRecipe,
+  KnowledgeEffect,
+  ProgressMilestone,
+  ReservationKey,
+  StateSectionSet,
+} from "./lifecycle.js";
 export type { ActorId, DurableId } from "./ids.js";
 
 export { isReasonId, MANDATORY_V0_REASON_IDS, REASON_BY_CODE, reasonDefinition, reasonId, REASONS } from "./reasons.js";
@@ -113,6 +140,7 @@ import {
   RouteRequestShape,
   RouteResultShape,
 } from "./simulation.js";
+import { LIFECYCLE_RECORDS } from "./lifecycle.js";
 import type { AnyShape } from "./schema.js";
 import { ContentProfileShape, FinalResultShape, RenderSnapshotShape, StateSectionDescriptorShape } from "./views.js";
 
@@ -138,4 +166,9 @@ export const CONTRACT_RECORDS: Readonly<Record<string, AnyShape>> = {
   StateSectionDescriptor: StateSectionDescriptorShape,
   ContentProfile: ContentProfileShape,
   FinalResult: FinalResultShape,
+  // P1-01: the action lifecycle records completing TP v1.1 §8, the complete
+  // state-section set, and AppearanceRecipe. Adding records changes
+  // `identity.contract.recordsDigest` — deliberately, once, rather than by
+  // editing shapes other packets already depend on.
+  ...LIFECYCLE_RECORDS,
 };
