@@ -302,7 +302,7 @@
    ],
    "refs": "TP 5\u20136; INFO-ISOLATION",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A2"
