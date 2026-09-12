@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@thi.ng/random": "4.1.54",
     "@types/node": "22.20.2",
     "eslint": "10.10.0",
     "fast-check": "4.10.0",

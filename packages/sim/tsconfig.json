@@ -4,8 +4,9 @@
     "rootDir": ".",
     "outDir": "dist",
     "lib": ["ES2023"],
+    "resolveJsonModule": true,
     "types": []
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "**/*.json"],
   "exclude": ["dist", "node_modules"]
 }

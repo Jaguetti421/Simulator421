@@ -1,7 +1,7 @@
 /**
- * @lastclan/sim primitives (W0-02): branded Int, checkedMath, units, rates
- * with saved remainders, little-endian serialization. PRNG and hashing are
- * added by W0-03.
+ * @lastclan/sim primitives: branded Int, checkedMath, units, rates with saved
+ * remainders, little-endian serialization (W0-02); sfc32 randomness, labeled
+ * stream derivation and canonical two-domain hashing (W0-03).
  */
 export { asInt, int, isInt, IntegerError, MAX_SAFE, MIN_SAFE, ONE, ZERO } from "./int.js";
 export type { Int, IntegerErrorCode } from "./int.js";
@@ -43,3 +43,29 @@ export {
   writeSection,
 } from "./serialize.js";
 export type { Section, SerializationErrorCode } from "./serialize.js";
+export {
+  decodeRandomState,
+  encodeRandomState,
+  labelWord,
+  RANDOM_ALGORITHM,
+  RANDOM_BYTE_ORDER,
+  RANDOM_SEEDING_RULE,
+  RANDOM_STATE_FORMAT_VERSION,
+  RandomStream,
+  splitmix32,
+  WARMUP_DRAWS,
+} from "./random.js";
+export type { RandomState } from "./random.js";
+export {
+  domainSeed,
+  FNV_OFFSET_BASIS,
+  fnv1a32,
+  formatDigest,
+  HashAccumulator,
+  HashDomain,
+  HashError,
+  hashBytes,
+  mixInt53,
+  mixWord,
+} from "./hash.js";
+export type { HashDomainTag, HashErrorCode } from "./hash.js";

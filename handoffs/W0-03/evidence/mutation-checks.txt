@@ -1,0 +1,10 @@
+== mutant 1: warm-up draws 12 -> 11 (seeding rule changed) ==
+      Tests  2 failed | 16 passed (18)
+== mutant 2: sfc32 rotation 21 -> 20 (algorithm changed) ==
+      Tests  3 failed | 15 passed (18)
+== mutant 3: hash domains collapsed (domainSeed ignores the domain) ==
+      Tests  2 failed | 10 passed (12)
+== mutant 4: accumulator folds in insertion order (no canonical sort) ==
+      Tests  3 failed | 9 passed (12)
+== restored ==
+      Tests  75 passed (75)

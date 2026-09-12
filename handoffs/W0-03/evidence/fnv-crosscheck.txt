@@ -1,0 +1,22 @@
+# FNV-1a/32 cross-check (W0-03)
+
+Independent recomputation in Python (no shared code with the TypeScript implementation), 12 September 2026:
+```
+''               python 0x811c9dc5
+'a'              python 0xe40c292c
+'b'              python 0xe70c2de5
+'abc'            python 0x1a47e90b
+'foobar'         python 0xbf9cf968
+'The Last Clan'  python 0x56c4abe8
+```
+TypeScript implementation on the same inputs:
+```
+""           ts     0x811c9dc5
+"a"           ts     0xe40c292c
+"b"           ts     0xe70c2de5
+"abc"           ts     0x1a47e90b
+"foobar"         ts     0xbf9cf968
+"The Last Clan"  ts     0x56c4abe8
+```
+
+The first four also match the published FNV-1a/32 vectors. sfc32 step outputs are cross-checked against @thi.ng/random@4.1.54 SFC32 both when the vectors are generated (tools/gen_random_vectors.mjs) and in random.test.ts (300 random states x 24 draws).
