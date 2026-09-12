@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Last Clan — runtime shell (W0-10a)</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; background: #12161c; color: #e6edf3; font: 14px/1.5 system-ui, sans-serif; }
+      main { max-width: 46rem; margin: 0 auto; padding: 2rem 1.25rem; }
+      .watermark { background: #3a3320; border: 1px solid #e8b33a; color: #e8b33a; padding: .5rem .75rem; border-radius: 4px; font-weight: 600; }
+      .tick { font-size: 2.5rem; font-variant-numeric: tabular-nums; margin: .25rem 0; }
+      button { background: #1b2028; color: #e6edf3; border: 1px solid #2d3542; border-radius: 4px; padding: .4rem .8rem; margin-right: .4rem; cursor: pointer; }
+      button[aria-pressed="true"] { border-color: #4ea3ff; color: #4ea3ff; }
+      dl { display: grid; grid-template-columns: max-content 1fr; gap: .2rem 1rem; }
+      dt { color: #8b949e; }
+      ul { color: #8b949e; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -27,3 +27,5 @@ Thumbs.db
 # playwright run output
 /test-results/
 /playwright-report/
+# vite output for apps/web (rebuilt by npm run build)
+/apps/web/dist-site/

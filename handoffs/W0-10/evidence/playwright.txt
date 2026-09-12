@@ -1,0 +1,16 @@
+
+Running 11 tests using 1 worker
+
+  ✓   1 tests/playwright/persistence.spec.ts:28:1 › the browser's IndexedDB satisfies the storage contract (300ms)
+  ✓   2 tests/playwright/persistence.spec.ts:56:1 › generations, fallback and exactly-once finalization behave as they do in Node (267ms)
+  ✓   3 tests/playwright/persistence.spec.ts:114:1 › a kernel save survives a round trip through browser storage and continues identically (539ms)
+  ✓   4 tests/playwright/shell.spec.ts:16:1 › boots the kernel in a Worker and shows the confirmed tick advancing (431ms)
+  ✓   5 tests/playwright/shell.spec.ts:29:1 › pause settles on a tick and nothing advances past it (958ms)
+  ✓   6 tests/playwright/shell.spec.ts:40:1 › offers 1x, 2x and 4x, and 4x advances more ticks per second than 1x (2.8s)
+  ✓   7 tests/playwright/shell.spec.ts:59:1 › carries the synthetic watermark and lists what the workload does not do (181ms)
+  ✓   8 tests/playwright/shell.spec.ts:65:1 › reports the authoritative digest the Worker actually holds (356ms)
+  ✓   9 tests/playwright/worker-hash.spec.ts:74:1 › a browser Worker reaches the same authoritative digest as Node, 137 actors (723ms)
+  ✓  10 tests/playwright/worker-hash.spec.ts:81:1 › and for the 136-actor workload, at a different tick count (469ms)
+  ✓  11 tests/playwright/worker-hash.spec.ts:87:1 › the digests are not trivially equal: the two workloads differ from each other (651ms)
+
+  11 passed (9.1s)
