@@ -282,7 +282,7 @@
    ],
    "refs": "TP 5; GDD 4,30.2",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A2"
