@@ -83,62 +83,61 @@ describe("the versioned section container", () => {
 });
 
 describe("two-generation durable saves", () => {
-  it("advances the generation pointer only after the payload is written", () => {
+  it("advances the generation pointer only after the payload is written", async () => {
     const storage = new MemoryStorage();
-    const first = saveCheckpoint(storage, "run-a", container());
+    const first = await saveCheckpoint(storage, "run-a", container());
     expect(first).toMatchObject({ saved: true, generation: 1 });
-    const second = saveCheckpoint(storage, "run-a", container());
-    expect(second.generation).toBe(2);
-    expect(loadLatest(storage, "run-a").generation).toBe(2);
+    expect((await saveCheckpoint(storage, "run-a", container())).generation).toBe(2);
+    expect((await loadLatest(storage, "run-a")).generation).toBe(2);
   });
 
-  it("never acknowledges a save whose write failed, and leaves the previous generation authoritative", () => {
+  it("never acknowledges a save whose write failed, and leaves the previous generation authoritative", async () => {
     const storage = new MemoryStorage();
-    saveCheckpoint(storage, "run-a", writeContainer([{ name: "world", formatVersion: 1, bytes: bytes(1) }]));
+    await saveCheckpoint(storage, "run-a", writeContainer([{ name: "world", formatVersion: 1, bytes: bytes(1) }]));
     storage.failNextWrite = "quota exceeded";
-    expect(() => saveCheckpoint(storage, "run-a", container())).toThrow(/WriteFailed/u);
+    await expect(saveCheckpoint(storage, "run-a", container())).rejects.toThrow(/WriteFailed/u);
 
-    const loaded = loadLatest(storage, "run-a");
+    const loaded = await loadLatest(storage, "run-a");
     expect(loaded.generation).toBe(1);
     expect(loaded.sections[0]?.bytes).toEqual(bytes(1));
     expect(loaded.fellBackFrom).toBeUndefined();
   });
 
-  it("falls back to the previous valid generation when the newest one is corrupt, and says so", () => {
+  it("falls back to the previous valid generation when the newest one is corrupt, and says so", async () => {
     const storage = new MemoryStorage();
-    saveCheckpoint(storage, "run-a", writeContainer([{ name: "world", formatVersion: 1, bytes: bytes(1) }]));
-    saveCheckpoint(storage, "run-a", writeContainer([{ name: "world", formatVersion: 1, bytes: bytes(2) }]));
+    await saveCheckpoint(storage, "run-a", writeContainer([{ name: "world", formatVersion: 1, bytes: bytes(1) }]));
+    await saveCheckpoint(storage, "run-a", writeContainer([{ name: "world", formatVersion: 1, bytes: bytes(2) }]));
 
-    const corrupt = storage.get(SNAPSHOT_STORE, "run-a/gen2") as Uint8Array;
+    const corrupt = (await storage.get(SNAPSHOT_STORE, "run-a/gen2")) as Uint8Array;
     corrupt[corrupt.byteLength - 1] = (corrupt[corrupt.byteLength - 1] ?? 0) ^ 0xff;
-    storage.put(SNAPSHOT_STORE, "run-a/gen2", corrupt);
+    await storage.put(SNAPSHOT_STORE, "run-a/gen2", corrupt);
 
-    const loaded = loadLatest(storage, "run-a");
+    const loaded = await loadLatest(storage, "run-a");
     expect(loaded.generation).toBe(1);
     expect(loaded.sections[0]?.bytes).toEqual(bytes(1));
     expect(loaded.fellBackFrom).toMatchObject({ generation: 2, code: "ChecksumMismatch" });
   });
 
-  it("falls back when the newest generation is truncated mid-write", () => {
+  it("falls back when the newest generation is truncated mid-write", async () => {
     const storage = new MemoryStorage();
-    saveCheckpoint(storage, "run-a", writeContainer([{ name: "world", formatVersion: 1, bytes: bytes(1) }]));
-    saveCheckpoint(storage, "run-a", container());
-    const partial = (storage.get(SNAPSHOT_STORE, "run-a/gen2") as Uint8Array).slice(0, 12);
-    storage.put(SNAPSHOT_STORE, "run-a/gen2", partial);
+    await saveCheckpoint(storage, "run-a", writeContainer([{ name: "world", formatVersion: 1, bytes: bytes(1) }]));
+    await saveCheckpoint(storage, "run-a", container());
+    const partial = ((await storage.get(SNAPSHOT_STORE, "run-a/gen2")) as Uint8Array).slice(0, 12);
+    await storage.put(SNAPSHOT_STORE, "run-a/gen2", partial);
 
-    const loaded = loadLatest(storage, "run-a");
+    const loaded = await loadLatest(storage, "run-a");
     expect(loaded.generation).toBe(1);
     expect(loaded.fellBackFrom?.code).toBe("Truncated");
   });
 
-  it("refuses to load a run that has no checkpoint rather than returning an empty world", () => {
-    expect(() => loadLatest(new MemoryStorage(), "run-missing")).toThrow(/NoValidGeneration/u);
+  it("refuses to load a run that has no checkpoint rather than returning an empty world", async () => {
+    await expect(loadLatest(new MemoryStorage(), "run-missing")).rejects.toThrow(/NoValidGeneration/u);
   });
 
-  it("keeps two generations and drops older ones", () => {
+  it("keeps two generations and drops older ones", async () => {
     const storage = new MemoryStorage();
-    for (let i = 0; i < 4; i += 1) saveCheckpoint(storage, "run-a", container());
-    expect(storage.keys(SNAPSHOT_STORE)).toEqual(["run-a/gen3", "run-a/gen4"]);
+    for (let i = 0; i < 4; i += 1) await saveCheckpoint(storage, "run-a", container());
+    expect(await storage.keys(SNAPSHOT_STORE)).toEqual(["run-a/gen3", "run-a/gen4"]);
   });
 });
 
@@ -151,28 +150,28 @@ describe("exactly-once finalization", () => {
     authoritativeDigest: "4d0bd28a",
   };
 
-  it("increments once when the same result is applied twice", () => {
+  it("increments once when the same result is applied twice", async () => {
     const storage = new MemoryStorage();
-    const first = applyResult(storage, record);
-    const second = applyResult(storage, record);
+    const first = await applyResult(storage, record);
+    const second = await applyResult(storage, record);
     expect(first).toMatchObject({ applied: true, alreadyPresent: false, appliedCount: 1 });
     expect(second).toMatchObject({ applied: false, alreadyPresent: true, appliedCount: 1 });
-    expect(countResults(storage)).toBe(1);
-    expect(readResult(storage, record.resultKey)?.winnerActorId).toBe("C017");
+    expect(await countResults(storage)).toBe(1);
+    expect((await readResult(storage, record.resultKey))?.winnerActorId).toBe("C017");
   });
 
-  it("fails explicitly when a different payload claims the same key", () => {
+  it("fails explicitly when a different payload claims the same key", async () => {
     const storage = new MemoryStorage();
-    applyResult(storage, record);
-    expect(() => applyResult(storage, { ...record, winnerActorId: "C042" })).toThrow(/ResultConflict/u);
-    expect(readResult(storage, record.resultKey)?.winnerActorId).toBe("C017");
-    expect(countResults(storage)).toBe(1);
+    await applyResult(storage, record);
+    await expect(applyResult(storage, { ...record, winnerActorId: "C042" })).rejects.toThrow(/ResultConflict/u);
+    expect((await readResult(storage, record.resultKey))?.winnerActorId).toBe("C017");
+    expect(await countResults(storage)).toBe(1);
   });
 
-  it("uses add semantics underneath, so a raw overwrite of an existing key is refused", () => {
+  it("uses add semantics underneath, so a raw overwrite of an existing key is refused", async () => {
     const storage = new MemoryStorage();
-    applyResult(storage, record);
-    expect(() => storage.add("results", record.resultKey, new Uint8Array([1]))).toThrow(/ResultConflict/u);
+    await applyResult(storage, record);
+    await expect(storage.add("results", record.resultKey, new Uint8Array([1]))).rejects.toThrow(/ResultConflict/u);
   });
 
   it("derives a result key from the run, the final tick and the authoritative digest", () => {
@@ -180,10 +179,10 @@ describe("exactly-once finalization", () => {
     expect(resultKeyFor("run-a", 36_000, "4d0bd28a")).not.toBe(resultKeyFor("run-a", 36_000, "ffffffff"));
   });
 
-  it("never acknowledges a result whose write failed", () => {
+  it("never acknowledges a result whose write failed", async () => {
     const storage = new MemoryStorage();
     storage.failNextWrite = "transaction aborted";
-    expect(() => applyResult(storage, record)).toThrow(/WriteFailed/u);
-    expect(countResults(storage)).toBe(0);
+    await expect(applyResult(storage, record)).rejects.toThrow(/WriteFailed/u);
+    expect(await countResults(storage)).toBe(0);
   });
 });

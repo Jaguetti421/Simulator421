@@ -144,3 +144,42 @@ describe("PERF-OPS-BASE through the real harness (G0 criteria 1 and 2)", () => {
     });
   });
 });
+
+describe("SAVE-ROUNDTRIP through the real harness (G0 criterion 1)", () => {
+  it("passes when the tape comes from a run that was saved, restored and continued", () => {
+    const original = simHost.SimHost.create({ matchSeed: SEED as never, withGuest: true });
+    original.runTicks(300);
+    const restored = simHost.SimHost.restore(original.save());
+    restored.runTicks(300);
+
+    const tapePath = join(dir, "restored-tape.json");
+    writeFileSync(tapePath, `${JSON.stringify(restored.eventTape("SAVE-ROUNDTRIP"), null, 1)}\n`);
+
+    const { summary, exitCode } = runFixtures({
+      files: [join(repoRoot, "tests/fixtures/SAVE-ROUNDTRIP.json")],
+      eventsPath: tapePath,
+      evidenceDir: join(dir, "evidence-save"),
+      nowIso: "2026-09-12T00:00:00.000Z",
+      version: "w0-08-test",
+    });
+    expect(exitCode).toBe(0);
+    expect(summary.counts).toMatchObject({ requested: 4, executed: 4, passed: 4, failed: 0, blocked: 0 });
+  });
+
+  it("fails the same fixture when the tape comes from a run that restarted instead of continuing", () => {
+    const restarted = simHost.SimHost.create({ matchSeed: SEED as never, withGuest: true });
+    restarted.runTicks(300);
+    const tapePath = join(dir, "restarted-tape.json");
+    writeFileSync(tapePath, `${JSON.stringify(restarted.eventTape("SAVE-ROUNDTRIP"), null, 1)}\n`);
+
+    const { exitCode, summary } = runFixtures({
+      files: [join(repoRoot, "tests/fixtures/SAVE-ROUNDTRIP.json")],
+      eventsPath: tapePath,
+      evidenceDir: join(dir, "evidence-restart"),
+      nowIso: "2026-09-12T00:00:00.000Z",
+      version: "w0-08-test",
+    });
+    expect(exitCode).toBe(1);
+    expect(summary.counts.failed).toBeGreaterThan(0);
+  });
+});

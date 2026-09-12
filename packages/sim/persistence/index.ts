@@ -14,8 +14,10 @@
  *      result applied twice increments once, and a different payload under the
  *      same key fails loudly instead of overwriting a finished match.
  *
- * The adapters (fake-indexeddb, browser IndexedDB) and the kernel snapshot codec
- * are the rest of this packet and are not in this slice.
+ * The interface is **asynchronous** because the real adapter is IndexedDB, and a
+ * synchronous interface would have to be rewritten the moment the browser
+ * adapter arrived. `MemoryStorage` is held to the same contract as every other
+ * adapter rather than getting an easier one.
  */
 import { asInt, ByteReader, ByteWriter, fnv1a32, HashDomain, hashBytes } from "../primitives/index.js";
 import type { Int } from "../primitives/index.js";
@@ -152,12 +154,12 @@ export function containerDigest(bytes: Uint8Array): Int {
  * browser — is held to the same contract.
  */
 export interface StorageAdapter {
-  get(store: string, key: string): Uint8Array | undefined;
-  put(store: string, key: string, value: Uint8Array): void;
-  /** Throws if the key already exists. */
-  add(store: string, key: string, value: Uint8Array): void;
-  delete(store: string, key: string): void;
-  keys(store: string): readonly string[];
+  get(store: string, key: string): Promise<Uint8Array | undefined>;
+  put(store: string, key: string, value: Uint8Array): Promise<void>;
+  /** Rejects if the key already exists — the exactly-once primitive. */
+  add(store: string, key: string, value: Uint8Array): Promise<void>;
+  delete(store: string, key: string): Promise<void>;
+  keys(store: string): Promise<readonly string[]>;
 }
 
 export class MemoryStorage implements StorageAdapter {
@@ -182,26 +184,26 @@ export class MemoryStorage implements StorageAdapter {
     }
   }
 
-  get(store: string, key: string): Uint8Array | undefined {
+  async get(store: string, key: string): Promise<Uint8Array | undefined> {
     return this.#store(store).get(key);
   }
 
-  put(store: string, key: string, value: Uint8Array): void {
+  async put(store: string, key: string, value: Uint8Array): Promise<void> {
     this.#checkFailure();
     this.#store(store).set(key, value.slice());
   }
 
-  add(store: string, key: string, value: Uint8Array): void {
+  async add(store: string, key: string, value: Uint8Array): Promise<void> {
     this.#checkFailure();
     if (this.#store(store).has(key)) throw new PersistenceError("ResultConflict", `${store}/${key} already exists; add never overwrites`);
     this.#store(store).set(key, value.slice());
   }
 
-  delete(store: string, key: string): void {
+  async delete(store: string, key: string): Promise<void> {
     this.#store(store).delete(key);
   }
 
-  keys(store: string): readonly string[] {
+  async keys(store: string): Promise<readonly string[]> {
     return [...this.#store(store).keys()].sort();
   }
 }
@@ -223,14 +225,14 @@ export interface SaveOutcome {
   readonly digest: string;
 }
 
-function readPointer(storage: StorageAdapter, runId: string): number {
-  const bytes = storage.get(META_STORE, pointerKey(runId));
+async function readPointer(storage: StorageAdapter, runId: string): Promise<number> {
+  const bytes = await storage.get(META_STORE, pointerKey(runId));
   if (bytes === undefined) return 0;
   return new ByteReader(bytes).u32();
 }
 
-function writePointer(storage: StorageAdapter, runId: string, generation: number): void {
-  storage.put(META_STORE, pointerKey(runId), new ByteWriter(4).u32(generation).toUint8Array());
+async function writePointer(storage: StorageAdapter, runId: string, generation: number): Promise<void> {
+  await storage.put(META_STORE, pointerKey(runId), new ByteWriter(4).u32(generation).toUint8Array());
 }
 
 /**
@@ -238,15 +240,15 @@ function writePointer(storage: StorageAdapter, runId: string, generation: number
  * payload write throws, the pointer never moves and `saveCheckpoint` reports
  * `saved: false` — the caller must not tell the player it was saved.
  */
-export function saveCheckpoint(storage: StorageAdapter, runId: string, container: Uint8Array): SaveOutcome {
-  const current = readPointer(storage, runId);
+export async function saveCheckpoint(storage: StorageAdapter, runId: string, container: Uint8Array): Promise<SaveOutcome> {
+  const current = await readPointer(storage, runId);
   const next = current + 1;
-  storage.put(SNAPSHOT_STORE, generationKey(runId, next), container);
+  await storage.put(SNAPSHOT_STORE, generationKey(runId, next), container);
   // Only now is the new generation reachable; a crash before this line leaves
   // the previous generation authoritative.
-  writePointer(storage, runId, next);
+  await writePointer(storage, runId, next);
   // Retain two generations: the current one and its predecessor.
-  if (next - 2 >= 1) storage.delete(SNAPSHOT_STORE, generationKey(runId, next - 2));
+  if (next - 2 >= 1) await storage.delete(SNAPSHOT_STORE, generationKey(runId, next - 2));
   return { saved: true, generation: next, digest: containerDigest(container).toString(16).padStart(8, "0") };
 }
 
@@ -262,13 +264,13 @@ export interface LoadOutcome {
  * not an error the player loses their match to: the previous valid generation is
  * loaded and the fallback is reported, never silently swallowed.
  */
-export function loadLatest(storage: StorageAdapter, runId: string): LoadOutcome {
-  const newest = readPointer(storage, runId);
+export async function loadLatest(storage: StorageAdapter, runId: string): Promise<LoadOutcome> {
+  const newest = await readPointer(storage, runId);
   if (newest === 0) throw new PersistenceError("NoValidGeneration", `run ${runId} has no checkpoint`);
 
   let fellBackFrom: LoadOutcome["fellBackFrom"];
   for (let generation = newest; generation >= 1; generation -= 1) {
-    const bytes = storage.get(SNAPSHOT_STORE, generationKey(runId, generation));
+    const bytes = await storage.get(SNAPSHOT_STORE, generationKey(runId, generation));
     if (bytes === undefined) continue;
     try {
       const sections = readContainer(bytes);
@@ -323,8 +325,8 @@ function decodeResult(bytes: Uint8Array): ResultRecord {
  * a crash. A *different* payload under the same key is a conflict and throws:
  * two different truths cannot both be the result of one match.
  */
-export function applyResult(storage: StorageAdapter, record: ResultRecord): ApplyResultOutcome {
-  const existing = storage.get(RESULTS_STORE, record.resultKey);
+export async function applyResult(storage: StorageAdapter, record: ResultRecord): Promise<ApplyResultOutcome> {
+  const existing = await storage.get(RESULTS_STORE, record.resultKey);
   const encoded = encodeResult(record);
   if (existing !== undefined) {
     const previous = decodeResult(existing);
@@ -335,18 +337,18 @@ export function applyResult(storage: StorageAdapter, record: ResultRecord): Appl
         `result key ${record.resultKey} already holds a different result (run ${previous.runId}, tick ${previous.finalTick}, digest ${previous.authoritativeDigest})`,
       );
     }
-    return { applied: false, alreadyPresent: true, appliedCount: countResults(storage) };
+    return { applied: false, alreadyPresent: true, appliedCount: await countResults(storage) };
   }
-  storage.add(RESULTS_STORE, record.resultKey, encoded);
-  return { applied: true, alreadyPresent: false, appliedCount: countResults(storage) };
+  await storage.add(RESULTS_STORE, record.resultKey, encoded);
+  return { applied: true, alreadyPresent: false, appliedCount: await countResults(storage) };
 }
 
-export function countResults(storage: StorageAdapter): number {
-  return storage.keys(RESULTS_STORE).length;
+export async function countResults(storage: StorageAdapter): Promise<number> {
+  return (await storage.keys(RESULTS_STORE)).length;
 }
 
-export function readResult(storage: StorageAdapter, resultKey: string): ResultRecord | undefined {
-  const bytes = storage.get(RESULTS_STORE, resultKey);
+export async function readResult(storage: StorageAdapter, resultKey: string): Promise<ResultRecord | undefined> {
+  const bytes = await storage.get(RESULTS_STORE, resultKey);
   return bytes === undefined ? undefined : decodeResult(bytes);
 }
 

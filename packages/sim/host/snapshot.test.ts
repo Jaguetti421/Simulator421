@@ -91,24 +91,24 @@ describe("snapshot round trip", () => {
 
 
 describe("kernel saves through the generation store", () => {
-  it("restores a continued run from the previous generation when the newest is corrupt", () => {
+  it("restores a continued run from the previous generation when the newest is corrupt", async () => {
     const storage = new MemoryStorage();
     const atThree = host(300);
-    saveCheckpoint(storage, "run-a", atThree.save());
+    await saveCheckpoint(storage, "run-a", atThree.save());
     const atSix = host(600);
-    saveCheckpoint(storage, "run-a", atSix.save());
+    await saveCheckpoint(storage, "run-a", atSix.save());
 
-    const corrupt = storage.get(SNAPSHOT_STORE, "run-a/gen2") as Uint8Array;
+    const corrupt = (await storage.get(SNAPSHOT_STORE, "run-a/gen2")) as Uint8Array;
     corrupt[corrupt.byteLength - 9] = (corrupt[corrupt.byteLength - 9] ?? 0) ^ 0xff;
-    storage.put(SNAPSHOT_STORE, "run-a/gen2", corrupt);
+    await storage.put(SNAPSHOT_STORE, "run-a/gen2", corrupt);
 
-    const loaded = loadLatest(storage, "run-a");
+    const loaded = await loadLatest(storage, "run-a");
     expect(loaded.generation).toBe(1);
     expect(loaded.fellBackFrom?.code).toBe("ChecksumMismatch");
 
     // The fallback is a usable world, not a husk: continuing from it reaches the
     // same tick-600 state the corrupt generation was supposed to hold.
-    const resumed = SimHost.restore(storage.get(SNAPSHOT_STORE, "run-a/gen1") as Uint8Array);
+    const resumed = SimHost.restore((await storage.get(SNAPSHOT_STORE, "run-a/gen1")) as Uint8Array);
     resumed.runTicks(300);
     expect(resumed.authoritativeDigest()).toBe(atSix.authoritativeDigest());
   });
