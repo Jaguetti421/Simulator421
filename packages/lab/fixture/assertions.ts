@@ -44,9 +44,27 @@ export interface AssertionOutcome {
 /** Kinds this build can actually evaluate from data. */
 export const EVALUABLE_KINDS: readonly string[] = ["EventCountGte", "EventCountEq"];
 /** Kinds that are known and valid but need a running simulation. */
+/**
+ * Why a kind cannot be judged yet. Updated in the 12 Sep debt pass: W0-07 and
+ * W0-08 have shipped, so citing them was misleading — the tick kernel and the
+ * snapshot codec both exist. What is still missing is named instead.
+ */
+/**
+ * An acknowledgement, in the shape contract v0's `CommandAck` carries: the
+ * reason a command was rejected lives here and nowhere else.
+ */
+export interface MatchableAck {
+  readonly type: string;
+  readonly tick: number;
+  readonly accepted: boolean;
+  readonly reasonId?: string;
+  readonly actorId?: string;
+  readonly sequence?: number;
+}
+
 export const BLOCKED_KINDS = {
-  Invariant: "W0-07 (tick loop and production invariants)",
-  HashEqualVariant: "W0-08 (snapshot, restore and canonical hashes)",
+  Invariant: "the P1 action packets: the kernel available today runs a synthetic workload with no actions, effects or inventory, so a production invariant has nothing to be violated by",
+  HashEqualVariant: "a run host that can snapshot: `clanlab run --host kernel` evaluates SaveReload; ObserverToggle needs observer state (P2) and Checkpoint10sVs60s needs a checkpoint cadence (P3)",
 } as const satisfies Record<string, string>;
 
 /**
@@ -103,25 +121,76 @@ function describeMatch(match: { type: string; actorId?: string; targetId?: strin
   return parts.join(", ");
 }
 
+function matchesAck(ack: MatchableAck, match: { type: string; reasonId?: string; actorId?: string; fromTick?: number; throughTick?: number }): boolean {
+  if (ack.type !== match.type) return false;
+  if (match.reasonId !== undefined && ack.reasonId !== match.reasonId) return false;
+  if (match.actorId !== undefined && ack.actorId !== match.actorId) return false;
+  if (match.fromTick !== undefined && ack.tick < match.fromTick) return false;
+  if (match.throughTick !== undefined && ack.tick > match.throughTick) return false;
+  return true;
+}
+
+function countOutcome(assertion: FixtureAssertion, count: number, described: string, noun: string): AssertionOutcome {
+  if (assertion.kind === "EventCountGte") {
+    const ok = count >= assertion.minimum;
+    return {
+      kind: assertion.kind,
+      status: ok ? "Passed" : "Failed",
+      observed: count,
+      expected: `>= ${assertion.minimum}`,
+      ...(ok ? {} : { detail: `no assertion passes on an empty match: ${count} ${noun} matched (${described}), needed at least ${assertion.minimum}` }),
+    };
+  }
+  if (assertion.kind === "EventCountEq") {
+    const ok = count === assertion.count;
+    return {
+      kind: assertion.kind,
+      status: ok ? "Passed" : "Failed",
+      observed: count,
+      expected: `== ${assertion.count}`,
+      ...(ok ? {} : { detail: `${count} ${noun} matched (${described}), expected exactly ${assertion.count}` }),
+    };
+  }
+  return { kind: assertion.kind, status: "Blocked", detail: "not a counting assertion" };
+}
+
 /**
  * Evaluate one assertion. `events` is the committed-event list from a run; pass
  * `undefined` when no run happened — every assertion is then Blocked rather
  * than trivially satisfied.
  */
-export function evaluateAssertion(assertion: FixtureAssertion, events: readonly MatchableEvent[] | undefined): AssertionOutcome {
+export function evaluateAssertion(assertion: FixtureAssertion, events: readonly MatchableEvent[] | undefined, acks?: readonly MatchableAck[]): AssertionOutcome {
   if (assertion.kind === "Invariant") {
-    return { kind: assertion.kind, status: "Blocked", detail: `invariant ${assertion.name} needs a running simulation`, availableFrom: BLOCKED_KINDS.Invariant };
+    return { kind: assertion.kind, status: "Blocked", detail: `invariant ${assertion.name} has nothing to check yet: the kernel runs a synthetic workload with no actions, effects or inventory`, availableFrom: BLOCKED_KINDS.Invariant };
   }
   if (assertion.kind === "HashEqualVariant") {
     return {
       kind: assertion.kind,
       status: "Blocked",
-      detail: `hash variant ${assertion.variant} needs snapshot, restore and canonical hashes`,
+      detail: `hash variant ${assertion.variant} needs a host that can produce it`,
       availableFrom: BLOCKED_KINDS.HashEqualVariant,
     };
   }
   if (events === undefined) {
-    return { kind: assertion.kind, status: "Blocked", detail: "no committed events: the fixture was validated, not run", availableFrom: "W0-06 (clanlab run)" };
+    return { kind: assertion.kind, status: "Blocked", detail: "no committed events: the fixture was validated, not run", availableFrom: "`clanlab run` with a host — `--host kernel`, or `--events <tape>`" };
+  }
+
+  // A reason lives on the acknowledgement, not on the committed event: contract
+  // v0's CommittedEvent has no reasonId and its payload fields are closed, and
+  // TP v2.0 §3 sends acks and events as separate channels. So a match on
+  // reasonId resolves against the ack stream — and when a host supplies none,
+  // it stays Blocked rather than being judged against the wrong stream.
+  if (assertion.match.reasonId !== undefined) {
+    if (acks === undefined) {
+      return {
+        kind: assertion.kind,
+        status: "Blocked",
+        detail: `this assertion matches on reasonId=${assertion.match.reasonId}, and this host supplied no acknowledgement stream to match it against`,
+        availableFrom: "`clanlab run --host kernel`, or an event tape at version 2 or later carrying `acks`",
+      };
+    }
+    const ackCount = acks.filter((a) => matchesAck(a, assertion.match)).length;
+    return countOutcome(assertion, ackCount, describeMatch(assertion.match), "acknowledgements");
   }
 
   const count = events.filter((e) => matches(e, assertion.match)).length;
@@ -153,8 +222,8 @@ export interface AssertionSummary {
   readonly outcomes: readonly AssertionOutcome[];
 }
 
-export function evaluateAll(assertions: readonly FixtureAssertion[], events: readonly MatchableEvent[] | undefined): AssertionSummary {
-  const outcomes = assertions.map((a) => evaluateAssertion(a, events));
+export function evaluateAll(assertions: readonly FixtureAssertion[], events: readonly MatchableEvent[] | undefined, acks?: readonly MatchableAck[]): AssertionSummary {
+  const outcomes = assertions.map((a) => evaluateAssertion(a, events, acks));
   return {
     requested: outcomes.length,
     passed: outcomes.filter((o) => o.status === "Passed").length,

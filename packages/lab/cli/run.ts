@@ -108,6 +108,7 @@ function runRun(args: readonly string[], io: CliIo, now: () => string): number {
   let eventsPath: string | undefined;
   let evidenceDir = DEFAULT_EVIDENCE_DIR;
   let writeBundles = true;
+  let kernelHost = false;
   let logMaxBytes = DEFAULT_LOG_MAX_BYTES;
 
   const needValue = (flag: string, value: string | undefined): value is string => {
@@ -146,6 +147,14 @@ function runRun(args: readonly string[], io: CliIo, now: () => string): number {
       }
       logMaxBytes = parsed;
       i += 1;
+    } else if (arg === "--host") {
+      if (!needValue(arg, next)) return 2;
+      if (next !== "kernel" && next !== "none") {
+        io.err(`clanlab run: --host takes "kernel" or "none" (use --events <tape> for a tape host), got ${next}`);
+        return 2;
+      }
+      kernelHost = next === "kernel";
+      i += 1;
     } else if (arg === "--no-bundle") {
       writeBundles = false;
     } else if (arg.startsWith("--")) {
@@ -163,8 +172,14 @@ function runRun(args: readonly string[], io: CliIo, now: () => string): number {
   }
 
   mkdirSync(evidenceDir, { recursive: true });
+  if (kernelHost && eventsPath !== undefined) {
+    io.err("clanlab run: --host kernel and --events are two different hosts; pick one");
+    return 2;
+  }
+
   const { summary, exitCode } = runFixtures({
     files: expanded,
+    ...(kernelHost ? { kernelHost: true } : {}),
     ...(eventsPath === undefined ? {} : { eventsPath }),
     evidenceDir,
     writeBundles,
@@ -296,6 +311,7 @@ export function usage(): string[] {
     "",
     "clanlab run options:",
     "  --fixture <path|dir>   Fixture file, or a directory of fixture JSON (repeatable)",
+    "  --host kernel          Run the real W0-07 kernel from each fixture's map seed (supplies events, acknowledgements and snapshots)",
     "  --events <tape>        Declared event tape to judge assertions against (default: no host, everything Blocked)",
     "  --summary <path>       Write the summary JSON to a file as well as stdout",
     `  --evidence <dir>       Where logs and bundles are written (default: ${DEFAULT_EVIDENCE_DIR})`,

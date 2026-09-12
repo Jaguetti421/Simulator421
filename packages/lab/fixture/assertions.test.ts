@@ -22,10 +22,21 @@ describe("acceptance 3 — an EventCountGte with no matching events fails rather
     expect(outcome.detail).toContain("no assertion passes on an empty match");
   });
 
-  it("a match that is right in kind but wrong in actor, reason or tick range still fails", () => {
-    expect(evaluateAssertion(gte({ type: "ActorWaited", actorId: "C009" }, 1), events).status).toBe("Failed");
-    expect(evaluateAssertion(gte({ type: "CommandRejected", reasonId: "MembershipLocked" }, 1), events).status).toBe("Failed");
-    expect(evaluateAssertion(gte({ type: "ActorWaited", fromTick: 100 }, 1), events).status).toBe("Failed");
+  it("a match that is right in kind but wrong in actor or tick range still fails", () => {
+    const events: MatchableEvent[] = [{ type: "CommandRejected", tick: 10, actorId: "C003" }];
+    expect(evaluateAssertion(gte({ type: "CommandRejected", actorId: "C009" }, 1), events).status).toBe("Failed");
+    expect(evaluateAssertion(gte({ type: "CommandRejected", fromTick: 20 }, 1), events).status).toBe("Failed");
+  });
+
+  it("a reason match is judged against acknowledgements, and blocked when none are supplied", () => {
+    // Changed in the 12 Sep debt pass. A committed event cannot carry a reason
+    // (contract v0), so judging a reason match against events would have been
+    // judging it against the wrong stream — it now resolves against acks.
+    const assertion = gte({ type: "CommandRejected", reasonId: "NoticeTooShort" }, 1);
+    const events: MatchableEvent[] = [{ type: "CommandRejected", tick: 10, actorId: "C003" }];
+    expect(evaluateAssertion(assertion, events).status).toBe("Blocked");
+    expect(evaluateAssertion(assertion, events, [{ type: "CommandRejected", tick: 10, accepted: false, reasonId: "NoticeTooShort" }]).status).toBe("Passed");
+    expect(evaluateAssertion(assertion, events, [{ type: "CommandRejected", tick: 10, accepted: false, reasonId: "ReservationLost" }]).status).toBe("Failed");
   });
 
   it("a genuine match passes and reports the count it saw", () => {

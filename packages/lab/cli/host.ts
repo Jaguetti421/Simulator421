@@ -18,8 +18,8 @@
  * the expected outcome from the expectation is circular and would fake a pass.
  */
 import { readFileSync, statSync } from "node:fs";
-import { contracts } from "@lastclan/sim";
-import type { MatchableEvent } from "../fixture/index.js";
+import { contracts, core, host as simHost } from "@lastclan/sim";
+import type { MatchableAck, MatchableEvent } from "../fixture/index.js";
 import { sha256 } from "./identity.js";
 
 export const TAPE_VERSION = 1;
@@ -72,7 +72,7 @@ export interface UnmatchableField {
 }
 
 export interface RunHost {
-  readonly kind: "none" | "tape";
+  readonly kind: "none" | "tape" | "kernel";
   readonly id: string;
   readonly watermark: "FakeSim";
   /** Always false at W0-06: no host here may stand as gate evidence (AGENTS.md). */
@@ -82,9 +82,28 @@ export interface RunHost {
   readonly unmatchableFields: readonly UnmatchableField[];
   /** `undefined` means "no run happened"; an empty array means "a run happened and produced no events". */
   readonly events: readonly MatchableEvent[] | undefined;
+  /**
+   * Acknowledgements, when the host produces them. The reason a command was
+   * rejected lives here, never on a committed event (contract v0; TP v2.0 §3).
+   */
+  readonly acks?: readonly MatchableAck[];
+  /**
+   * Present only on a host that can snapshot. `SaveReload` asks whether a run
+   * saved at one tick and continued reaches the same authoritative state as one
+   * that never stopped; only a host that owns the kernel can answer that.
+   */
+  readonly saveReload?: (startTick: number, advanceTicks: number) => { readonly uninterrupted: string; readonly restored: string };
   readonly finalTick: number;
   readonly tape?: HostTapeInfo;
   readonly note: string;
+  /** Scheduled commands this host could not submit — visible, never silently dropped. */
+  readonly unsubmittedCommands?: readonly string[];
+  /**
+   * Event types this host is capable of emitting at all. An assertion about a
+   * type outside this set is Blocked, not Failed: the absence of an event a
+   * system cannot produce says nothing about the game.
+   */
+  readonly emittableEventTypes?: readonly string[];
 }
 
 /** Contract v0's CommittedEvent carries no reason ID, so no host can match one yet. */
@@ -102,6 +121,91 @@ const NO_SIMULATION_SYSTEMS = [
   "snapshots, restore and canonical hashes (W0-08)",
   "careers (never written by a fixture)",
 ];
+
+/**
+ * The kernel host (12 Sep debt pass). Runs the real W0-07 kernel from the
+ * fixture's own map seed, which is what finally makes `Invariant`-adjacent and
+ * `HashEqualVariant` claims answerable and gives reason matching an
+ * acknowledgement stream. Still watermarked: the kernel's workload is synthetic
+ * (`core.WORKLOAD_OMISSIONS`), so a pass here is not a gameplay pass.
+ */
+export interface KernelScheduleEntry {
+  readonly atTick: number;
+  readonly sequence: number;
+  readonly expectedRulesVersion: number;
+  readonly operation: string;
+  readonly payload: { readonly lawId?: string; readonly startTick?: number; readonly endTick?: number };
+}
+
+export function kernelHost(options: {
+  readonly seed: number;
+  readonly withGuest: boolean;
+  readonly ticks: number;
+  /** The fixture's own schedule: without submitting it, no command exists to acknowledge. */
+  readonly schedule?: readonly KernelScheduleEntry[];
+}): RunHost {
+  const sim = simHost.SimHost.create({ matchSeed: options.seed as never, withGuest: options.withGuest });
+  const unsubmitted: string[] = [];
+  for (const entry of options.schedule ?? []) {
+    if (entry.operation !== "ScheduleLaw" || entry.payload.lawId === undefined || entry.payload.startTick === undefined || entry.payload.endTick === undefined) {
+      unsubmitted.push(`${entry.operation} (sequence ${entry.sequence}): the kernel implements ScheduleLaw only`);
+      continue;
+    }
+    const result = sim.submit({
+      sequence: entry.sequence,
+      atTick: entry.atTick,
+      expectedRulesVersion: entry.expectedRulesVersion,
+      lawId: entry.payload.lawId,
+      startTick: entry.payload.startTick,
+      endTick: entry.payload.endTick,
+    });
+    if (!result.queued) unsubmitted.push(`sequence ${entry.sequence}: ${result.reason ?? "not queued"}`);
+  }
+  sim.runTicks(options.ticks);
+
+  const events: MatchableEvent[] = sim.events().map((e) => ({ type: e.type, tick: e.tick }));
+  const acks: MatchableAck[] = sim.outcomes().map((o) => ({
+    type: o.accepted ? "CommandAccepted" : "CommandRejected",
+    tick: o.tick,
+    accepted: o.accepted,
+    sequence: o.sequence,
+    ...(o.reasonId === undefined ? {} : { reasonId: o.reasonId }),
+  }));
+
+  return {
+    kind: "kernel",
+    id: `kernel:${simHost.KERNEL_VERSION}:seed${options.seed}:t${options.ticks}`,
+    watermark: "FakeSim",
+    gateEligible: false,
+    simulated: false,
+    unsupportedSystems: core.WORKLOAD_OMISSIONS,
+    unmatchableFields: [],
+    events,
+    acks,
+    emittableEventTypes: [
+      "tick.committed",
+      "law.installed",
+      "law.ended",
+      "command.accepted",
+      "command.rejected",
+      "CommandAccepted",
+      "CommandRejected",
+      ...core.STAGE_ORDER.map((name, i) => `stage.${String(i + 1).padStart(2, "0")}.${name}`),
+    ],
+    finalTick: sim.tick,
+    saveReload: (startTick, advanceTicks) => {
+      const straight = simHost.SimHost.create({ matchSeed: options.seed as never, withGuest: options.withGuest });
+      straight.runTicks(startTick + advanceTicks);
+      const interrupted = simHost.SimHost.create({ matchSeed: options.seed as never, withGuest: options.withGuest });
+      interrupted.runTicks(startTick);
+      const resumed = simHost.SimHost.restore(interrupted.save());
+      resumed.runTicks(advanceTicks);
+      return { uninterrupted: straight.authoritativeDigest(), restored: resumed.authoritativeDigest() };
+    },
+    ...(unsubmitted.length === 0 ? {} : { unsubmittedCommands: unsubmitted }),
+    note: `Events, acknowledgements and snapshots come from the real ${simHost.KERNEL_VERSION} kernel. Its workload is synthetic — no goals, combat, economy or terrain — so this is evidence about the harness and the kernel, never about gameplay.${unsubmitted.length === 0 ? "" : ` ${unsubmitted.length} scheduled command(s) could not be submitted: ${unsubmitted.join("; ")}.`}`,
+  };
+}
 
 export function noneHost(): RunHost {
   return {

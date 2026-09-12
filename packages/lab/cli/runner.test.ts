@@ -141,10 +141,12 @@ describe("clanlab run against a declared event tape", () => {
     expect(assertion?.status).toBe("Blocked");
     expect(assertion?.detail).toContain("CommittedEvent at contract v0 has no reasonId");
     expect(assertion?.detail).toContain("blame the game for a gap in the contract");
-    expect(assertion?.availableFrom).toContain("P1-12");
+    // Updated in the 12 Sep debt pass: the answer is no longer "wait for P1-12"
+    // but "use a host that supplies acknowledgements", which now exists.
+    expect(assertion?.availableFrom).toContain("--host kernel");
   });
 
-  it("keeps Invariant and HashEqualVariant blocked, naming the packets that will evaluate them", () => {
+  it("keeps Invariant and HashEqualVariant blocked on a tape host, naming what each still needs", () => {
     const fixture = writeFixture(
       fixtureDoc({
         assertions: [
@@ -156,8 +158,10 @@ describe("clanlab run against a declared event tape", () => {
     const { summary, exitCode } = run([fixture], { eventsPath: writeTape([event()]) });
     expect(exitCode).toBe(4);
     expect(summary.runs[0]?.assertions.map((a) => a.status)).toEqual(["Blocked", "Blocked"]);
-    expect(summary.runs[0]?.assertions[0]?.availableFrom).toContain("W0-07");
-    expect(summary.runs[0]?.assertions[1]?.availableFrom).toContain("W0-08");
+    // Both packets shipped, so citing them would be stale. The messages now
+    // name what is actually missing for each kind.
+    expect(summary.runs[0]?.assertions[0]?.availableFrom).toContain("P1 action packets");
+    expect(summary.runs[0]?.assertions[1]?.availableFrom).toContain("--host kernel");
   });
 
   it("counts an explicit absence as a real pass, and catches it when the thing did happen", () => {

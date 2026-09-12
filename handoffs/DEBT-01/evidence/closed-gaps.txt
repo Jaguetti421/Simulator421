@@ -1,0 +1,20 @@
+=== debt pass: gaps closed, 12 Sep 2026 ===
+
+--- 1. LAW-NOTICE-REJECTION: its reasonId assertion was Blocked since W0-06 ---
+exit=4 (4 = nothing failed, one Invariant still Blocked)
+counts: {"requested": 3, "executed": 2, "passed": 2, "failed": 0, "blocked": 1, "skippedChecks": 1}
+   EventCountGte      Passed   
+   EventCountEq       Passed   
+   Invariant          Blocked  the P1 action packets: the kernel available today runs a synthetic workload with no actions, ef
+
+--- 2. the three supplied examples against the real kernel ---
+exit=1
+counts: {"fixtures": 3, "requested": 6, "executed": 4, "passed": 3, "failed": 1, "blocked": 2, "skippedChecks": 4, "invalid": 0, "unreadable": 0}
+host requested: kernel
+   AI-03-PATIENT-WAIT       Failed
+   LAW-NOTICE-REJECTION     Blocked
+   SAVE-BOOTSTRAP-01        Passed
+
+--- 3. PERF-OPS-BASE with no tape at all ---
+exit=0
+counts: {"requested": 13, "executed": 13, "passed": 13, "failed": 0, "blocked": 0, "skippedChecks": 0}

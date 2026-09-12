@@ -24,7 +24,7 @@ export type { Fixture, FixtureAssertion, LawSpec, ScheduleEntry, SetupActor } fr
 export { FIXTURE_LIMITS, FixtureValidationError, fixtureError, MINIMUM_LAW_NOTICE_TICKS } from "./errors.js";
 export type { FixtureError, FixtureErrorCode, FixtureSkipCode, FixtureSkippedCheck } from "./errors.js";
 export { BLOCKED_KINDS, EVALUABLE_KINDS, evaluateAll, evaluateAssertion, registerAssertion } from "./assertions.js";
-export type { AssertionOutcome, AssertionStatus, AssertionSummary, MatchableEvent } from "./assertions.js";
+export type { AssertionOutcome, AssertionStatus, AssertionSummary, MatchableEvent, MatchableAck } from "./assertions.js";
 export { PROFILE_CONTESTANT_COUNTS, validateSemantics } from "./semantics.js";
 export type { SemanticOptions, SemanticReport } from "./semantics.js";
 export { FIXTURE_SCHEMA_VERSION, parseFixtureText, parseFixtureValue } from "./parse.js";

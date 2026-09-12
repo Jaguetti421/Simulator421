@@ -26,7 +26,7 @@ import type { BundleFailure } from "../bundle/index.js";
 import { writeFailureBundle } from "../bundle/index.js";
 import { geometryIdentity, runIdentity, sha256 } from "./identity.js";
 import type { RunIdentity } from "./identity.js";
-import { loadTape, noneHost, REASON_NOT_REPRESENTABLE } from "./host.js";
+import { kernelHost, loadTape, noneHost, REASON_NOT_REPRESENTABLE } from "./host.js";
 import type { RunError, RunHost, RunSkippedCheck } from "./host.js";
 import { BoundedLog, DEFAULT_LOG_MAX_BYTES } from "./logfile.js";
 
@@ -49,7 +49,7 @@ export interface AssertionRecord {
 
 /** The host a single fixture actually ran against — authoritative per run. */
 export interface EffectiveHost {
-  readonly kind: "none" | "tape";
+  readonly kind: "none" | "tape" | "kernel";
   readonly id: string;
   readonly watermark: "FakeSim";
   readonly gateEligible: false;
@@ -97,7 +97,7 @@ export interface RunSummary {
    * not honestly describe both.
    */
   readonly host: {
-    readonly requested: "none" | "tape";
+    readonly requested: "none" | "tape" | "kernel";
     readonly eventsPath: string | null;
     readonly watermark: "FakeSim";
     readonly gateEligible: false;
@@ -124,6 +124,8 @@ export interface RunSummary {
 
 export interface RunOptions {
   readonly files: readonly string[];
+  /** Run the real W0-07 kernel from each fixture's own map seed instead of reading a tape. */
+  readonly kernelHost?: boolean;
   readonly eventsPath?: string;
   readonly evidenceDir: string;
   readonly writeBundles?: boolean;
@@ -171,17 +173,49 @@ export function judgeAssertion(assertion: FixtureAssertion, index: number, host:
   const window = matchWindowOf(assertion);
   const base = { index, kind: assertion.kind, evaluatedAtTick: host.finalTick, ...(window === undefined ? {} : { matchWindow: window }) };
 
+  if (assertion.kind === "HashEqualVariant" && assertion.variant === "SaveReload" && host.saveReload !== undefined) {
+    // Answerable now (12 Sep debt pass): the kernel host owns snapshots, so
+    // "saved and continued equals never stopped" is a check, not a promise.
+    const { uninterrupted, restored } = host.saveReload(assertion.startTick, assertion.advanceTicks);
+    const ok = uninterrupted === restored;
+    return {
+      ...base,
+      status: ok ? "Passed" : "Failed",
+      expected: `authoritative digest ${uninterrupted}`,
+      detail: ok
+        ? `saved at tick ${assertion.startTick}, restored and advanced ${assertion.advanceTicks}: digest ${restored} matches an uninterrupted run`
+        : `saved at tick ${assertion.startTick}, restored and advanced ${assertion.advanceTicks}: digest ${restored} differs from the uninterrupted ${uninterrupted}`,
+    };
+  }
+
   if (assertion.kind === "Invariant" || assertion.kind === "HashEqualVariant") {
-    const outcome = evaluateAssertion(assertion, host.events);
+    const outcome = evaluateAssertion(assertion, host.events, host.acks);
     return { ...base, status: "Blocked", detail: outcome.detail ?? "needs a running simulation", ...(outcome.availableFrom === undefined ? {} : { availableFrom: outcome.availableFrom }) };
   }
 
-  if (assertion.match.reasonId !== undefined) {
+  if (assertion.match.reasonId !== undefined && host.acks === undefined) {
     return {
       ...base,
       status: "Blocked",
-      detail: `this assertion matches on reasonId=${assertion.match.reasonId}, and ${REASON_NOT_REPRESENTABLE.reason}; reporting it as Failed would blame the game for a gap in the contract`,
-      availableFrom: REASON_NOT_REPRESENTABLE.availableFrom,
+      detail: `this assertion matches on reasonId=${assertion.match.reasonId}, and ${REASON_NOT_REPRESENTABLE.reason}; this host supplied no acknowledgement stream, and judging it against committed events would blame the game for a gap in the contract`,
+      availableFrom: "`clanlab run --host kernel`, or an event tape at version 2 or later carrying `acks`",
+    };
+  }
+
+  if (
+    (assertion.kind === "EventCountGte" || assertion.kind === "EventCountEq") &&
+    host.emittableEventTypes !== undefined &&
+    !host.emittableEventTypes.includes(assertion.match.type)
+  ) {
+    // Neither Passed nor Failed. This host cannot emit that type at all, so a
+    // count of zero is a fact about the build, not about the game: reporting
+    // Failed would blame a system that does not exist yet, and reporting a
+    // zero-count Pass would be vacuous.
+    return {
+      ...base,
+      status: "Blocked",
+      detail: `this host cannot emit "${assertion.match.type}" at all, so neither its presence nor its absence is evidence`,
+      availableFrom: `the packet that implements ${assertion.match.type.split(".")[0] ?? "this system"}`,
     };
   }
 
@@ -194,7 +228,7 @@ export function judgeAssertion(assertion: FixtureAssertion, index: number, host:
     };
   }
 
-  const outcome = evaluateAssertion(assertion, host.events);
+  const outcome = evaluateAssertion(assertion, host.events, host.acks);
   return {
     ...base,
     status: outcome.status,
@@ -294,7 +328,12 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
     let hostErrors: readonly RunError[] = [];
     let hostSkipped: readonly RunSkippedCheck[] = [];
     let eventsText: string | undefined;
-    if (options.eventsPath !== undefined) {
+    if (options.kernelHost === true) {
+      host = kernelHost({ seed: fixture.map.seed, withGuest: fixture.setup.actors.some((a) => a.id.startsWith("G")), ticks: fixture.maxTicks, schedule: fixture.schedule as never });
+      log.write(`host kernel ${host.id} — ${host.events?.length ?? 0} event(s), ${host.acks?.length ?? 0} acknowledgement(s), final tick ${host.finalTick}`);
+      log.write(`  ${host.note}`);
+      for (const u of host.unsubmittedCommands ?? []) log.write(`  unsubmitted command: ${u}`);
+    } else if (options.eventsPath !== undefined) {
       const loaded = loadTape(options.eventsPath, { maxTicks: fixture.maxTicks, fixtureId: fixture.id });
       if (loaded.ok) {
         host = loaded.host;
@@ -419,7 +458,7 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
     schemaVersion: RUN_SUMMARY_SCHEMA_VERSION,
     identity,
     host: {
-      requested: options.eventsPath === undefined ? "none" : "tape",
+      requested: options.kernelHost === true ? "kernel" : options.eventsPath === undefined ? "none" : "tape",
       eventsPath: options.eventsPath ?? null,
       watermark: "FakeSim",
       gateEligible: false,
