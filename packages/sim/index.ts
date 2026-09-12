@@ -17,4 +17,4 @@ export * as contracts from "./contracts/index.js";
 export * as core from "./core/index.js";
 export * as host from "./host/index.js";
 /** Save container, generations and exactly-once results (W0-08). */
-export * as persistence from "./persistence/index.js";
+export * as persistence from "./persistence/all.js";

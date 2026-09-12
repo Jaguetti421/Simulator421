@@ -171,7 +171,7 @@
    ],
    "refs": "TP v2.0 \u00a715; TP v1.1 \u00a715; SAVE-ROUNDTRIP; DATA 01 foundation",
    "gate": null,
-   "status": "IN_PROGRESS",
+   "status": "READY_FOR_REVIEW",
    "complexity": "M",
    "webAdaptation": null
   },

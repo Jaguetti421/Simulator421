@@ -1,0 +1,8 @@
+
+Running 3 tests using 1 worker
+
+  ✓  1 tests/playwright/persistence.spec.ts:30:1 › the browser's IndexedDB satisfies the storage contract (380ms)
+  ✓  2 tests/playwright/persistence.spec.ts:62:1 › generations, fallback and exactly-once finalization behave as they do in Node (282ms)
+  ✓  3 tests/playwright/persistence.spec.ts:116:1 › a kernel save survives a round trip through browser storage and continues identically (486ms)
+
+  3 passed (2.8s)

@@ -24,3 +24,6 @@ Thumbs.db
 /clanlab-out/
 # archives produced for the round-trip are presented from the outputs folder, never committed
 /lastclan-*.zip
+# playwright run output
+/test-results/
+/playwright-report/
