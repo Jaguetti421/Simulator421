@@ -12,6 +12,7 @@
 import { add, asInt, formatDigest } from "../primitives/index.js";
 import type { Int } from "../primitives/index.js";
 import { authoritativeHash, createWorld, runTick, STAGE_ORDER, WORKLOAD_OMISSIONS } from "../core/index.js";
+import { decodeWorld, encodeWorld } from "./snapshot.js";
 import type { CommandOutcome, Counters, KernelEvent, QueuedCommand, World, WorldConfig } from "../core/index.js";
 
 export const KERNEL_VERSION = "w0-07-synthetic-1" as const;
@@ -52,6 +53,8 @@ export interface EventTape {
   readonly fixtureId: string;
   readonly events: readonly unknown[];
 }
+
+export { decodeWorld, encodeWorld, fromSnapshot, toSnapshot } from "./snapshot.js";
 
 export class SimHost {
   readonly #world: World;
@@ -194,6 +197,21 @@ export class SimHost {
         payload: { kind: `${e.type}.v0`, version: 0, fields: {} },
       })),
     };
+  }
+
+  /** The world as save bytes: a checksummed, versioned container (W0-08). */
+  save(): Uint8Array {
+    return encodeWorld(this.#world);
+  }
+
+  /**
+   * Rebuild a host from save bytes. The restored host continues the run: the
+   * random streams resume from their saved words, so its digests match an
+   * uninterrupted run tick for tick.
+   */
+  static restore(bytes: Uint8Array): SimHost {
+    const world = decodeWorld(bytes);
+    return new SimHost(world, world.actors.some((a) => a.kind === "Guest"));
   }
 
   /** Ticks remaining in a Standard match from here — used by callers that pace a run. */
