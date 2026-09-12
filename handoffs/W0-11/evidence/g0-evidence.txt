@@ -1,0 +1,35 @@
+=== G0 integrated evidence run, 2026-09-12T11:40:23Z ===
+
+--- fixtures: clanlab validate ---
+contracts/examples (3 supplied): exit 0
+tests/fixtures/PERF-OPS-BASE.json: exit 0
+tests/fixtures/SAVE-ROUNDTRIP.json: exit 0
+tests/fixtures/PRESENT-READ-01.json: exit 0
+
+--- replay of the synthetic tape: kernel -> tape -> clanlab run ---
+PERF-OPS-BASE: exit 0 | {"fixtures":1,"requested":13,"executed":13,"passed":13,"failed":0,"blocked":0,"skippedChecks":0,"invalid":0,"unreadable":0} | digest 4d0bd28a
+SAVE-ROUNDTRIP: exit 0 | {"fixtures":1,"requested":4,"executed":4,"passed":4,"failed":0,"blocked":0,"skippedChecks":0,"invalid":0,"unreadable":0} | digest 4d0bd28a
+
+--- readability PNG in the sandbox ---
+clanlab render: exit 0
+  readability pass: True | overlap 0.1241 | ring contrast 6.24 | icons 12 / 12
+
+--- Node vs browser Worker digests (the G0 determinism criterion) ---
+Node digests for the parity check: 137a/600t 4d0bd28a | 136a/250t bc38b04a
+
+--- static build: self-contained check ---
+apps/web/dist-site/assets/index-CgxJe_X8.js:https://react.dev/errors/
+apps/web/dist-site/assets/index-CgxJe_X8.js:https://react.dev/errors/
+apps/web/dist-site/assets/index-CgxJe_X8.js:http://www.w3.org/2000/svg
+apps/web/dist-site/assets/index-CgxJe_X8.js:http://www.w3.org/1998/Math/MathML
+apps/web/dist-site/assets/index-CgxJe_X8.js:http://www.w3.org/2000/svg
+external origins referenced in dist-site: 21
+736K	apps/web/dist-site
+
+--- environment ---
+v22.22.2
+10.9.7
+git version 2.43.0
+Python 3.12.3
+cpus: 1 | mem: 3 GiB
+chromium-1194 chromium_headless_shell-1194 ffmpeg-1011 

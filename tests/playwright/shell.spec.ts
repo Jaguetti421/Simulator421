@@ -67,3 +67,27 @@ test("reports the authoritative digest the Worker actually holds", async ({ page
   await page.getByTestId("digest").click();
   await expect(page.getByTestId("digest-value")).toHaveText(/^[0-9a-f]{8}$/u);
 });
+
+test("serves offline: the built site boots with every non-local request blocked", async ({ page }) => {
+  // The grep for "https://" in the bundle finds React error URLs and XML
+  // namespace strings, which are text, not fetches. This is the check that
+  // actually answers the G0 criterion: block every external origin and see
+  // whether the site still runs the workload.
+  const blocked: string[] = [];
+  await page.route("**/*", async (route) => {
+    const url = route.request().url();
+    if (url.startsWith("http://127.0.0.1:4173/") || url.startsWith("data:") || url.startsWith("blob:")) {
+      await route.continue();
+      return;
+    }
+    blocked.push(url);
+    await route.abort();
+  });
+
+  await page.goto(SITE);
+  await expect(page.getByTestId("actors")).toHaveText("137");
+  const read = async (): Promise<number> => Number(/t=(\d+)/u.exec((await page.getByTestId("confirmed-tick").textContent()) ?? "")?.[1] ?? "-1");
+  await expect.poll(read, { timeout: 5000 }).toBeGreaterThan(0);
+  await expect(page.getByTestId("error")).toHaveCount(0);
+  expect(blocked, `the site requested external origins: ${blocked.join(", ")}`).toEqual([]);
+});

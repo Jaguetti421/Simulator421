@@ -1,0 +1,22 @@
+
+Running 17 tests using 1 worker
+
+  ✓   1 tests/playwright/capture.spec.ts:46:1 › renders after warm-up frames and writes a PNG carrying its own metadata (1.2s)
+  ✓   2 tests/playwright/capture.spec.ts:81:1 › every FakeSim frame carries a visible watermark inside the captured image (464ms)
+  ✓   3 tests/playwright/capture.spec.ts:95:1 › honours the camera and textScale parameters (308ms)
+  ✓   4 tests/playwright/capture.spec.ts:104:1 › a different tick produces a different picture (1.1s)
+  ✓   5 tests/playwright/capture.spec.ts:116:1 › renders the eight supplied recipes side by side at default tabletop distance (378ms)
+  ✓   6 tests/playwright/persistence.spec.ts:30:1 › the browser's IndexedDB satisfies the storage contract (224ms)
+  ✓   7 tests/playwright/persistence.spec.ts:62:1 › generations, fallback and exactly-once finalization behave as they do in Node (210ms)
+  ✓   8 tests/playwright/persistence.spec.ts:116:1 › a kernel save survives a round trip through browser storage and continues identically (479ms)
+  ✓   9 tests/playwright/shell.spec.ts:16:1 › boots the kernel in a Worker and shows the confirmed tick advancing (407ms)
+  ✓  10 tests/playwright/shell.spec.ts:29:1 › pause settles on a tick and nothing advances past it (926ms)
+  ✓  11 tests/playwright/shell.spec.ts:40:1 › offers 1x, 2x and 4x, and 4x advances more ticks per second than 1x (2.8s)
+  ✓  12 tests/playwright/shell.spec.ts:59:1 › carries the synthetic watermark and lists what the workload does not do (315ms)
+  ✓  13 tests/playwright/shell.spec.ts:65:1 › reports the authoritative digest the Worker actually holds (253ms)
+  ✓  14 tests/playwright/shell.spec.ts:71:1 › serves offline: the built site boots with every non-local request blocked (463ms)
+  ✓  15 tests/playwright/worker-hash.spec.ts:74:1 › a browser Worker reaches the same authoritative digest as Node, 137 actors (646ms)
+  ✓  16 tests/playwright/worker-hash.spec.ts:81:1 › and for the 136-actor workload, at a different tick count (343ms)
+  ✓  17 tests/playwright/worker-hash.spec.ts:87:1 › the digests are not trivially equal: the two workloads differ from each other (522ms)
+
+  17 passed (13.3s)
