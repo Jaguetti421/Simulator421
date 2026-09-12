@@ -16,5 +16,7 @@ export * as contracts from "./contracts/index.js";
 /** The minimal deterministic tick kernel (W0-07) and its composition root. */
 export * as core from "./core/index.js";
 export * as host from "./host/index.js";
+/** Island geometry: the compiled terrain both render and simulation read (P1-02). */
+export * as spatial from "./spatial/index.js";
 /** Save container, generations and exactly-once results (W0-08). */
 export * as persistence from "./persistence/all.js";

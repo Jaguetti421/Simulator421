@@ -1,0 +1,15 @@
+=== P1-02 geometry evidence ===
+compile: 3034 ms on 1 CPU (diagnostic only), 640000 cells
+manifest: {"version":1,"recipeId":"valley-standard","seed":4107,"template":"valley","grid":800,"cellMm":1000,"fineCellMm":250,"fineCells":36}
+classCounts: {"Ground":417199,"ShallowWater":148897,"DeepWater":70997,"Cliff":2891,"Obstacle":16}
+geometryHash: b0a3a4eb
+render export hash: b0a3a4eb  (equal: true)
+recompile hash: b0a3a4eb  (deterministic: true)
+seed 4108 hash: 257050da
+--- queries at known coordinates ---
+  start.north        class=Ground        passable=true walk=3500 mm/s
+  start.south        class=Ground        passable=true walk=3500 mm/s
+  work.camp          class=Ground        passable=true walk=3500 mm/s
+  obstacle.boulder   class=Obstacle      passable=false walk=0 mm/s
+--- GDD speeds ---
+  ground walk 3500 mm/s, shallow 0.8x = 2800 mm/s, deep water impassable (0)
