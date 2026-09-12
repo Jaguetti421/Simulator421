@@ -13,6 +13,13 @@ export default defineConfig({
   root: "apps/web",
   base: "./",
   plugins: [react()],
-  build: { outDir: "dist-site", emptyOutDir: true, target: "es2023" },
+  build: {
+    outDir: "dist-site",
+    emptyOutDir: true,
+    target: "es2023",
+    // Two entries: the shell and the /capture route. A static host maps
+    // /capture to capture.html; opening the file directly works too.
+    rollupOptions: { input: { index: "apps/web/index.html", capture: "apps/web/capture.html" } },
+  },
   worker: { format: "es" },
 });

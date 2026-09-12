@@ -8,13 +8,21 @@
 
 vite v7.1.5 building for production...
 transforming...
-✓ 30 modules transformed.
+✓ 63 modules transformed.
 rendering chunks...
 computing gzip size...
-dist-site/index.html                       1.20 kB │ gzip:  0.65 kB
-dist-site/assets/sim.worker-CP7mFxOo.js   24.08 kB
-dist-site/assets/index-CXpOYGIR.js       197.11 kB │ gzip: 61.94 kB
-✓ built in 2.14s
+dist-site/capture.html                                 0.91 kB │ gzip:   0.53 kB
+dist-site/index.html                                   1.29 kB │ gzip:   0.69 kB
+dist-site/assets/sim.worker-CP7mFxOo.js               24.08 kB
+dist-site/assets/modulepreload-polyfill-B5Qt9EMX.js    0.71 kB │ gzip:   0.40 kB
+dist-site/assets/index-CgxJe_X8.js                   196.43 kB │ gzip:  61.68 kB
+dist-site/assets/capture-Bw4scW-a.js                 508.29 kB │ gzip: 131.01 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.73s
 
 > lastclan@0.0.0 lint
 > eslint .
@@ -26,52 +34,52 @@ dist-site/assets/index-CXpOYGIR.js       197.11 kB │ gzip: 61.94 kB
 
  RUN  v5.0.0 /home/claude/repo
 
- ✓ packages/sim/host/snapshot.test.ts (8 tests) 2663ms
+ ✓ packages/sim/host/snapshot.test.ts (8 tests) 2146ms
    ✓ snapshot round trip (7)
-     ✓ continues to the same hashes as an uninterrupted run 627ms
-     ✓ survives several save/restore cycles without drifting 566ms
-     ✓ carries pending commands and the rules version across a restore 613ms
+     ✓ continues to the same hashes as an uninterrupted run 483ms
+     ✓ survives several save/restore cycles without drifting 484ms
+     ✓ carries pending commands and the rules version across a restore 499ms
    ✓ kernel saves through the generation store (1)
-     ✓ restores a continued run from the previous generation when the newest is corrupt 528ms
- ✓ tests/kernel/kernel.test.ts (9 tests) 2148ms
+     ✓ restores a continued run from the previous generation when the newest is corrupt 435ms
+ ✓ tests/kernel/kernel.test.ts (9 tests) 1867ms
    ✓ cross-runtime determinism (G0 criterion 1) (4)
-     ✓ gives the same authoritative digest on repeated Node runs 612ms
- ✓ tests/arch/boundaries.test.ts (80 tests) 1623ms
+     ✓ gives the same authoritative digest on repeated Node runs 539ms
+ ✓ packages/lab/render/render.test.ts (16 tests) 1309ms
+ ✓ tests/arch/boundaries.test.ts (80 tests) 1545ms
    ✓ eslint.config.js is the configuration under test (2)
-     ✓ resolves a config for a packages/sim file that carries the boundary rules 882ms
- ✓ packages/lab/render/render.test.ts (16 tests) 1524ms
-   ✓ the renderer is pure over the snapshot (3)
-     ✓ produces identical bytes for the same snapshot, twice 331ms
- ✓ packages/sim/core/tick.test.ts (16 tests) 472ms
- ✓ packages/sim/primitives/random.test.ts (18 tests) 295ms
- ✓ packages/sim/primitives/checkedMath.test.ts (17 tests) 298ms
- ✓ tests/contracts/samples.test.ts (29 tests) 192ms
- ✓ packages/sim/host/host.test.ts (10 tests) 166ms
- ✓ packages/sim/primitives/units.test.ts (17 tests) 113ms
- ✓ packages/sim/primitives/serialize.test.ts (11 tests) 81ms
- ✓ packages/lab/cli/runner.test.ts (16 tests) 86ms
- ✓ packages/lab/bundle/bundle.test.ts (12 tests) 60ms
- ✓ packages/sim/primitives/hash.test.ts (12 tests) 51ms
- ✓ packages/sim/contracts/schema.test.ts (19 tests) 35ms
+     ✓ resolves a config for a packages/sim file that carries the boundary rules 854ms
+ ✓ packages/sim/core/tick.test.ts (16 tests) 456ms
+ ✓ packages/sim/primitives/random.test.ts (18 tests) 235ms
+ ✓ packages/sim/primitives/checkedMath.test.ts (17 tests) 220ms
+ ✓ tests/contracts/samples.test.ts (29 tests) 159ms
+ ✓ packages/sim/host/host.test.ts (10 tests) 150ms
+ ✓ packages/sim/primitives/units.test.ts (17 tests) 110ms
+ ✓ packages/sim/primitives/serialize.test.ts (11 tests) 76ms
+ ✓ packages/lab/cli/runner.test.ts (16 tests) 80ms
+ ✓ packages/lab/bundle/bundle.test.ts (12 tests) 50ms
+ ✓ packages/sim/primitives/hash.test.ts (12 tests) 47ms
+ ✓ packages/sim/contracts/schema.test.ts (19 tests) 34ms
  ✓ tests/fixtures/conformance.test.ts (22 tests) 30ms
- ✓ packages/lab/fixture/parse.test.ts (29 tests) 24ms
  ✓ packages/sim/persistence/adapter-contract.test.ts (16 tests) 24ms
- ✓ packages/lab/cli/host.test.ts (13 tests) 24ms
- ✓ packages/sim/contracts/contracts.test.ts (25 tests) 24ms
- ✓ packages/lab/cli/run.test.ts (8 tests) 13ms
- ✓ packages/sim/persistence/index.test.ts (17 tests) 17ms
- ✓ packages/lab/fixture/assertions.test.ts (12 tests) 12ms
+ ✓ packages/lab/fixture/parse.test.ts (29 tests) 20ms
+ ✓ packages/sim/contracts/contracts.test.ts (25 tests) 18ms
+ ✓ packages/lab/cli/host.test.ts (13 tests) 19ms
+ ✓ packages/lab/cli/run.test.ts (8 tests) 9ms
+ ✓ packages/sim/persistence/index.test.ts (17 tests) 14ms
+ ✓ apps/web/src/kit/recipe.test.ts (8 tests) 10ms
+ ✓ packages/lab/fixture/assertions.test.ts (12 tests) 16ms
+ ✓ apps/web/src/scene/camera.test.ts (6 tests) 5ms
  ✓ packages/lab/fixture/semantics.test.ts (6 tests) 7ms
  ✓ apps/web/src/view/pacing.test.ts (5 tests) 5ms
- ✓ packages/lab/cli/logfile.test.ts (4 tests) 5ms
+ ✓ packages/lab/cli/logfile.test.ts (4 tests) 4ms
 
- Test Files  26 passed (26)
-      Tests  447 passed (447)
-   Start at  08:52:26
-   Duration  15.82s (tests 79%, import 11%, transform 9%, worker 1%)
+ Test Files  28 passed (28)
+      Tests  461 passed (461)
+   Start at  09:36:00
+   Duration  13.89s (tests 79%, import 11%, transform 9%, worker 1%)
 
-    Isolate  26 workers spawned · ~110ms startup each (spawn + environment, per file)
-             at least ~2.75s faster with isolate: false — reuses workers across files instead of one per file
+    Isolate  28 workers spawned · ~91ms startup each (spawn + environment, per file)
+             at least ~2.47s faster with isolate: false — reuses workers across files instead of one per file
 
 
 > lastclan@0.0.0 test:tools
@@ -669,70 +677,70 @@ ResourceWarning: Enable tracemalloc to get the object allocation traceback
   data = open(p, "rb").read()
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 ok
-test_check_detects_cycle_and_missing_dep (test_tools.KitTools.test_check_detects_cycle_and_missing_dep) ... /home/claude/repo/tools/test_tools.py:22: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpldb08d4o/state/workboard.json' mode='r' encoding='utf-8'>
+test_check_detects_cycle_and_missing_dep (test_tools.KitTools.test_check_detects_cycle_and_missing_dep) ... /home/claude/repo/tools/test_tools.py:22: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp5aec3ltt/state/workboard.json' mode='r' encoding='utf-8'>
   p = os.path.join(self.tmp, "state/workboard.json"); wb = json.load(open(p))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/test_tools.py:24: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpldb08d4o/state/workboard.json' mode='w' encoding='utf-8'>
+/home/claude/repo/tools/test_tools.py:24: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp5aec3ltt/state/workboard.json' mode='w' encoding='utf-8'>
   wb["packets"][3]["depends"].append("NOPE-99"); json.dump(wb, open(p, "w"))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/check_workboard.py:11: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpldb08d4o/state/workboard.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/check_workboard.py:11: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp5aec3ltt/state/workboard.json' mode='r' encoding='utf-8'>
   wb = json.load(open(os.path.join(root, "state/workboard.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/check_workboard.py:12: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpldb08d4o/state/gates.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/check_workboard.py:12: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp5aec3ltt/state/gates.json' mode='r' encoding='utf-8'>
   gates = json.load(open(os.path.join(root, "state/gates.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/check_workboard.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpldb08d4o/state/acceptance_map.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/check_workboard.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp5aec3ltt/state/acceptance_map.json' mode='r' encoding='utf-8'>
   am = json.load(open(os.path.join(root, "state/acceptance_map.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 ok
-test_check_passes_on_shipped_kit (test_tools.KitTools.test_check_passes_on_shipped_kit) ... /home/claude/repo/tools/check_workboard.py:11: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp_ccfjeul/state/workboard.json' mode='r' encoding='utf-8'>
+test_check_passes_on_shipped_kit (test_tools.KitTools.test_check_passes_on_shipped_kit) ... /home/claude/repo/tools/check_workboard.py:11: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp822iz3uy/state/workboard.json' mode='r' encoding='utf-8'>
   wb = json.load(open(os.path.join(root, "state/workboard.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/check_workboard.py:12: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp_ccfjeul/state/gates.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/check_workboard.py:12: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp822iz3uy/state/gates.json' mode='r' encoding='utf-8'>
   gates = json.load(open(os.path.join(root, "state/gates.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/check_workboard.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp_ccfjeul/state/acceptance_map.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/check_workboard.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp822iz3uy/state/acceptance_map.json' mode='r' encoding='utf-8'>
   am = json.load(open(os.path.join(root, "state/acceptance_map.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 ok
-test_live_board_next_work_is_in_w0_until_g0 (test_tools.KitTools.test_live_board_next_work_is_in_w0_until_g0) ... /home/claude/repo/tools/test_tools.py:41: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp87mpxwh_/state/workboard.json' mode='r' encoding='utf-8'>
+test_live_board_next_work_is_in_w0_until_g0 (test_tools.KitTools.test_live_board_next_work_is_in_w0_until_g0) ... /home/claude/repo/tools/test_tools.py:41: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpdhta42r5/state/workboard.json' mode='r' encoding='utf-8'>
   wb = json.load(open(os.path.join(self.tmp, "state/workboard.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp87mpxwh_/state/workboard.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpdhta42r5/state/workboard.json' mode='r' encoding='utf-8'>
   wb = json.load(open(os.path.join(root, "state/workboard.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 ok
-test_mark_refuses_accept_with_unaccepted_deps (test_tools.KitTools.test_mark_refuses_accept_with_unaccepted_deps) ... /home/claude/repo/tools/test_tools.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpuugbyj1c/state/workboard.json' mode='r' encoding='utf-8'>
+test_mark_refuses_accept_with_unaccepted_deps (test_tools.KitTools.test_mark_refuses_accept_with_unaccepted_deps) ... /home/claude/repo/tools/test_tools.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpl59490ke/state/workboard.json' mode='r' encoding='utf-8'>
   p = os.path.join(self.tmp, "state/workboard.json"); wb = json.load(open(p))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/test_tools.py:15: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpuugbyj1c/state/workboard.json' mode='w' encoding='utf-8'>
+/home/claude/repo/tools/test_tools.py:15: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpl59490ke/state/workboard.json' mode='w' encoding='utf-8'>
   json.dump(wb, open(p, "w"), indent=1)
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/mark.py:8: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpuugbyj1c/state/workboard.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/mark.py:8: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpl59490ke/state/workboard.json' mode='r' encoding='utf-8'>
   path = os.path.join(root, "state/workboard.json"); wb = json.load(open(path))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/mark.py:16: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpuugbyj1c/state/workboard.json' mode='w' encoding='utf-8'>
+/home/claude/repo/tools/mark.py:16: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpl59490ke/state/workboard.json' mode='w' encoding='utf-8'>
   json.dump(wb, open(path, "w"), indent=1); print(f"{pid} -> {status}")
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 W0-01 -> ACCEPTED
 W0-02 -> ACCEPTED
-/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpuugbyj1c/state/workboard.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpl59490ke/state/workboard.json' mode='r' encoding='utf-8'>
   wb = json.load(open(os.path.join(root, "state/workboard.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 ok
-test_next_work_initially_only_w0_01 (test_tools.KitTools.test_next_work_initially_only_w0_01) ... /home/claude/repo/tools/test_tools.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpkiqckf1f/state/workboard.json' mode='r' encoding='utf-8'>
+test_next_work_initially_only_w0_01 (test_tools.KitTools.test_next_work_initially_only_w0_01) ... /home/claude/repo/tools/test_tools.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpzdwchpcj/state/workboard.json' mode='r' encoding='utf-8'>
   p = os.path.join(self.tmp, "state/workboard.json"); wb = json.load(open(p))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/test_tools.py:15: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpkiqckf1f/state/workboard.json' mode='w' encoding='utf-8'>
+/home/claude/repo/tools/test_tools.py:15: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpzdwchpcj/state/workboard.json' mode='w' encoding='utf-8'>
   json.dump(wb, open(p, "w"), indent=1)
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
-/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpkiqckf1f/state/workboard.json' mode='r' encoding='utf-8'>
+/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpzdwchpcj/state/workboard.json' mode='r' encoding='utf-8'>
   wb = json.load(open(os.path.join(root, "state/workboard.json")))
 ResourceWarning: Enable tracemalloc to get the object allocation traceback
 ok
 
 ----------------------------------------------------------------------
-Ran 6 tests in 0.075s
+Ran 6 tests in 0.070s
 
 OK
 

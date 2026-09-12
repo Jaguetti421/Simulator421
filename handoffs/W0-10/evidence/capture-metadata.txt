@@ -1,0 +1,4 @@
+--- capture-t300.png 14656 bytes
+{"Actors":"137","AuthoritativeDigest":"e82bda09","Camera":"45,30,220","Fixture":"PRESENT-READ-01","Kernel":"w0-07-synthetic-1","Renderer":"software WebGL (SwiftShader) in the sandbox - proves layout and correctness, never frame budget or GPU quality","Software":"lastclan-tabletop-3d-v1","Tick":"300","Watermark":"FakeSim"}
+--- identity-kit-prototype8.png 7350 bytes
+{"Actors":"8","Camera":"45,0,60","Fixture":"identity-kit-prototype8","Note":"eight supplied AppearanceRecipe identities at default tabletop distance; visual distinguishability is a HUMAN_REQUIRED judgement, the automated check is structural","Software":"lastclan-tabletop-3d-v1"}
