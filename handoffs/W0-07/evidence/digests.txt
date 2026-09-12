@@ -1,0 +1,6 @@
+W0-07 authoritative digests — sfc32 streams, FNV-1a/32 two-domain hashing (W0-03), canonical LE serialization (W0-02)
+seed 4107
+136 actors, 600 ticks: node-run-1 bf299b16 | node-run-2 bf299b16 | worker_threads bf299b16 | equal: true
+137 actors, 600 ticks: node-run-1 4d0bd28a | node-run-2 4d0bd28a | worker_threads 4d0bd28a | equal: true
+137 actors, 200 ticks: node-run-1 317d9cff | node-run-2 317d9cff | worker_threads 317d9cff | equal: true
+browser Worker digest: BLOCKED_RENDER — no app shell or Worker bootstrap before W0-10; recorded, not assumed (G0 criterion 1).

@@ -1,0 +1,270 @@
+{
+ "tool": "clanlab",
+ "command": "run",
+ "schemaVersion": 1,
+ "identity": {
+  "build": {
+   "tool": "clanlab",
+   "version": "0.1.0-w0-06",
+   "sourceDigest": "sha256:f7d168c7274c52cb982418e1aebb8e88ea7164e62aef4d64ef593d41f51d5ce0",
+   "sourceKind": "dist",
+   "files": 16
+  },
+  "contract": {
+   "version": 0,
+   "recordsDigest": "sha256:291f9b94ce3a4e8ed1b25bddb7258cca73353fed2c451cbe3fb2331e8c253521",
+   "records": 16,
+   "reasonIds": 13
+  },
+  "content": {
+   "status": "Unavailable",
+   "reason": "no compiled content catalog exists yet, so item, goal and profile-override IDs were not checked",
+   "availableFrom": "content packets (P1+)"
+  },
+  "fixtureDslVersion": 1
+ },
+ "host": {
+  "requested": "tape",
+  "eventsPath": "/home/claude/repo/handoffs/W0-07/evidence/kernel-tape.json",
+  "watermark": "FakeSim",
+  "gateEligible": false,
+  "simulated": false,
+  "kindsUsed": [
+   "tape"
+  ],
+  "unsupportedSystems": [
+   "tick loop (W0-07)",
+   "actors, movement, needs, crafting, combat (P1+)",
+   "runtime law validation and effects (P1-12, P2-14)",
+   "snapshots, restore and canonical hashes (W0-08)",
+   "careers (never written by a fixture)"
+  ],
+  "note": "Events were requested from a declared tape; nothing was simulated. Each run records the host it actually used and that tape's hash. A tape run proves the harness, never the game."
+ },
+ "counts": {
+  "fixtures": 1,
+  "requested": 13,
+  "executed": 13,
+  "passed": 13,
+  "failed": 0,
+  "blocked": 0,
+  "skippedChecks": 0,
+  "invalid": 0,
+  "unreadable": 0
+ },
+ "exitCode": 0,
+ "note": "Every requested supported check passed. Read the host: a tape host proves the harness and the assertions, never the game.",
+ "runs": [
+  {
+   "file": "/home/claude/repo/tests/fixtures/PERF-OPS-BASE.json",
+   "fixtureSha256": "sha256:76dbeef1572e5a18264d01ba3e1018ea011a13e2635f3b4fd2fdc67f608679a6",
+   "id": "PERF-OPS-BASE",
+   "gate": "G0",
+   "profile": "Standard100",
+   "seed": 4107,
+   "maxTicks": 600,
+   "geometry": {
+    "recipeId": "bootstrap-flat",
+    "seed": 4107,
+    "compiled": {
+     "status": "Unavailable",
+     "reason": "no map compiler exists yet, so the map recipe was not compiled and its geometry has no digest",
+     "availableFrom": "map compiler (P1)"
+    }
+   },
+   "status": "Passed",
+   "host": {
+    "kind": "tape",
+    "id": "tape:2d0f32144948",
+    "watermark": "FakeSim",
+    "gateEligible": false,
+    "tape": {
+     "sha256": "sha256:2d0f32144948502e3bdd533d4dfcfa9494ff2afcc5254292612de99beb38ba3c",
+     "events": 612,
+     "producedBy": "w0-07-synthetic-1 (synthetic workload; authoritative digest 4d0bd28a)"
+    }
+   },
+   "finalTick": 600,
+   "outcome": "every requested supported check passed",
+   "counts": {
+    "requested": 13,
+    "executed": 13,
+    "passed": 13,
+    "failed": 0,
+    "blocked": 0,
+    "skippedChecks": 0
+   },
+   "gateEvidence": {
+    "eligible": false,
+    "reason": "no host in this build simulates anything, so no run here is gate evidence (AGENTS.md: FakeSim never passes a production gate)"
+   },
+   "assertions": [
+    {
+     "index": 0,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 1,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 2,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 3,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 4,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 5,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 6,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 7,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 8,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 9,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 1",
+     "observed": 1
+    },
+    {
+     "index": 10,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 600",
+     "observed": 600
+    },
+    {
+     "index": 11,
+     "kind": "EventCountGte",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": ">= 1",
+     "observed": 2
+    },
+    {
+     "index": 12,
+     "kind": "EventCountEq",
+     "evaluatedAtTick": 600,
+     "matchWindow": {
+      "fromTick": 0,
+      "throughTick": null
+     },
+     "status": "Passed",
+     "expected": "== 0",
+     "observed": 0
+    }
+   ],
+   "validationErrors": [],
+   "hostErrors": [],
+   "skippedChecks": [],
+   "artifacts": {
+    "log": "/tmp/w007ev/PERF-OPS-BASE/run.log",
+    "fixture": "/tmp/w007ev/PERF-OPS-BASE/fixture.json",
+    "events": "/tmp/w007ev/PERF-OPS-BASE/events.json",
+    "bundle": null
+   }
+  }
+ ]
+}

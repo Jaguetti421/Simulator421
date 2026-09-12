@@ -1,0 +1,208 @@
+{
+ "measurement": "W0-07 synthetic workload, 137 actors (100 contestants + 36 wildlife + guest), 600 ticks, 3 runs",
+ "environment": "this sandbox: 1 CPU, 3.9 GiB RAM, Node v22.22.2 — wall-clock numbers here are DIAGNOSTICS ONLY, never budget evidence (state/STATUS.md)",
+ "proposedTarget": "TP v2.0 §18: simulation tick P95 at 137 actors in Node ≤ 20 ms (proposed, TUNE, measured on reference hardware — not here)",
+ "digestsIdentical": true,
+ "runs": [
+  {
+   "run": 1,
+   "digest": "4d0bd28a",
+   "ticks": 600,
+   "actors": 137,
+   "msPerTick": {
+    "p50": 0.227,
+    "p95": 0.416,
+    "p99": 4.695,
+    "max": 9.15,
+    "mean": 0.375
+   },
+   "report": {
+    "kernel": "w0-07-synthetic-1",
+    "synthetic": true,
+    "matchSeed": 4107,
+    "actors": 137,
+    "withGuest": true,
+    "tick": 600,
+    "paused": false,
+    "stageOrder": [
+     "install",
+     "commands",
+     "observations",
+     "decisions",
+     "advance",
+     "transactions",
+     "damage",
+     "cleanup",
+     "result",
+     "commit"
+    ],
+    "counters": {
+     "actors": 137,
+     "ticks": 600,
+     "routeQueries": 82200,
+     "perceptionQueries": 657600,
+     "lawQueries": 130424,
+     "eventsCommitted": 612,
+     "commandsApplied": 0,
+     "commandsRejected": 0,
+     "perTick": {
+      "routeQueries": 137,
+      "perceptionQueries": 1096,
+      "lawQueries": 217.37333333333333,
+      "eventsCommitted": 1.02
+     }
+    },
+    "authoritativeDigest": "4d0bd28a",
+    "eventsDropped": 0,
+    "omissions": [
+     "no goals, planning, decisions or coordination — stage 4 runs the stage, not an AI",
+     "no real navigation: 'route queries' are straight-line distance and budget checks, with no graph, portals or congestion",
+     "no real perception: 'perception queries' scan a fixed neighbour stride, with no evidence records, line of sight or knowledge model",
+     "no combat, damage, wildlife behaviour, crafting, inventory, reservations or economy",
+     "no clans, membership, diplomacy or succession",
+     "laws are installed and queried, but no action is refused by one because there are no actions",
+     "no careers, no persistence, no observer state and no render snapshot",
+     "cannot certify FINALE 01 or any production latency budget"
+    ],
+    "cannotCertify": "Synthetic workload (W0-07). These counts and any timing measured around them cannot certify FINALE 01, AI latency or any production budget (G0 contract)."
+   }
+  },
+  {
+   "run": 2,
+   "digest": "4d0bd28a",
+   "ticks": 600,
+   "actors": 137,
+   "msPerTick": {
+    "p50": 0.197,
+    "p95": 0.347,
+    "p99": 2.751,
+    "max": 4.986,
+    "mean": 0.274
+   },
+   "report": {
+    "kernel": "w0-07-synthetic-1",
+    "synthetic": true,
+    "matchSeed": 4107,
+    "actors": 137,
+    "withGuest": true,
+    "tick": 600,
+    "paused": false,
+    "stageOrder": [
+     "install",
+     "commands",
+     "observations",
+     "decisions",
+     "advance",
+     "transactions",
+     "damage",
+     "cleanup",
+     "result",
+     "commit"
+    ],
+    "counters": {
+     "actors": 137,
+     "ticks": 600,
+     "routeQueries": 82200,
+     "perceptionQueries": 657600,
+     "lawQueries": 130424,
+     "eventsCommitted": 612,
+     "commandsApplied": 0,
+     "commandsRejected": 0,
+     "perTick": {
+      "routeQueries": 137,
+      "perceptionQueries": 1096,
+      "lawQueries": 217.37333333333333,
+      "eventsCommitted": 1.02
+     }
+    },
+    "authoritativeDigest": "4d0bd28a",
+    "eventsDropped": 0,
+    "omissions": [
+     "no goals, planning, decisions or coordination — stage 4 runs the stage, not an AI",
+     "no real navigation: 'route queries' are straight-line distance and budget checks, with no graph, portals or congestion",
+     "no real perception: 'perception queries' scan a fixed neighbour stride, with no evidence records, line of sight or knowledge model",
+     "no combat, damage, wildlife behaviour, crafting, inventory, reservations or economy",
+     "no clans, membership, diplomacy or succession",
+     "laws are installed and queried, but no action is refused by one because there are no actions",
+     "no careers, no persistence, no observer state and no render snapshot",
+     "cannot certify FINALE 01 or any production latency budget"
+    ],
+    "cannotCertify": "Synthetic workload (W0-07). These counts and any timing measured around them cannot certify FINALE 01, AI latency or any production budget (G0 contract)."
+   }
+  },
+  {
+   "run": 3,
+   "digest": "4d0bd28a",
+   "ticks": 600,
+   "actors": 137,
+   "msPerTick": {
+    "p50": 0.193,
+    "p95": 0.3,
+    "p99": 0.348,
+    "max": 2.387,
+    "mean": 0.212
+   },
+   "report": {
+    "kernel": "w0-07-synthetic-1",
+    "synthetic": true,
+    "matchSeed": 4107,
+    "actors": 137,
+    "withGuest": true,
+    "tick": 600,
+    "paused": false,
+    "stageOrder": [
+     "install",
+     "commands",
+     "observations",
+     "decisions",
+     "advance",
+     "transactions",
+     "damage",
+     "cleanup",
+     "result",
+     "commit"
+    ],
+    "counters": {
+     "actors": 137,
+     "ticks": 600,
+     "routeQueries": 82200,
+     "perceptionQueries": 657600,
+     "lawQueries": 130424,
+     "eventsCommitted": 612,
+     "commandsApplied": 0,
+     "commandsRejected": 0,
+     "perTick": {
+      "routeQueries": 137,
+      "perceptionQueries": 1096,
+      "lawQueries": 217.37333333333333,
+      "eventsCommitted": 1.02
+     }
+    },
+    "authoritativeDigest": "4d0bd28a",
+    "eventsDropped": 0,
+    "omissions": [
+     "no goals, planning, decisions or coordination — stage 4 runs the stage, not an AI",
+     "no real navigation: 'route queries' are straight-line distance and budget checks, with no graph, portals or congestion",
+     "no real perception: 'perception queries' scan a fixed neighbour stride, with no evidence records, line of sight or knowledge model",
+     "no combat, damage, wildlife behaviour, crafting, inventory, reservations or economy",
+     "no clans, membership, diplomacy or succession",
+     "laws are installed and queried, but no action is refused by one because there are no actions",
+     "no careers, no persistence, no observer state and no render snapshot",
+     "cannot certify FINALE 01 or any production latency budget"
+    ],
+    "cannotCertify": "Synthetic workload (W0-07). These counts and any timing measured around them cannot certify FINALE 01, AI latency or any production budget (G0 contract)."
+   }
+  }
+ ],
+ "omissions": [
+  "no goals, planning, decisions or coordination — stage 4 runs the stage, not an AI",
+  "no real navigation: 'route queries' are straight-line distance and budget checks, with no graph, portals or congestion",
+  "no real perception: 'perception queries' scan a fixed neighbour stride, with no evidence records, line of sight or knowledge model",
+  "no combat, damage, wildlife behaviour, crafting, inventory, reservations or economy",
+  "no clans, membership, diplomacy or succession",
+  "laws are installed and queried, but no action is refused by one because there are no actions",
+  "no careers, no persistence, no observer state and no render snapshot",
+  "cannot certify FINALE 01 or any production latency budget"
+ ],
+ "cannotCertify": "Synthetic workload (W0-07). These counts and any timing measured around them cannot certify FINALE 01, AI latency or any production budget (G0 contract)."
+}
