@@ -192,7 +192,7 @@
    ],
    "refs": "TP v2.0 \u00a713, \u00a720; GDD 14; PRESENT 01 (first automated half)",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "M",
    "webAdaptation": null
   },
