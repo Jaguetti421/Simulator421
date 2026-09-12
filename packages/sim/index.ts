@@ -1,8 +1,8 @@
 /**
  * @lastclan/sim — package entry point.
  *
- * W0-01 ships the skeleton only. No game system exists yet; the sub-modules
- * (primitives, contracts, core, spatial, ai, story, observer, persistence, host)
- * are added by their own work packets. See README.md.
+ * Sub-modules arrive with their packets: primitives (W0-02, W0-03), contracts
+ * (W0-04), core/host (W0-07), persistence (W0-08). No game system exists yet.
  */
 export const PACKAGE_NAME = "@lastclan/sim" as const;
+export * from "./primitives/index.js";

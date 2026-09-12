@@ -49,7 +49,7 @@
    ],
    "refs": "TP v2.0 \u00a74; TP v1.1 \u00a74; GDD 30.1\u201330.2; Addendum D02",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "S",
    "webAdaptation": null
   },

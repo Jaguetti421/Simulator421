@@ -1,12 +1,12 @@
 # Project status (web build)
 
-Owner: the developer. Updated 11 September 2026 (W0-01, session 1).
+Owner: the developer. Updated 12 September 2026 (W0-02, session 1).
 
 - Kit: The_Last_Clan_Web_Kit_v1 (kit zip SHA-256 `11136c86390b4b146c6eb5de3f87125c25ffdabc18318f6c7e1204d7fa06f179`), imported frozen under `docs/production/` — 196/196 files verified against its MANIFEST.json; live copies at the repository root (see README.md "Layout").
 - Baseline: the W0-01 bootstrap commit `ed2766fec321584f9f021a1b8c591ffcef9e2ad6` (see state/ACCEPTED_BASELINE.json). W0-01 ACCEPTED on top of it; ACCEPTED_BASELINE.json is re-cut at the G0 tag (W0-11).
 - HEAD at session end: cannot be written here without changing itself (same circularity as the archive hash). The sidecar `lastclan-W0-01-a01.zip.sha256` lists both the archive SHA-256 and the HEAD commit; next session verifies `git rev-parse HEAD` against it and expects `git log --oneline` to show the two W0-01 commits on top of nothing.
 - Accepted packets: 1 / 133 shipping + 6 optional PX (W0: 1/11). Gates passed: none.
-- Current phase: W0. **W0-01 ACCEPTED** (producer acceptance by Jani in chat, 11 Sep 2026; same-session review recorded in handoffs/W0-01/REVIEW.md — the fresh-context review was waived, see metrics). Next packet: **W0-02** (`python tools/next_work.py`).
+- Current phase: W0. W0-01 ACCEPTED (producer acceptance, 11 Sep). **W0-02 READY_FOR_REVIEW** (12 Sep; primitives in `packages/sim/primitives`, 94/94 tests). Next after acceptance: **W0-03** (PRNG sfc32, streams, hashing).
 - Continuity: **GitHub is now canonical.** `https://github.com/Jaguetti421/Simulator421` (private), branch `main`, pushed 11 Sep 2026 after Jani granted the token Contents: Read and write (first attempt was refused 403 read-only). Token used only via environment variable + per-command header; never in files. Each session: clone/fetch with the session token, `npm ci && npm run verify` on the baseline, push at every green step. Archives (`lastclan-<packet>-a<NN>.zip`) are the fallback only when no token is given.
 
 ## Environment observed in this sandbox (W0-01, 11 Sep 2026 — supersedes the AGENTS.md note)
@@ -34,6 +34,7 @@ Owner: the developer. Updated 11 September 2026 (W0-01, session 1).
 | typescript-eslint | 8.70.0 | recommended rules + `no-restricted-types` for DOM type bans |
 | vitest | 5.0.0 | vite 8.3.0 arrives as its peer; Vite itself is adopted for apps/web at W0-10 |
 | globals / @types/node | 17.12.0 / 22.20.2 | Node 22 globals and types for lab, content, tests |
+| fast-check | 4.10.0 | property tests (W0-02) |
 | Planned at later packets | canvas 3.2.3 (W0-09), @playwright/test 1.56.x (W0-10, must match installed browsers), three, react 19.x, fake-indexeddb 6.x (W0-08) | pinned when introduced, with a note here |
 
 ## Decisions recorded at W0-01
@@ -45,10 +46,13 @@ Owner: the developer. Updated 11 September 2026 (W0-01, session 1).
 5. **Archive hashing:** an archive cannot contain its own SHA-256. The HEAD commit is recorded here; the archive's SHA-256 travels in a sidecar `lastclan-<packet>-a<NN>.zip.sha256` and in chat. Next session verifies both.
 6. **Playwright plan (for W0-10):** pin @playwright/test 1.56.x to the installed browsers; capture 3D screenshots in the sandbox with SwiftShader and label them software-rendered; keep GPU performance/quality as HUMAN_REQUIRED on Jani's PC.
 
+7. **W0-02:** checkedMath asserts safe integers always (not only in test builds); `mulDiv` slow path is pure integer long multiplication with stated preconditions; the typed lint rule against bare arithmetic on `Int` is deferred to W0-04.
+
 ## Session log (one line per session)
 | date | packet | session # for packet | status at end | tests added | fixtures authored/failing/passing | blocked checks | rework after self-review | human needed |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-09-11 | W0-01 | 1 | ACCEPTED (producer) | 49 vitest (44 boundary cases, 5 clanlab) + 2 python (6 total in tools) | 0 / 0 / 0 | 2 (CI runner execution: BLOCKED_TOOL; GitHub push: refused 403, token lacks write) | waived — fresh-context review replaced by Jani's explicit acceptance; same-session review found 3 Low, 0 material | yes — token permission |
+| 2026-09-12 | W0-02 | 1 | READY_FOR_REVIEW | 44 vitest (13 fast-check properties) | 0 / 0 / 0 | 0 | pending | no |
 
 ## Risks and open questions
 - **Toolchain versions post-date the developer's training data** (TypeScript 6, ESLint 10, Vitest 5, Vite 8, Playwright 1.56 browsers). Everything used at W0-01 was executed and observed; nothing is assumed. Expect occasional API surprises in later packets — verify by running, not by memory.
