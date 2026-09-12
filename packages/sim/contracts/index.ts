@@ -15,6 +15,7 @@ export {
   encodeJsonPretty,
   enumOf,
   int,
+  mapOf,
   obj,
   opt,
   parse,

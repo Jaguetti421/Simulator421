@@ -1,12 +1,12 @@
 # Project status (web build)
 
-Owner: the developer. Updated 12 September 2026 (W0-04, session 1).
+Owner: the developer. Updated 12 September 2026 (W0-05, session 1).
 
 - Kit: The_Last_Clan_Web_Kit_v1 (kit zip SHA-256 `11136c86390b4b146c6eb5de3f87125c25ffdabc18318f6c7e1204d7fa06f179`), imported frozen under `docs/production/` — 196/196 files verified against its MANIFEST.json; live copies at the repository root (see README.md "Layout").
 - Baseline: the W0-01 bootstrap commit `ed2766fec321584f9f021a1b8c591ffcef9e2ad6` (see state/ACCEPTED_BASELINE.json). W0-01 ACCEPTED on top of it; ACCEPTED_BASELINE.json is re-cut at the G0 tag (W0-11).
 - HEAD at session end: cannot be written here without changing itself (same circularity as the archive hash). The sidecar `lastclan-W0-01-a01.zip.sha256` lists both the archive SHA-256 and the HEAD commit; next session verifies `git rev-parse HEAD` against it and expects `git log --oneline` to show the two W0-01 commits on top of nothing.
-- Accepted packets: 3 / 133 shipping + 6 optional PX (W0: 3/11). Gates passed: none.
-- Current phase: W0. W0-01 ACCEPTED (producer acceptance, 11 Sep). **W0-02 ACCEPTED** (producer acceptance, 12 Sep; primitives in `packages/sim/primitives`, 94/94 tests). **W0-03 ACCEPTED** (producer acceptance, 12 Sep; sfc32 + labeled streams + two-domain hashing, 124/124 tests). **W0-04 READY_FOR_REVIEW** (contracts v0: 16 records, JSON Schemas, 25 golden samples, reason registry, intra-sim dependency direction in lint; 233/233 tests). Next after acceptance: **W0-05** (fixture DSL).
+- Accepted packets: 4 / 133 shipping + 6 optional PX (W0: 4/11). Gates passed: none.
+- Current phase: W0. W0-01 ACCEPTED (producer acceptance, 11 Sep). **W0-02 ACCEPTED** (producer acceptance, 12 Sep; primitives in `packages/sim/primitives`, 94/94 tests). **W0-03 ACCEPTED** (producer acceptance, 12 Sep; sfc32 + labeled streams + two-domain hashing, 124/124 tests). **W0-04 ACCEPTED** (producer acceptance, 12 Sep; contracts v0 frozen — 16 records, 16 schemas, 25 golden samples, reason registry, intra-sim dependency direction in lint; 233/233 tests). **W0-05 READY_FOR_REVIEW** (fixture DSL v1: envelope, semantics, assertion registry, `clanlab validate`; 303/303 tests). Next after acceptance: **W0-06** (fixture runner, summaries, failure bundles).
 - Continuity: **GitHub is now canonical.** `https://github.com/Jaguetti421/Simulator421` (private), branch `main`, pushed 11 Sep 2026 after Jani granted the token Contents: Read and write (first attempt was refused 403 read-only). Token used only via environment variable + per-command header; never in files. Each session: clone/fetch with the session token, `npm ci && npm run verify` on the baseline, push at every green step. Archives (`lastclan-<packet>-a<NN>.zip`) are the fallback only when no token is given.
 
 ## Environment observed in this sandbox (W0-01, 11 Sep 2026 — supersedes the AGENTS.md note)
@@ -54,13 +54,16 @@ Owner: the developer. Updated 12 September 2026 (W0-04, session 1).
 
 9. **W0-04:** contract records are declared once in a small typed DSL that emits the TS type, the validator, the JSON Schema and the canonical codec, so those four cannot drift; cross-field invariants live in `refine(...)` and are annotated as `x-refinements` in the emitted schema (JSON Schema cannot express them, and the sample manifest records which layer enforces each rejection). The intra-sim dependency direction from INTERFACES.md is now lint, composed into **one** `no-restricted-imports` rule per module — a second block for the same rule key would have silently replaced the first. Operation and event payload *fields* stay open at v0 and are frozen per operation by the packet that implements it.
 
+10. **W0-05:** the fixture envelope is re-declared with the contract DSL and kept honest by a conformance test that runs every case through both ajv (the supplied `contracts/fixture.schema.json`) and the parser, requiring agreement on structural verdicts and requiring semantic-only rules to be genuinely beyond JSON Schema. Two of my own claims were corrected by that discipline: an invented "law must start before maxTicks" rule was deleted after it rejected a supplied example, and the tick-0 schedule rule turned out to be structural. Skipped checks (no content catalog) and Blocked assertions (no simulation) are reported as such and can never read as passes; `clanlab validate` is implemented and CI no longer needs `continue-on-error` on the fixture step.
+
 ## Session log (one line per session)
 | date | packet | session # for packet | status at end | tests added | fixtures authored/failing/passing | blocked checks | rework after self-review | human needed |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-09-11 | W0-01 | 1 | ACCEPTED (producer) | 49 vitest (44 boundary cases, 5 clanlab) + 2 python (6 total in tools) | 0 / 0 / 0 | 2 (CI runner execution: BLOCKED_TOOL; GitHub push: refused 403, token lacks write) | waived — fresh-context review replaced by Jani's explicit acceptance; same-session review found 3 Low, 0 material | yes — token permission |
 | 2026-09-12 | W0-02 | 1 | ACCEPTED (producer) | 44 vitest (13 fast-check properties) | 0 / 0 / 0 | 0 | waived — producer acceptance; same-session review found 2 Low | no |
 | 2026-09-12 | W0-03 | 1 | ACCEPTED (producer) | 30 vitest (13 fast-check properties) + 4 mutation checks | 0 / 0 / 0 | 1 (cross-runtime stream equality: deferred to W0-07/W0-10 by the card) | waived — producer acceptance; same-session review found 2 Low | no |
-| 2026-09-12 | W0-04 | 1 | READY_FOR_REVIEW | 109 vitest (44 contracts, 29 samples/ajv, 36 arch) + 3 mutation checks | 0 / 0 / 0 | 0 | pending | no |
+| 2026-09-12 | W0-04 | 1 | ACCEPTED (producer) | 109 vitest (44 contracts, 29 samples/ajv, 36 arch) + 3 mutation checks | 0 / 0 / 0 | 0 | waived — producer acceptance; same-session review found 1 Medium (found and fixed in-packet, with a regression test) and 3 Low | no |
+| 2026-09-12 | W0-05 | 1 | READY_FOR_REVIEW | 75 vitest (53 lab, 22 conformance) + 4 mutation checks | 3 authored / 0 failing / 0 passing (parse-only; running them is W0-06) | 2 (Invariant assertions → W0-07; HashEqualVariant → W0-08) | pending | no |
 
 ## Risks and open questions
 - **Toolchain versions post-date the developer's training data** (TypeScript 6, ESLint 10, Vitest 5, Vite 8, Playwright 1.56 browsers). Everything used at W0-01 was executed and observed; nothing is assumed. Expect occasional API surprises in later packets — verify by running, not by memory.

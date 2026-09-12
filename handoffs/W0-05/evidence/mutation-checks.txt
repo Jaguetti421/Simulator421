@@ -1,0 +1,13 @@
+== mutant 1: EventCountGte passes on an empty match (>= becomes >= 0) ==
+      Tests  4 failed | 8 passed (12)
+== mutant 2: unknown assertion kinds silently skipped instead of UnsupportedAssertion ==
+      Tests  1 failed | 28 passed (29)
+      Tests  1 failed | 11 passed (12)
+== mutant 3: the 600-tick notice rule dropped ==
+      Tests  1 failed | 28 passed (29)
+== mutant 4: unknown schema versions accepted ==
+      Tests  1 failed | 28 passed (29)
+      Tests  22 passed (22)
+== restored ==
+      Tests  53 passed (53)
+      Tests  22 passed (22)

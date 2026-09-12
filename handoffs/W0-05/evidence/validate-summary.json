@@ -1,0 +1,96 @@
+{
+ "tool": "clanlab",
+ "command": "validate",
+ "fixtureDslVersion": 1,
+ "contractVersion": 0,
+ "requested": 3,
+ "valid": 3,
+ "invalid": 0,
+ "unreadable": 0,
+ "skippedChecks": 4,
+ "blockedAssertions": 6,
+ "note": "validate parses and checks fixtures; it does not construct a world or run anything. Blocked assertions are not passes (clanlab run arrives in W0-06).",
+ "reports": [
+  {
+   "file": "contracts/examples/AI-03-PATIENT-WAIT.json",
+   "status": "Valid",
+   "id": "AI-03-PATIENT-WAIT",
+   "gate": "G1",
+   "profile": "Fixture",
+   "evidenceStatus": "SCHEMA_EXAMPLE_UNEXECUTED",
+   "errors": [],
+   "skippedChecks": [
+    {
+     "code": "ContentCatalogUnavailable",
+     "path": "/setup/actors/0",
+     "message": "item, goal and profile-override IDs cannot be checked before a compiled content catalog exists",
+     "availableFrom": "content packets (P1+)"
+    },
+    {
+     "code": "ContentCatalogUnavailable",
+     "path": "/setup/actors/1",
+     "message": "item, goal and profile-override IDs cannot be checked before a compiled content catalog exists",
+     "availableFrom": "content packets (P1+)"
+    }
+   ],
+   "assertions": {
+    "requested": 2,
+    "blocked": 2,
+    "blockedDetail": [
+     "EventCountGte: no committed events: the fixture was validated, not run (W0-06 (clanlab run))",
+     "Invariant: invariant NoIllegalEffects needs a running simulation (W0-07 (tick loop and production invariants))"
+    ]
+   }
+  },
+  {
+   "file": "contracts/examples/LAW-NOTICE-REJECTION.json",
+   "status": "Valid",
+   "id": "LAW-NOTICE-REJECTION",
+   "gate": "G1",
+   "profile": "Fixture",
+   "evidenceStatus": "SCHEMA_EXAMPLE_UNEXECUTED",
+   "errors": [],
+   "skippedChecks": [
+    {
+     "code": "ContentCatalogUnavailable",
+     "path": "/setup/actors/0",
+     "message": "item, goal and profile-override IDs cannot be checked before a compiled content catalog exists",
+     "availableFrom": "content packets (P1+)"
+    }
+   ],
+   "assertions": {
+    "requested": 3,
+    "blocked": 3,
+    "blockedDetail": [
+     "EventCountGte: no committed events: the fixture was validated, not run (W0-06 (clanlab run))",
+     "EventCountEq: no committed events: the fixture was validated, not run (W0-06 (clanlab run))",
+     "Invariant: invariant NoIllegalEffects needs a running simulation (W0-07 (tick loop and production invariants))"
+    ]
+   }
+  },
+  {
+   "file": "contracts/examples/SAVE-BOOTSTRAP-01.json",
+   "status": "Valid",
+   "id": "SAVE-BOOTSTRAP-01",
+   "gate": "G0",
+   "profile": "Fixture",
+   "evidenceStatus": "SCHEMA_EXAMPLE_UNEXECUTED",
+   "errors": [],
+   "skippedChecks": [
+    {
+     "code": "ContentCatalogUnavailable",
+     "path": "/setup/actors/0",
+     "message": "item, goal and profile-override IDs cannot be checked before a compiled content catalog exists",
+     "availableFrom": "content packets (P1+)"
+    }
+   ],
+   "assertions": {
+    "requested": 1,
+    "blocked": 1,
+    "blockedDetail": [
+     "HashEqualVariant: hash variant SaveReload needs snapshot, restore and canonical hashes (W0-08 (snapshot, restore and canonical hashes))"
+    ]
+   }
+  }
+ ]
+}

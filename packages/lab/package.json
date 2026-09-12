@@ -2,7 +2,7 @@
   "name": "@lastclan/lab",
   "version": "0.0.0",
   "private": true,
-  "description": "clanlab — Node CLI: fixture runner, assertion registry, readability renderer, failure bundles (TP v2.0 §19).",
+  "description": "clanlab \u2014 Node CLI: fixture runner, assertion registry, readability renderer, failure bundles (TP v2.0 \u00a719).",
   "type": "module",
   "bin": {
     "clanlab": "./dist/cli/index.js"
@@ -15,5 +15,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@lastclan/sim": "0.0.0"
+  }
 }

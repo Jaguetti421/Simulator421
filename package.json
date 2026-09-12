@@ -2,7 +2,7 @@
   "name": "lastclan",
   "version": "0.0.0",
   "private": true,
-  "description": "The Last Clan — web build (browser survival god game). npm workspace root.",
+  "description": "The Last Clan \u2014 web build (browser survival god game). npm workspace root.",
   "type": "module",
   "engines": {
     "node": ">=22.12.0",
@@ -19,7 +19,7 @@
     "test:tools": "python3 -m unittest discover -s tools -p test_tools.py -v",
     "lint": "eslint .",
     "lab": "node packages/lab/dist/cli/index.js",
-    "fixtures": "node packages/lab/dist/cli/index.js validate contracts/examples",
+    "fixtures": "node packages/lab/dist/cli/index.js validate --fixture contracts/examples",
     "screens": "node -e \"console.log('screens: BLOCKED_RENDER until W0-10 (no /capture route, no Playwright job yet)'); process.exit(0)\"",
     "check:workboard": "python3 tools/check_workboard.py",
     "verify": "npm run build && npm run lint && npm test && npm run test:tools && npm run check:workboard"

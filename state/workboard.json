@@ -89,7 +89,7 @@
    ],
    "refs": "contracts/INTERFACES.md; TP v1.1 \u00a73, \u00a712; TP v2.0 \u00a73",
    "gate": null,
-   "status": "READY_FOR_REVIEW",
+   "status": "ACCEPTED",
    "complexity": "M",
    "webAdaptation": null
   },
@@ -110,7 +110,7 @@
    ],
    "refs": "contracts/FIXTURE_DSL.md; contracts/fixture.schema.json; TP v1.1 \u00a719\u201320; Addendum D07",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "M",
    "webAdaptation": null
   },

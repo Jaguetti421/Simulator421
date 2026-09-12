@@ -38,6 +38,8 @@ export interface StringNode {
 }
 export interface BoolNode {
   readonly kind: "bool";
+  /** When set, only this exact value is valid (e.g. `writeCareer` pinned to false). */
+  readonly const?: boolean;
   readonly description?: string;
 }
 export interface EnumNode {
@@ -58,13 +60,21 @@ export interface ObjectNode {
   readonly refinements: readonly Refinement[];
   readonly description?: string;
 }
+export interface MapNode {
+  readonly kind: "map";
+  /** Every value follows this shape; keys are arbitrary strings matching `keyPattern`. */
+  readonly values: AnyShape;
+  readonly keyPattern?: string;
+  readonly maxEntries?: number;
+  readonly description?: string;
+}
 export interface UnionNode {
   readonly kind: "union";
   readonly discriminant: string;
   readonly variants: readonly AnyShape[];
   readonly description?: string;
 }
-export type SchemaNode = IntNode | StringNode | BoolNode | EnumNode | ArrayNode | ObjectNode | UnionNode;
+export type SchemaNode = IntNode | StringNode | BoolNode | EnumNode | ArrayNode | ObjectNode | MapNode | UnionNode;
 
 export interface Refinement {
   /** Human-readable rule, also emitted into the JSON Schema `$comment`. */
@@ -101,8 +111,14 @@ export function int(opts: Omit<IntNode, "kind"> = {}): Shape<Int> {
 export function str(opts: Omit<StringNode, "kind"> = {}): Shape<string> {
   return { node: { kind: "string", ...opts } };
 }
-export function bool(description?: string): Shape<boolean> {
-  return { node: description === undefined ? { kind: "bool" } : { kind: "bool", description } };
+export function bool(description?: string, opts: { const?: boolean } = {}): Shape<boolean> {
+  return {
+    node: {
+      kind: "bool",
+      ...(opts.const === undefined ? {} : { const: opts.const }),
+      ...(description === undefined ? {} : { description }),
+    },
+  };
 }
 export function enumOf<const V extends readonly string[]>(values: V, description?: string): Shape<V[number]> {
   return { node: description === undefined ? { kind: "enum", values } : { kind: "enum", values, description } };
@@ -125,6 +141,15 @@ export function obj<const F extends Record<string, AnyShape>>(
     },
   };
 }
+/**
+ * An open map: arbitrary string keys, one value shape (e.g. an inventory of
+ * item ID to count). Canonical encoding sorts the keys, since a map has no
+ * declaration order to preserve.
+ */
+export function mapOf<S extends AnyShape>(values: S, opts: { keyPattern?: string; maxEntries?: number; description?: string } = {}): Shape<Readonly<Record<string, Infer<S>>>> {
+  return { node: { kind: "map", values, ...opts } };
+}
+
 /** Marks a field optional. Absent and `undefined` are the same thing; `null` is never valid. */
 export function opt<T>(shape: Shape<T>): Shape<T> & { optional: true } {
   return { ...shape, optional: true };
@@ -170,7 +195,8 @@ function check(node: SchemaNode, value: unknown, path: string, errors: Validatio
       return;
     }
     case "bool": {
-      if (typeof value !== "boolean") fail(`expected a boolean, got ${describe(value)}`);
+      if (typeof value !== "boolean") return fail(`expected a boolean, got ${describe(value)}`);
+      if (node.const !== undefined && value !== node.const) fail(`must be ${node.const}`);
       return;
     }
     case "enum": {
@@ -183,6 +209,19 @@ function check(node: SchemaNode, value: unknown, path: string, errors: Validatio
       value.forEach((item, i) => {
         check(node.items.node, item, `${path}/${i}`, errors);
       });
+      return;
+    }
+    case "map": {
+      if (!isPlainObject(value)) return fail(`expected an object, got ${describe(value)}`);
+      const entries = Object.entries(value);
+      if (node.maxEntries !== undefined && entries.length > node.maxEntries) fail(`must have at most ${node.maxEntries} entries, got ${entries.length}`);
+      for (const [key, v] of entries) {
+        if (node.keyPattern !== undefined && !new RegExp(node.keyPattern, "u").test(key)) {
+          fail(`key ${JSON.stringify(key)} must match ${node.keyPattern}`);
+          continue;
+        }
+        check(node.values.node, v, `${path}/${key}`, errors);
+      }
       return;
     }
     case "object": {
@@ -198,7 +237,9 @@ function check(node: SchemaNode, value: unknown, path: string, errors: Validatio
         check(shape.node, value[key], `${path}/${key}`, errors);
       }
       for (const key of Object.keys(value)) {
-        if (!known.has(key)) fail(`unknown field ${JSON.stringify(key)} (contract records are closed)`);
+        if (!known.has(key)) {
+          errors.push({ path: `${path}/${key}`, message: `unknown field ${JSON.stringify(key)} (contract records are closed)` });
+        }
       }
       if (errors.length === 0) {
         for (const r of node.refinements) {
@@ -259,6 +300,12 @@ function canonical(node: SchemaNode, value: unknown): unknown {
   switch (node.kind) {
     case "array":
       return (value as readonly unknown[]).map((item) => canonical(node.items.node, item));
+    case "map": {
+      const source = value as Record<string, unknown>;
+      const out: Record<string, unknown> = {};
+      for (const key of Object.keys(source).sort()) out[key] = canonical(node.values.node, source[key]);
+      return out;
+    }
     case "object": {
       const source = value as Record<string, unknown>;
       const out: Record<string, unknown> = {};
@@ -331,9 +378,16 @@ function nodeToSchema(node: SchemaNode): JsonSchema {
     case "string":
       return described({ type: "string", ...(node.pattern === undefined ? {} : { pattern: node.pattern }), ...(node.maxLength === undefined ? {} : { maxLength: node.maxLength }) });
     case "bool":
-      return described({ type: "boolean" });
+      return described({ type: "boolean", ...(node.const === undefined ? {} : { const: node.const }) });
     case "enum":
       return described({ type: "string", enum: [...node.values] });
+    case "map":
+      return described({
+        type: "object",
+        additionalProperties: nodeToSchema(node.values.node),
+        ...(node.keyPattern === undefined ? {} : { propertyNames: { pattern: node.keyPattern } }),
+        ...(node.maxEntries === undefined ? {} : { maxProperties: node.maxEntries }),
+      });
     case "array":
       return described({ type: "array", items: nodeToSchema(node.items.node), ...(node.maxItems === undefined ? {} : { maxItems: node.maxItems }) });
     case "object": {

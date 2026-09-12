@@ -67,8 +67,7 @@ jobs:
       # The fixture subset runs the three example fixtures through clanlab. Until W0-05/W0-06
       # ship the validator and runner, clanlab reports NOT_IMPLEMENTED with exit 3 (never PASS).
       # continue-on-error keeps the step visible as a warning instead of hiding it; remove it at W0-06.
-      - name: "Fixture subset (clanlab validate contracts/examples) — NOT_IMPLEMENTED until W0-05/W0-06"
-        continue-on-error: true
+      - name: "Fixture subset (clanlab validate) — implemented at W0-05; running fixtures arrives with W0-06"
         run: npm run fixtures
 
       - name: Workboard check (tools/check_workboard.py)
