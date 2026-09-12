@@ -16,6 +16,17 @@
   }
  },
  "status": "Failed",
+ "host": {
+  "kind": "tape",
+  "id": "tape:dbfe0adcc418",
+  "watermark": "FakeSim",
+  "gateEligible": false,
+  "tape": {
+   "sha256": "sha256:dbfe0adcc41848652d24ec2b6a47c60e01f06d92406ae002dc59927a00e77c29",
+   "events": 2,
+   "producedBy": "the developer writing this packet's evidence, by hand"
+  }
+ },
  "finalTick": 31,
  "outcome": "at least one assertion failed",
  "counts": {

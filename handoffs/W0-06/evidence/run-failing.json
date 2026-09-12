@@ -6,7 +6,7 @@
   "build": {
    "tool": "clanlab",
    "version": "0.1.0-w0-06",
-   "sourceDigest": "sha256:f3ef077e0459e09e3ec611e03eb61ea716dc3e62668f83c618d610a44553d380",
+   "sourceDigest": "sha256:f7d168c7274c52cb982418e1aebb8e88ea7164e62aef4d64ef593d41f51d5ce0",
    "sourceKind": "dist",
    "files": 16
   },
@@ -24,11 +24,14 @@
   "fixtureDslVersion": 1
  },
  "host": {
-  "kind": "tape",
-  "id": "tape:dbfe0adcc418",
+  "requested": "tape",
+  "eventsPath": "handoffs/W0-06/evidence/demo/tape.json",
   "watermark": "FakeSim",
   "gateEligible": false,
   "simulated": false,
+  "kindsUsed": [
+   "tape"
+  ],
   "unsupportedSystems": [
    "tick loop (W0-07)",
    "actors, movement, needs, crafting, combat (P1+)",
@@ -36,25 +39,7 @@
    "snapshots, restore and canonical hashes (W0-08)",
    "careers (never written by a fixture)"
   ],
-  "unmatchableFields": [
-   {
-    "field": "reasonId",
-    "reason": "CommittedEvent at contract v0 has no reasonId field and its payload fields are closed, so no run can report the reason a command was rejected",
-    "availableFrom": "the packet that freezes the rejection event payload (P1-12, public command validator)"
-   }
-  ],
-  "finalTick": 31,
-  "tape": {
-   "path": "handoffs/W0-06/evidence/demo/tape.json",
-   "sha256": "sha256:dbfe0adcc41848652d24ec2b6a47c60e01f06d92406ae002dc59927a00e77c29",
-   "declaredSource": "hand-authored for the W0-06 handoff evidence; no simulation exists at W0-06",
-   "producedBy": "the developer writing this packet's evidence, by hand",
-   "fixtureId": "W0-06-DEMO-FAIL",
-   "events": 2,
-   "firstTick": 12,
-   "lastTick": 31
-  },
-  "note": "Events were read from a declared tape (the developer writing this packet's evidence, by hand); nothing was simulated. A tape run proves the harness and the assertions, never the game — it can never be gate evidence."
+  "note": "Events were requested from a declared tape; nothing was simulated. Each run records the host it actually used and that tape's hash. A tape run proves the harness, never the game."
  },
  "counts": {
   "fixtures": 1,
@@ -88,6 +73,17 @@
     }
    },
    "status": "Failed",
+   "host": {
+    "kind": "tape",
+    "id": "tape:dbfe0adcc418",
+    "watermark": "FakeSim",
+    "gateEligible": false,
+    "tape": {
+     "sha256": "sha256:dbfe0adcc41848652d24ec2b6a47c60e01f06d92406ae002dc59927a00e77c29",
+     "events": 2,
+     "producedBy": "the developer writing this packet's evidence, by hand"
+    }
+   },
    "finalTick": 31,
    "outcome": "at least one assertion failed",
    "counts": {
@@ -134,10 +130,10 @@
    "hostErrors": [],
    "skippedChecks": [],
    "artifacts": {
-    "log": "/tmp/w006out/fail/W0-06-DEMO-FAIL/run.log",
-    "fixture": "/tmp/w006out/fail/W0-06-DEMO-FAIL/fixture.json",
-    "events": "/tmp/w006out/fail/W0-06-DEMO-FAIL/events.json",
-    "bundle": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/bundle.json",
+    "log": "clanlab-out/W0-06-DEMO-FAIL/run.log",
+    "fixture": "clanlab-out/W0-06-DEMO-FAIL/fixture.json",
+    "events": "clanlab-out/W0-06-DEMO-FAIL/events.json",
+    "bundle": "clanlab-out/W0-06-DEMO-FAIL/bundle/bundle.json",
     "verdictDigest": "sha256:19b0a04a49ab42a95a5c95400e695f92650b76f11b71ff61a14e91cc9435510d"
    }
   }

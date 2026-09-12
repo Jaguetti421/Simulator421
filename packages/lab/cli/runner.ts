@@ -47,6 +47,15 @@ export interface AssertionRecord {
   readonly nearMiss?: readonly MatchableEvent[];
 }
 
+/** The host a single fixture actually ran against — authoritative per run. */
+export interface EffectiveHost {
+  readonly kind: "none" | "tape";
+  readonly id: string;
+  readonly watermark: "FakeSim";
+  readonly gateEligible: false;
+  readonly tape?: { readonly sha256: string; readonly events: number; readonly producedBy: string };
+}
+
 export interface FixtureRunReport {
   readonly file: string;
   readonly fixtureSha256: string | null;
@@ -57,6 +66,7 @@ export interface FixtureRunReport {
   readonly maxTicks: number | null;
   readonly geometry?: ReturnType<typeof geometryIdentity>;
   readonly status: RunStatus;
+  readonly host: EffectiveHost;
   readonly finalTick: number;
   readonly outcome: string;
   readonly counts: {
@@ -80,7 +90,22 @@ export interface RunSummary {
   readonly command: "run";
   readonly schemaVersion: number;
   readonly identity: RunIdentity;
-  readonly host: Omit<RunHost, "events">;
+  /**
+   * The host **requested** for this invocation, plus the kinds actually used.
+   * Per-fixture effective hosts live on each run: a tape that fails to bind to
+   * one fixture leaves that run on `none`, and a single top-level block could
+   * not honestly describe both.
+   */
+  readonly host: {
+    readonly requested: "none" | "tape";
+    readonly eventsPath: string | null;
+    readonly watermark: "FakeSim";
+    readonly gateEligible: false;
+    readonly simulated: false;
+    readonly kindsUsed: readonly string[];
+    readonly unsupportedSystems: readonly string[];
+    readonly note: string;
+  };
   readonly counts: {
     readonly fixtures: number;
     readonly requested: number;
@@ -113,6 +138,16 @@ const GATE_INELIGIBLE =
 function hostWithoutEvents(host: RunHost): Omit<RunHost, "events"> {
   const { events: _events, ...rest } = host;
   return rest;
+}
+
+function effectiveHost(host: RunHost): EffectiveHost {
+  return {
+    kind: host.kind,
+    id: host.id,
+    watermark: host.watermark,
+    gateEligible: host.gateEligible,
+    ...(host.tape === undefined ? {} : { tape: { sha256: host.tape.sha256, events: host.tape.events, producedBy: host.tape.producedBy } }),
+  };
 }
 
 function matchWindowOf(assertion: FixtureAssertion): { fromTick: number; throughTick: number | null } | undefined {
@@ -198,7 +233,6 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
   const logMaxBytes = options.logMaxBytes ?? DEFAULT_LOG_MAX_BYTES;
   const writeBundles = options.writeBundles ?? true;
   const reports: FixtureRunReport[] = [];
-  let summaryHost: RunHost = noneHost();
 
   for (const file of options.files) {
     const log = new BoundedLog(logMaxBytes);
@@ -232,6 +266,7 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
         seed: null,
         maxTicks: null,
         status: "Invalid",
+        host: effectiveHost(noneHost()),
         finalTick: 0,
         outcome: "the fixture did not validate, so nothing was run",
         counts: { requested: 0, executed: 0, passed: 0, failed: 0, blocked: 0, skippedChecks: parsed.skipped.length },
@@ -279,7 +314,6 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
     } else {
       log.write(`host none — ${host.note}`);
     }
-    summaryHost = host;
 
     if (hostErrors.length > 0) {
       const artifacts = writeArtifacts(options.evidenceDir, fileKey(file), { log: log.text(), fixture: text });
@@ -293,6 +327,7 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
         maxTicks: fixture.maxTicks,
         geometry: geometryIdentity(fixture.map.recipeId, fixture.map.seed),
         status: "Invalid",
+        host: effectiveHost(host),
         finalTick: 0,
         outcome: "the event tape did not validate, so no assertion was judged",
         counts: { requested: fixture.assertions.length, executed: 0, passed: 0, failed: 0, blocked: 0, skippedChecks: parsed.skipped.length },
@@ -342,6 +377,7 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
       maxTicks: fixture.maxTicks,
       geometry: geometryIdentity(fixture.map.recipeId, fixture.map.seed),
       status,
+      host: effectiveHost(host),
       finalTick: host.finalTick,
       outcome:
         status === "Passed"
@@ -382,7 +418,19 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
     command: "run",
     schemaVersion: RUN_SUMMARY_SCHEMA_VERSION,
     identity,
-    host: hostWithoutEvents(summaryHost),
+    host: {
+      requested: options.eventsPath === undefined ? "none" : "tape",
+      eventsPath: options.eventsPath ?? null,
+      watermark: "FakeSim",
+      gateEligible: false,
+      simulated: false,
+      kindsUsed: [...new Set(reports.map((r) => r.host.kind))].sort(),
+      unsupportedSystems: noneHost().unsupportedSystems,
+      note:
+        options.eventsPath === undefined
+          ? noneHost().note
+          : "Events were requested from a declared tape; nothing was simulated. Each run records the host it actually used and that tape's hash. A tape run proves the harness, never the game.",
+    },
     counts,
     exitCode,
     note:
@@ -431,6 +479,7 @@ function unreadableReport(file: string, error: Error, artifacts: Readonly<Record
     seed: null,
     maxTicks: null,
     status: "Unreadable",
+    host: effectiveHost(noneHost()),
     finalTick: 0,
     outcome: "the fixture file could not be read",
     counts: { requested: 0, executed: 0, passed: 0, failed: 0, blocked: 0, skippedChecks: 0 },

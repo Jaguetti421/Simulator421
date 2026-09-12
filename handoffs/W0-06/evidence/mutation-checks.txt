@@ -1,17 +1,19 @@
 Mutation checks — W0-06. Each mutation is applied to the source, the lab suite is run, then the file is restored.
-Command: npx vitest run packages/lab  (baseline: 8 files, 99 tests, all passing)
+Command: npx vitest run packages/lab  (baseline: 8 files, 100 tests, all passing)
 
 1. Blocked checks stop forcing a nonzero exit (a build that cannot evaluate a check would exit 0):
-   -> Tests 5 failed | 94 passed (99)
+   -> Tests 5 failed | 95 passed (100)
 2. Assertions matching on reasonId are evaluated anyway (the contract gap turns into a fake Failed):
-   -> Tests 1 failed | 98 passed (99)
+   -> Tests 1 failed | 99 passed (100)
 3. The none host reports an empty event stream instead of no run (Blocked would become Failed):
-   -> Tests 5 failed | 94 passed (99)
+   -> Tests 5 failed | 95 passed (100)
 4. inspect trusts the recorded verdict digest instead of recomputing it (an edited bundle would read as intact):
-   -> Tests 1 failed | 98 passed (99)
+   -> Tests 1 failed | 99 passed (100)
 5. The tape adapter stops checking that sequences are monotonic:
-   -> Tests 1 failed | 98 passed (99)
+   -> Tests 1 failed | 99 passed (100)
 6. Tape events are no longer validated against the frozen CommittedEvent contract:
-   -> Tests 2 failed | 97 passed (99)
+   -> Tests 2 failed | 98 passed (100)
+7. The summary claims every fixture used the requested host instead of the host it actually ran on:
+   -> Tests 1 failed | 99 passed (100)
 
-All mutations restored; baseline re-run: Tests 99 passed (99)
+All mutations restored; baseline re-run: Tests 100 passed (100)

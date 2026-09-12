@@ -3,9 +3,9 @@
  "command": "inspect",
  "status": "FAILED_RUN_REOPENED",
  "bundle": {
-  "directory": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle",
+  "directory": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle",
   "bundleVersion": 1,
-  "createdAtIso": "2026-09-12T02:04:27.489Z",
+  "createdAtIso": "2026-09-12T02:09:48.327Z",
   "verdictDigest": "sha256:19b0a04a49ab42a95a5c95400e695f92650b76f11b71ff61a14e91cc9435510d",
   "runStatus": "Failed"
  },
@@ -83,13 +83,13 @@
  ],
  "validationErrors": [],
  "evidence": {
-  "fixture": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/fixture.json",
-  "events": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/events.json",
-  "log": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/run.log",
-  "summary": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/run-summary.json"
+  "fixture": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle/fixture.json",
+  "events": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle/events.json",
+  "log": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle/run.log",
+  "summary": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle/run-summary.json"
  },
  "reproduce": {
-  "command": "node packages/lab/dist/cli/index.js run --fixture handoffs/W0-06/evidence/demo/W0-06-DEMO-FAIL.json --events handoffs/W0-06/evidence/demo/tape.json --evidence /tmp/w006out/fail",
+  "command": "node packages/lab/dist/cli/index.js run --fixture handoffs/W0-06/evidence/demo/W0-06-DEMO-FAIL.json --events handoffs/W0-06/evidence/demo/tape.json --evidence clanlab-out",
   "note": "Run it from the repository root. The copies in this bundle are the exact inputs the verdict used; their hashes are recorded above and checked by `clanlab inspect`."
  },
  "note": "This is a reopened failing run, not a pass. Exit 0 means the bundle is internally consistent: the copied inputs hash to what the manifest recorded and the verdict digest recomputes."

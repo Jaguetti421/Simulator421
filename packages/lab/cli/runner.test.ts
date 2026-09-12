@@ -230,8 +230,23 @@ describe("the machine summary", () => {
     const { summary } = run([writeFixture(fixtureDoc())], { eventsPath: writeTape([event()]) });
     expect(summary.host.gateEligible).toBe(false);
     expect(summary.host.watermark).toBe("FakeSim");
+    expect(summary.runs[0]?.host.gateEligible).toBe(false);
     expect(summary.runs[0]?.gateEvidence.eligible).toBe(false);
     expect(summary.runs[0]?.gateEvidence.reason).toContain("FakeSim never passes a production gate");
+  });
+
+  it("separates the host that was requested from the hosts the fixtures actually ran on", () => {
+    const bound = writeFixture(fixtureDoc(), "bound.json");
+    const unbound = writeFixture(fixtureDoc({ id: "W0-06-OTHER" }), "other.json");
+    const { summary } = run([bound, unbound], { eventsPath: writeTape([event()]) });
+
+    expect(summary.host.requested).toBe("tape");
+    expect(summary.host.kindsUsed).toEqual(["none", "tape"]);
+    // The second fixture is not the one the tape declares, so it never got a tape host.
+    expect(summary.runs[0]?.host.kind).toBe("tape");
+    expect(summary.runs[0]?.host.tape?.producedBy).toContain("not a simulation");
+    expect(summary.runs[1]?.host.kind).toBe("none");
+    expect(summary.runs[1]?.hostErrors[0]?.code).toBe("TapeFixtureMismatch");
   });
 
   it("reports skipped checks that could not run, without letting them look like passes", () => {

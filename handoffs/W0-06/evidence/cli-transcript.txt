@@ -1,7 +1,7 @@
 === 1. run with the default (none) host on the three supplied examples — must be BLOCKED, exit 4 ===
 exit=4
 counts: {"fixtures": 3, "requested": 6, "executed": 0, "passed": 0, "failed": 0, "blocked": 6, "skippedChecks": 4, "invalid": 0, "unreadable": 0}
-host: none | gateEligible: False | watermark: FakeSim
+host requested: none | kindsUsed: ['none'] | gateEligible: False | watermark: FakeSim
 statuses: ['Blocked', 'Blocked', 'Blocked']
 any Passed in output: False
 
@@ -9,30 +9,28 @@ any Passed in output: False
 exit=1
 counts: {"requested": 2, "executed": 2, "passed": 1, "failed": 1, "blocked": 0, "skippedChecks": 0}
 assertions: [(0, 'EventCountGte', 'Passed'), (1, 'EventCountGte', 'Failed')]
-bundle: /tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/bundle.json
-verdictDigest: sha256:19b0a04a49ab42a95a5c95400e695f92650b76f11b71ff61a14e91cc9435510d
+effective host: tape | tape events: 2
+bundle: clanlab-out/W0-06-DEMO-FAIL/bundle/bundle.json | digest: sha256:19b0a04a49ab42a95a5c95400e695f92650b76f11b71ff61a14e91cc9435510d
 
 === 3. clanlab inspect reopens the bundle ===
 exit=0
 status: FAILED_RUN_REOPENED | integrity: {"fixtureCopyMatches": true, "eventsCopyMatches": true, "verdictDigestMatches": true, "missingArtifacts": [], "intact": true}
 failing assertion: EventCountGte index 1 | evaluatedAtTick 31 | window {'fromTick': 1, 'throughTick': 50}
-evidence: {"fixture": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/fixture.json", "events": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/events.json", "log": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/run.log", "summary": "/tmp/w006out/fail/W0-06-DEMO-FAIL/bundle/run-summary.json"}
-reproduce: node packages/lab/dist/cli/index.js run --fixture handoffs/W0-06/evidence/demo/W0-06-DEMO-FAIL.json --events handoffs/W0-06/evidence/demo/tape.json --evidence /tmp/w006out/fail
+evidence: {"fixture": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle/fixture.json", "events": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle/events.json", "log": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle/run.log", "summary": "/home/claude/repo/clanlab-out/W0-06-DEMO-FAIL/bundle/run-summary.json"}
+reproduce: node packages/lab/dist/cli/index.js run --fixture handoffs/W0-06/evidence/demo/W0-06-DEMO-FAIL.json --events handoffs/W0-06/evidence/demo/tape.json --evidence clanlab-out
 
 === 4. bundle contents ===
-total 28
-drwxr-xr-x 2 root root 4096 Sep 12 02:04 .
-drwxr-xr-x 3 root root 4096 Sep 12 02:04 ..
--rw-r--r-- 1 root root 3483 Sep 12 02:04 bundle.json
--rw-r--r-- 1 root root  780 Sep 12 02:04 events.json
--rw-r--r-- 1 root root  909 Sep 12 02:04 fixture.json
--rw-r--r-- 1 root root 1773 Sep 12 02:04 run-summary.json
--rw-r--r-- 1 root root  852 Sep 12 02:04 run.log
-=== 5. reproducibility through the CLI: same failure twice, two different evidence directories ===
+bundle.json
+events.json
+fixture.json
+run-summary.json
+run.log
+
+=== 5. reproducibility: the same failure twice, two evidence directories, one second apart ===
 run a exit=1
 run b exit=1
 verdictDigest equal: True sha256:19b0a04a49ab42a95a5...
-createdAtIso differs: True 2026-09-12T02:04:45.411Z 2026-09-12T02:04:46.478Z
+createdAtIso differs: True 2026-09-12T02:09:48.461Z 2026-09-12T02:09:49.526Z
 failures equal: True
 
 === 6. the only way to exit 0: every requested check supported and passed ===

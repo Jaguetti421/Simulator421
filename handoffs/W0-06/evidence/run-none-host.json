@@ -6,7 +6,7 @@
   "build": {
    "tool": "clanlab",
    "version": "0.1.0-w0-06",
-   "sourceDigest": "sha256:f3ef077e0459e09e3ec611e03eb61ea716dc3e62668f83c618d610a44553d380",
+   "sourceDigest": "sha256:f7d168c7274c52cb982418e1aebb8e88ea7164e62aef4d64ef593d41f51d5ce0",
    "sourceKind": "dist",
    "files": 16
   },
@@ -24,11 +24,14 @@
   "fixtureDslVersion": 1
  },
  "host": {
-  "kind": "none",
-  "id": "none",
+  "requested": "none",
+  "eventsPath": null,
   "watermark": "FakeSim",
   "gateEligible": false,
   "simulated": false,
+  "kindsUsed": [
+   "none"
+  ],
   "unsupportedSystems": [
    "tick loop (W0-07)",
    "actors, movement, needs, crafting, combat (P1+)",
@@ -36,14 +39,6 @@
    "snapshots, restore and canonical hashes (W0-08)",
    "careers (never written by a fixture)"
   ],
-  "unmatchableFields": [
-   {
-    "field": "reasonId",
-    "reason": "CommittedEvent at contract v0 has no reasonId field and its payload fields are closed, so no run can report the reason a command was rejected",
-    "availableFrom": "the packet that freezes the rejection event payload (P1-12, public command validator)"
-   }
-  ],
-  "finalTick": 0,
   "note": "No simulation exists at W0-06. No world was constructed, no tick ran and no event was produced; every assertion is Blocked."
  },
  "counts": {
@@ -78,6 +73,12 @@
     }
    },
    "status": "Blocked",
+   "host": {
+    "kind": "none",
+    "id": "none",
+    "watermark": "FakeSim",
+    "gateEligible": false
+   },
    "finalTick": 0,
    "outcome": "no assertion failed, and at least one could not be evaluated by this host",
    "counts": {
@@ -155,6 +156,12 @@
     }
    },
    "status": "Blocked",
+   "host": {
+    "kind": "none",
+    "id": "none",
+    "watermark": "FakeSim",
+    "gateEligible": false
+   },
    "finalTick": 0,
    "outcome": "no assertion failed, and at least one could not be evaluated by this host",
    "counts": {
@@ -238,6 +245,12 @@
     }
    },
    "status": "Blocked",
+   "host": {
+    "kind": "none",
+    "id": "none",
+    "watermark": "FakeSim",
+    "gateEligible": false
+   },
    "finalTick": 0,
    "outcome": "no assertion failed, and at least one could not be evaluated by this host",
    "counts": {

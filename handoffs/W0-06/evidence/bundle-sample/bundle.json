@@ -1,6 +1,6 @@
 {
  "bundleVersion": 1,
- "createdAtIso": "2026-09-12T02:04:54.995Z",
+ "createdAtIso": "2026-09-12T02:09:48.327Z",
  "verdictDigest": "sha256:19b0a04a49ab42a95a5c95400e695f92650b76f11b71ff61a14e91cc9435510d",
  "status": "Failed",
  "fixture": {
@@ -16,7 +16,7 @@
   "build": {
    "tool": "clanlab",
    "version": "0.1.0-w0-06",
-   "sourceDigest": "sha256:f3ef077e0459e09e3ec611e03eb61ea716dc3e62668f83c618d610a44553d380",
+   "sourceDigest": "sha256:f7d168c7274c52cb982418e1aebb8e88ea7164e62aef4d64ef593d41f51d5ce0",
    "sourceKind": "dist",
    "files": 16
   },
