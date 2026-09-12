@@ -262,7 +262,7 @@
    ],
    "refs": "TP 3,8,12",
    "gate": null,
-   "status": "IN_PROGRESS",
+   "status": "READY_FOR_REVIEW",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A0"

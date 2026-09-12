@@ -1,0 +1,4 @@
+records: 23
+recordsDigest: sha256:3fe2ced169a071ba3e25bcc1096a993d8ba85643e558365bc768406f72efc292
+previous (W0 baseline): sha256:291f9b94ce3a4e8ed1b25bddb7258cca73353fed2c451cbe3fb2331e8c253521
+new records: ActionResources, ActionExecution, ActionInterruption, ActionCompletion, ActionFailure, StateSectionSet, AppearanceRecipe
