@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CLANLAB_VERSION, PLANNED_COMMANDS, runCli } from "./run.js";
 
 /** Commands that have shipped; the rest must still report NOT_IMPLEMENTED. */
-const IMPLEMENTED_COMMANDS = ["validate", "run", "inspect"];
+const IMPLEMENTED_COMMANDS = ["validate", "run", "inspect", "render"];
 
 function capture() {
   const out: string[] = [];
@@ -87,6 +87,10 @@ describe("clanlab CLI dispatch", () => {
     const noBundle = capture();
     expect(runCli(["inspect"], noBundle.io)).toBe(2);
     expect(noBundle.err.join("\n")).toContain("no bundle directory given");
+
+    const noOut = capture();
+    expect(runCli(["render", "--fixture", "x.json", "--tick", "1"], noOut.io)).toBe(2);
+    expect(noOut.err.join("\n")).toContain("--fixture, --tick and --out are all required");
   });
 
   it("documents every exit code it can return, including BLOCKED", () => {

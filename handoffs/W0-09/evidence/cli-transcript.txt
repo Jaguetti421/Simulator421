@@ -1,0 +1,25 @@
+render exit=0
+=== clanlab render PRESENT-READ-01 --tick 300 ===
+exit 0 | png 200918 bytes | sha256:6229a6b86b167e21ec3...
+scene: 137 actors, 1 law boundaries, terrain Unavailable
+nameplate overlap: 17 / 137 = 0.1241 (threshold 0.35, TUNE) -> True
+ring contrast min: 6.24 (threshold 3, TUNE) -> True
+  by class: {"Contestant": {"againstDisc": 7.22, "againstBackground": 6.24}, "Wildlife": {"againstDisc": 9.8, "againstBackground": 8.47}, "Guest": {"againstDisc": 8.75, "againstBackground": 7.56}}
+action icons distinct: 12 / 12 -> True
+skipped: ['TerrainUnavailable', 'RingEncodesKindNotClan', 'ActionStatesNotAssigned']
+buildHash: sha256:572f9f6e52b91c13644...
+
+=== PNG metadata read back out of the image ===
+{
+ "Actors": "137",
+ "BuildHash": "sha256:572f9f6e52b91c136442d9665d97dd40fd67c4eee4addb637586a0672216064d",
+ "Fixture": "PRESENT-READ-01",
+ "SceneVersion": "1",
+ "Software": "clanlab-readability-2d-v1",
+ "Terrain": "Unavailable: map compiler (P1) \u0014 no terrain classes exist to draw yet, so the ground is one declared class",
+ "Tick": "300"
+}
+
+=== purity: two renders of the same snapshot ===
+6229a6b86b167e21ec3d3a2b6c800f4fafd641249ea6bc68e199efa8709a50f8 handoffs/W0-09/evidence/present-read-01-t300.png
+6229a6b86b167e21ec3d3a2b6c800f4fafd641249ea6bc68e199efa8709a50f8 /tmp/again.png

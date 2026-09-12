@@ -2,6 +2,7 @@ import { mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { buildSummary, validateFixtureFile } from "./validate.js";
 import { inspectBundle } from "./inspect.js";
 import { runFixtures } from "./runner.js";
+import { renderFixture } from "../render/command.js";
 import { DEFAULT_LOG_MAX_BYTES } from "./logfile.js";
 
 /**
@@ -13,7 +14,7 @@ import { DEFAULT_LOG_MAX_BYTES } from "./logfile.js";
  *   3  NOT_IMPLEMENTED — the command exists in the plan but its packet has not shipped
  *   4  BLOCKED — nothing failed, but a requested check could not be evaluated by this build
  */
-export const CLANLAB_VERSION = "0.1.0-w0-06";
+export const CLANLAB_VERSION = "0.1.0-w0-09";
 export const DEFAULT_EVIDENCE_DIR = "clanlab-out";
 
 /**
@@ -178,6 +179,63 @@ function runRun(args: readonly string[], io: CliIo, now: () => string): number {
   return exitCode;
 }
 
+/** `clanlab render --fixture <f> --tick <t> --out <png> [--summary <path>]` (W0-09). */
+function runRender(args: readonly string[], io: CliIo): number {
+  let fixturePath: string | undefined;
+  let outPath: string | undefined;
+  let summaryPath: string | undefined;
+  let tick: number | undefined;
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i] as string;
+    const next = args[i + 1];
+    const needs = (): boolean => {
+      if (next === undefined) {
+        io.err(`clanlab render: ${arg} needs a value`);
+        return false;
+      }
+      return true;
+    };
+    if (arg === "--fixture") {
+      if (!needs()) return 2;
+      fixturePath = next;
+      i += 1;
+    } else if (arg === "--out") {
+      if (!needs()) return 2;
+      outPath = next;
+      i += 1;
+    } else if (arg === "--summary") {
+      if (!needs()) return 2;
+      summaryPath = next;
+      i += 1;
+    } else if (arg === "--tick") {
+      if (!needs()) return 2;
+      tick = Number(next);
+      if (!Number.isSafeInteger(tick) || tick < 0) {
+        io.err(`clanlab render: --tick needs a non-negative integer, got ${next}`);
+        return 2;
+      }
+      i += 1;
+    } else if (arg.startsWith("--")) {
+      io.err(`clanlab render: unknown option ${arg}`);
+      return 2;
+    }
+  }
+  if (fixturePath === undefined || outPath === undefined || tick === undefined) {
+    io.err("clanlab render: --fixture, --tick and --out are all required");
+    return 2;
+  }
+
+  const result = renderFixture({ fixturePath, tick, outPath, version: CLANLAB_VERSION });
+  if ("error" in result) {
+    io.err(`clanlab render: ${result.error}`);
+    return result.exitCode;
+  }
+  const text = `${JSON.stringify(result.summary, null, 1)}\n`;
+  if (summaryPath !== undefined) writeFileSync(summaryPath, text);
+  io.out(text.trimEnd());
+  return result.exitCode;
+}
+
 /** `clanlab inspect --failure <directory>` — reopen a failure bundle. */
 function runInspect(args: readonly string[], io: CliIo): number {
   let directory: string | undefined;
@@ -220,7 +278,7 @@ export const PLANNED_COMMANDS: Readonly<Record<string, { implementedBy: string; 
   inspect: { implementedBy: "W0-06", summary: "Reopen a failure bundle: failing assertions, ticks, evidence paths. IMPLEMENTED." },
   batch: { implementedBy: "P3 (seed batches)", summary: "Run a seed batch for a profile." },
   replay: { implementedBy: "W0-08 (snapshots and hashes)", summary: "Replay a bundle and compare canonical hashes." },
-  render: { implementedBy: "W0-09", summary: "Render a snapshot with the 2D readability renderer." },
+  render: { implementedBy: "W0-09", summary: "Render a snapshot with the 2D readability renderer; readability checks decide the exit code. IMPLEMENTED." },
 };
 
 export function usage(): string[] {
@@ -243,6 +301,12 @@ export function usage(): string[] {
     `  --evidence <dir>       Where logs and bundles are written (default: ${DEFAULT_EVIDENCE_DIR})`,
     "  --no-bundle            Do not write failure bundles",
     "  --log-max-bytes <n>    Per-run log ceiling (default: " + String(DEFAULT_LOG_MAX_BYTES) + ")",
+    "",
+    "clanlab render options:",
+    "  --fixture <path>       Fixture whose map seed builds the world",
+    "  --tick <n>             Tick to advance to before rendering",
+    "  --out <path.png>       Where to write the PNG (metadata is embedded in it)",
+    "  --summary <path>       Write the render summary JSON to a file as well as stdout",
     "",
     "clanlab inspect options:",
     "  --failure <dir>        Bundle directory written by a failing run",
@@ -280,6 +344,7 @@ export function runCli(argv: readonly string[], io: CliIo, deps: CliDeps = {}): 
   if (command === "validate") return runValidate(rest, io);
   if (command === "run") return runRun(rest, io, now);
   if (command === "inspect") return runInspect(rest, io);
+  if (command === "render") return runRender(rest, io);
 
   const planned = PLANNED_COMMANDS[command];
   if (planned === undefined) {

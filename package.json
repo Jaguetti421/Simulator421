@@ -2,7 +2,7 @@
   "name": "lastclan",
   "version": "0.0.0",
   "private": true,
-  "description": "The Last Clan \u2014 web build (browser survival god game). npm workspace root.",
+  "description": "The Last Clan — web build (browser survival god game). npm workspace root.",
   "type": "module",
   "engines": {
     "node": ">=22.12.0",
@@ -31,6 +31,7 @@
     "@thi.ng/random": "4.1.54",
     "@types/node": "22.20.2",
     "ajv": "8.20.0",
+    "canvas": "^3.2.0",
     "eslint": "10.10.0",
     "fake-indexeddb": "6.2.2",
     "fast-check": "4.10.0",

@@ -1,0 +1,2225 @@
+{
+ "schemaVersion": 1,
+ "id": "PRESENT-READ-01",
+ "gate": "G0",
+ "evidenceStatus": "IMPLEMENTED_UNVERIFIED",
+ "profile": {
+  "kind": "Standard100",
+  "definitions": "Prototype8",
+  "contestantCount": 100,
+  "writeCareer": false
+ },
+ "map": {
+  "recipeId": "bootstrap-flat",
+  "seed": 4107
+ },
+ "setup": {
+  "actors": [
+   {
+    "id": "C001",
+    "positionMm": [
+     341525,
+     365561,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C002",
+    "positionMm": [
+     140484,
+     16297,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C003",
+    "positionMm": [
+     151365,
+     437380,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C004",
+    "positionMm": [
+     202638,
+     269198,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C005",
+    "positionMm": [
+     508434,
+     797909,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C006",
+    "positionMm": [
+     604369,
+     139265,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C007",
+    "positionMm": [
+     498160,
+     425572,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C008",
+    "positionMm": [
+     155517,
+     601914,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C009",
+    "positionMm": [
+     542660,
+     603788,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C010",
+    "positionMm": [
+     177573,
+     154438,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C011",
+    "positionMm": [
+     787754,
+     16190,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C012",
+    "positionMm": [
+     561745,
+     296462,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C013",
+    "positionMm": [
+     384923,
+     223882,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C014",
+    "positionMm": [
+     720377,
+     625241,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C015",
+    "positionMm": [
+     429230,
+     353198,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C016",
+    "positionMm": [
+     434116,
+     764661,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C017",
+    "positionMm": [
+     557736,
+     580712,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C018",
+    "positionMm": [
+     791789,
+     454669,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C019",
+    "positionMm": [
+     329028,
+     611523,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C020",
+    "positionMm": [
+     287922,
+     691035,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C021",
+    "positionMm": [
+     6904,
+     310193,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C022",
+    "positionMm": [
+     449568,
+     132324,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C023",
+    "positionMm": [
+     355662,
+     772705,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C024",
+    "positionMm": [
+     158741,
+     766031,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C025",
+    "positionMm": [
+     339568,
+     602603,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C026",
+    "positionMm": [
+     63760,
+     753119,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C027",
+    "positionMm": [
+     37777,
+     71164,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C028",
+    "positionMm": [
+     657958,
+     614469,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C029",
+    "positionMm": [
+     298037,
+     325834,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C030",
+    "positionMm": [
+     35939,
+     342869,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C031",
+    "positionMm": [
+     620779,
+     667624,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C032",
+    "positionMm": [
+     341062,
+     765366,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C033",
+    "positionMm": [
+     659772,
+     58194,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C034",
+    "positionMm": [
+     417628,
+     428788,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C035",
+    "positionMm": [
+     661633,
+     298912,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C036",
+    "positionMm": [
+     80035,
+     464937,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C037",
+    "positionMm": [
+     226622,
+     472288,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C038",
+    "positionMm": [
+     389719,
+     299903,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C039",
+    "positionMm": [
+     316929,
+     462450,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C040",
+    "positionMm": [
+     156064,
+     530834,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C041",
+    "positionMm": [
+     670878,
+     62986,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C042",
+    "positionMm": [
+     399177,
+     663810,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C043",
+    "positionMm": [
+     474035,
+     594411,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C044",
+    "positionMm": [
+     245003,
+     242544,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C045",
+    "positionMm": [
+     608658,
+     373119,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C046",
+    "positionMm": [
+     455054,
+     312993,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C047",
+    "positionMm": [
+     594170,
+     782695,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C048",
+    "positionMm": [
+     293161,
+     310593,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C049",
+    "positionMm": [
+     326105,
+     285708,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C050",
+    "positionMm": [
+     414292,
+     280765,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C051",
+    "positionMm": [
+     64391,
+     753047,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C052",
+    "positionMm": [
+     410691,
+     557994,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C053",
+    "positionMm": [
+     352434,
+     374216,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C054",
+    "positionMm": [
+     612596,
+     670164,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C055",
+    "positionMm": [
+     165494,
+     621390,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C056",
+    "positionMm": [
+     435865,
+     16206,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C057",
+    "positionMm": [
+     421608,
+     285097,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C058",
+    "positionMm": [
+     24580,
+     21607,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C059",
+    "positionMm": [
+     525395,
+     669626,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C060",
+    "positionMm": [
+     151728,
+     727646,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C061",
+    "positionMm": [
+     749412,
+     264073,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C062",
+    "positionMm": [
+     140580,
+     658057,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C063",
+    "positionMm": [
+     418370,
+     776371,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C064",
+    "positionMm": [
+     215090,
+     8224,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C065",
+    "positionMm": [
+     475740,
+     362703,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C066",
+    "positionMm": [
+     607899,
+     102995,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C067",
+    "positionMm": [
+     323050,
+     367175,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C068",
+    "positionMm": [
+     117973,
+     49529,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C069",
+    "positionMm": [
+     56171,
+     657825,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C070",
+    "positionMm": [
+     331035,
+     667714,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C071",
+    "positionMm": [
+     390649,
+     562366,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C072",
+    "positionMm": [
+     395413,
+     29117,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C073",
+    "positionMm": [
+     713833,
+     622134,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C074",
+    "positionMm": [
+     733347,
+     556479,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C075",
+    "positionMm": [
+     205476,
+     770367,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C076",
+    "positionMm": [
+     393955,
+     338106,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C077",
+    "positionMm": [
+     477275,
+     237706,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C078",
+    "positionMm": [
+     374355,
+     118717,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C079",
+    "positionMm": [
+     563799,
+     224911,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C080",
+    "positionMm": [
+     193766,
+     196777,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C081",
+    "positionMm": [
+     329559,
+     576265,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C082",
+    "positionMm": [
+     17079,
+     179232,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C083",
+    "positionMm": [
+     141511,
+     733982,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C084",
+    "positionMm": [
+     528684,
+     714502,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C085",
+    "positionMm": [
+     427323,
+     564770,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C086",
+    "positionMm": [
+     629822,
+     633606,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C087",
+    "positionMm": [
+     178299,
+     674895,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C088",
+    "positionMm": [
+     799292,
+     507200,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C089",
+    "positionMm": [
+     156138,
+     531737,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C090",
+    "positionMm": [
+     352571,
+     714261,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C091",
+    "positionMm": [
+     790784,
+     700592,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C092",
+    "positionMm": [
+     364103,
+     40984,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C093",
+    "positionMm": [
+     296844,
+     167342,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C094",
+    "positionMm": [
+     187667,
+     341530,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C095",
+    "positionMm": [
+     711601,
+     372971,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C096",
+    "positionMm": [
+     399036,
+     657082,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C097",
+    "positionMm": [
+     80231,
+     314838,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C098",
+    "positionMm": [
+     419288,
+     13334,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C099",
+    "positionMm": [
+     200506,
+     795178,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "C100",
+    "positionMm": [
+     575517,
+     395115,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W001",
+    "positionMm": [
+     580773,
+     339595,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W002",
+    "positionMm": [
+     270046,
+     418788,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W003",
+    "positionMm": [
+     609173,
+     719435,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W004",
+    "positionMm": [
+     165008,
+     478166,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W005",
+    "positionMm": [
+     376874,
+     239142,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W006",
+    "positionMm": [
+     763674,
+     195498,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W007",
+    "positionMm": [
+     476115,
+     340511,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W008",
+    "positionMm": [
+     96798,
+     564776,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W009",
+    "positionMm": [
+     454175,
+     799139,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W010",
+    "positionMm": [
+     442051,
+     517912,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W011",
+    "positionMm": [
+     590369,
+     765667,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W012",
+    "positionMm": [
+     514390,
+     733605,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W013",
+    "positionMm": [
+     215120,
+     55401,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W014",
+    "positionMm": [
+     742473,
+     149413,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W015",
+    "positionMm": [
+     145879,
+     255952,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W016",
+    "positionMm": [
+     482274,
+     617995,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W017",
+    "positionMm": [
+     204378,
+     75007,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W018",
+    "positionMm": [
+     241476,
+     93858,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W019",
+    "positionMm": [
+     115540,
+     494641,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W020",
+    "positionMm": [
+     555117,
+     736614,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W021",
+    "positionMm": [
+     763673,
+     549053,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W022",
+    "positionMm": [
+     336996,
+     209766,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W023",
+    "positionMm": [
+     381586,
+     451213,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W024",
+    "positionMm": [
+     563369,
+     68830,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W025",
+    "positionMm": [
+     290992,
+     729591,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W026",
+    "positionMm": [
+     166624,
+     20339,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W027",
+    "positionMm": [
+     533887,
+     375769,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W028",
+    "positionMm": [
+     352772,
+     409459,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W029",
+    "positionMm": [
+     440306,
+     512380,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W030",
+    "positionMm": [
+     381113,
+     472272,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W031",
+    "positionMm": [
+     344697,
+     419463,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W032",
+    "positionMm": [
+     438286,
+     237004,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W033",
+    "positionMm": [
+     46357,
+     684235,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W034",
+    "positionMm": [
+     324320,
+     283349,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W035",
+    "positionMm": [
+     613833,
+     735551,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "W036",
+    "positionMm": [
+     671384,
+     45288,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   },
+   {
+    "id": "G001",
+    "positionMm": [
+     786337,
+     198199,
+     0
+    ],
+    "vitalsMilli": {
+     "health": 100000,
+     "fullness": 85000,
+     "fatigue": 10000,
+     "exposure": 0,
+     "stamina": 100000
+    },
+    "inventory": {}
+   }
+  ],
+  "precommittedLaws": []
+ },
+ "schedule": [],
+ "maxTicks": 600,
+ "assertions": [
+  {
+   "kind": "EventCountEq",
+   "match": {
+    "type": "tick.committed"
+   },
+   "count": 600
+  }
+ ],
+ "notes": "Readability scene for `clanlab render` (W0-09). The readability checks — nameplate overlap ratio, ring contrast, action-icon distinctness — are NOT expressible in fixture DSL v1: its assertion kinds are EventCount*, Invariant (four registered names, none of them about presentation) and HashEqualVariant. They are executed instead by `clanlab render`, which exits 1 when any of them fails, and by packages/lab/render/render.test.ts. Adding a readability assertion kind to the DSL is a named gap for a later lab packet; until then this fixture carries only what the DSL can honestly express, and the render summary is where the readability verdict lives."
+}

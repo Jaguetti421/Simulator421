@@ -1,0 +1,84 @@
+{
+ "tool": "clanlab",
+ "command": "render",
+ "renderer": "clanlab-readability-2d-v1",
+ "fixture": {
+  "path": "tests/fixtures/PRESENT-READ-01.json",
+  "id": "PRESENT-READ-01",
+  "seed": 4107,
+  "declaredActors": 137
+ },
+ "tick": 300,
+ "out": "handoffs/W0-09/evidence/present-read-01-t300.png",
+ "bytes": 200918,
+ "pngSha256": "sha256:748772bf748c2d949bcf9792c9c9d5c6a0d8eb102fa9cae0c030753807768786",
+ "scene": {
+  "width": 900,
+  "height": 900,
+  "actors": 137,
+  "laws": 1,
+  "terrain": {
+   "classes": [
+    "unavailable"
+   ],
+   "status": "Unavailable",
+   "availableFrom": "map compiler (P1) — no terrain classes exist to draw yet, so the ground is one declared class"
+  }
+ },
+ "readability": {
+  "nameplates": {
+   "total": 137,
+   "overlapping": 17,
+   "ratio": 0.1241,
+   "threshold": 0.35,
+   "pass": true
+  },
+  "ringContrast": {
+   "byClass": {
+    "Contestant": {
+     "againstDisc": 7.22,
+     "againstBackground": 6.24
+    },
+    "Wildlife": {
+     "againstDisc": 9.8,
+     "againstBackground": 8.47
+    },
+    "Guest": {
+     "againstDisc": 8.75,
+     "againstBackground": 7.56
+    }
+   },
+   "minimum": 6.24,
+   "threshold": 3,
+   "pass": true
+  },
+  "actionIcons": {
+   "total": 12,
+   "distinct": 12,
+   "duplicates": [],
+   "pass": true,
+   "note": "icon slot names are provisional; the canonical twelve action states are frozen by the packet that implements actions (P1)"
+  },
+  "pass": true,
+  "thresholdStatus": "TUNE"
+ },
+ "skippedChecks": [
+  {
+   "code": "TerrainUnavailable",
+   "message": "no map compiler exists, so terrain classes were not drawn; the ground is one declared 'unavailable' class",
+   "availableFrom": "map compiler (P1)"
+  },
+  {
+   "code": "RingEncodesKindNotClan",
+   "message": "clans do not exist yet, so the actor ring encodes actor kind; the contrast check measures the ring either way",
+   "availableFrom": "clan packets (P2)"
+  },
+  {
+   "code": "ActionStatesNotAssigned",
+   "message": "no actor has an action state yet, so icons are assigned deterministically from actor id purely to exercise the icon set",
+   "availableFrom": "the packet that implements actions (P1)"
+  }
+ ],
+ "buildHash": "sha256:5f600653e27534512e87226bc94ac987f40524dd029c89759be3290185679dd7",
+ "note": "8 workload omissions apply (the world is the W0-07 synthetic kernel). This is evidence for layout and readability, not for 3D quality."
+}
