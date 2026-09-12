@@ -5,3 +5,4 @@
  * geometry manifest that render and simulation both read.
  */
 export * from "./terrain.js";
+export * from "./visibility.js";

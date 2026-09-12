@@ -1,0 +1,10 @@
+=== P1-03 line-of-sight evidence ===
+  open ground, 8 m                  Visible         visible=true  steps=8    
+  across the valley, 280 m          Visible         visible=true  steps=280  
+  through a declared obstacle       Blocked         visible=false steps=10   blockedAt {"cx":298,"cy":300,"reason":"Obstacle"}
+  over a ridge (terrain block)      Blocked         visible=false steps=27   blockedAt {"cx":227,"cy":400,"reason":"Terrain"}
+  reverse direction (symmetry)      Blocked         visible=false steps=27   blockedAt {"cx":227,"cy":400,"reason":"Terrain"}
+  beyond sight range                OutOfRange      visible=false steps=0    
+  budget too small                  BudgetExhausted visible=false steps=0    budget {"allowedCells":10,"neededCells":100}
+  two-phase query: seen=["C001"] results=["C001:Visible","C002:BudgetExhausted"]
+  static visibility inputs: ["terrain.height","terrain.cover","terrain.openness"]
