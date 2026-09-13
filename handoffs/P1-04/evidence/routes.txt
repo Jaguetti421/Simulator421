@@ -1,0 +1,13 @@
+=== P1-04 route evidence ===
+known cells: 2601 of 640000
+  near goal, known ground       Complete        path=11   expanded=10    
+  goal beyond knowledge         Partial         path=43   expanded=2494  portal {"cx":225,"cy":383,"regionFrom":22,"regionTo":15}
+  budget of 3                   BudgetExhausted path=0    expanded=4     
+  one known cell                NoKnownRoute    path=0    expanded=1     
+--- unobserved change cannot alter a route ---
+  walled off 40 cells at cx=320 (unobserved): identical route = true
+--- repeated partials ---
+  attempt 1: Partial
+  attempt 2: Partial
+  attempt 3: Partial -> PortalAbandoned
+  attempt 4: NoKnownRoute -> GaveUp

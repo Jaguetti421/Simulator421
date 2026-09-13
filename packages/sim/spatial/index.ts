@@ -6,3 +6,5 @@
  */
 export * from "./terrain.js";
 export * from "./visibility.js";
+export { DEFAULT_ROUTE_BUDGET, findRoute, PORTAL_REPEAT_LIMIT, RouteKnowledge, RouteProgress, stepDurationTicks, UNKNOWN } from "./route.js";
+export type { RouteCell, RouteResult, RouteStatus } from "./route.js";
