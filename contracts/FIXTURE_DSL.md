@@ -44,3 +44,33 @@ The Godot client uses a real rendered capture entry point, for example `--captur
 ## Regression registry beyond the 51 GDD scenes
 
 P0/P1 define SAVE-ROUNDTRIP, SAVE-FREQUENCY, WHY-TRACE, BRIDGE-OWNERSHIP, INFO-ISOLATION, ROUTE-PROGRESS and PERF-OPS-BASE. P2/P3 add membership/schedule boundary matrices, Custom command refusal, scenario provenance and full-population traffic. P4 adds THREAD-FACTS, SAGA-ESCAPE and IDENTITY-100. P6 adds DSL-FUZZ, ARCH-BOUNDARIES, CRASH-RECOVERY and CLEAN-PC-OFFLINE. A7 owns adapters and evidence; game owners implement necessary behavior. Refer to GDD_TRACEABILITY.md for exact gate homes.
+
+
+## Addendum — fixture DSL v2 (12 September 2026)
+
+Five registry fixtures state claims that v1's assertion kinds cannot express:
+PRESENT-READ-01 (nameplate overlap, ring contrast, icon distinctness),
+INFO-ISOLATION (decision code cannot reach world state), ROUTE-PROGRESS
+(a repeated partial route advances or recovers), and the sight and boundary
+claims behind them. Before this addendum those fixtures either carried
+assertions about something else or carried none, and the claim lived only in a
+unit test — invisible to the harness that is supposed to run the registry.
+
+v2 adds one assertion kind:
+
+```json
+{ "kind": "ToolCheck", "check": "<registered check>", "expect": "Pass" }
+```
+
+- `check` comes from a closed registry (`TOOL_CHECKS` in the envelope), exactly
+  as invariant names do. An unregistered check fails registration.
+- `expect` is `Pass` or `Fail`. `Fail` lets a fixture pin a known defect.
+- A **provider** performs the check. `clanlab render` performs the three
+  readability checks today; `clanlab run` reports every ToolCheck as **Blocked**
+  and names the provider that would run it. A check with no provider is Blocked,
+  never Passed — the rule the rest of this document already applies.
+
+v1 fixtures are unchanged and still parse. `schemaVersion` is now `1` or `2`;
+anything else is refused as before. The supplied `contracts/fixture.schema.json`
+carries the same addendum so the conformance check still compares the parser
+against a schema, not against itself.

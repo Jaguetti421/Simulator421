@@ -51,7 +51,9 @@ describe("structural rejections agree with the supplied schema", () => {
   const base = (): Record<string, unknown> => readExample("SAVE-BOOTSTRAP-01.json");
 
   it.each([
-    ["unknown schema version", (f: Record<string, unknown>) => { f["schemaVersion"] = 2; }],
+    // v2 is a supported version since the 12 Sep addendum (ToolCheck assertions),
+    // so the rejection case has to be a version neither side knows.
+    ["unknown schema version", (f: Record<string, unknown>) => { f["schemaVersion"] = 3; }],
     ["unknown top-level field", (f: Record<string, unknown>) => { f["cheat"] = true; }],
     ["unknown actor field", (f: Record<string, unknown>) => { ((f["setup"] as Record<string, unknown>)["actors"] as Record<string, unknown>[])[0]!["luck"] = 1; }],
     ["malformed actor ID", (f: Record<string, unknown>) => { ((f["setup"] as Record<string, unknown>)["actors"] as Record<string, unknown>[])[0]!["id"] = "CC01"; }],

@@ -25,7 +25,30 @@ export const LAW_IDS = ["Truce", "BuildingsProtected", "PropertyProtected", "San
 export const FACT_SOURCES = ["Self", "DirectObservation", "PublicNotice", "Report"] as const;
 export const INVARIANT_NAMES = ["NoIllegalEffects", "ConserveInventory", "NoUnexplainedStallOver100Ticks", "GuestExcludedFromContestantWins"] as const;
 export const HASH_VARIANTS = ["SaveReload", "ObserverToggle", "Checkpoint10sVs60s"] as const;
-export const ASSERTION_KINDS = ["EventCountGte", "EventCountEq", "Invariant", "HashEqualVariant"] as const;
+export const ASSERTION_KINDS = ["EventCountGte", "EventCountEq", "Invariant", "HashEqualVariant", "ToolCheck"] as const;
+
+/**
+ * Named checks a **tool** performs and reports, added in fixture DSL v2.
+ *
+ * Five registry fixtures — PRESENT-READ-01, INFO-ISOLATION, ROUTE-PROGRESS and
+ * two others — state claims no event count, invariant or hash variant can
+ * express: "these nameplates do not overlap too much", "decision code cannot
+ * reach world state", "a repeated partial route advances or recovers". Before
+ * v2 those fixtures either carried assertions that said something else or
+ * carried none at all, and the claim lived only in a test.
+ *
+ * A `ToolCheck` names the check; a **provider** runs it. A check no provider
+ * supplies is Blocked, naming what would supply it — never Passed.
+ */
+export const TOOL_CHECKS = [
+  "NameplateOverlapWithinThreshold",
+  "RingContrastAboveThreshold",
+  "ActionIconsDistinct",
+  "DecisionContextHasNoWorldHandle",
+  "RouteProgressAdvancesOrRecovers",
+  "SightIgnoresUnobservedTerrain",
+] as const;
+export type ToolCheckName = (typeof TOOL_CHECKS)[number];
 
 const milli = () => int({ min: 0, max: 100_000, description: "Thousandths of the displayed value (85000 = 85/100)" });
 const tick = (description: string) => int({ min: 0, description });
@@ -101,6 +124,11 @@ export const AssertionShape = contracts.union("kind", [
     count: int({ min: 0, description: "Exact count; 0 asserts an explicit absence" }),
   }),
   obj("InvariantAssertion", { kind: enumOf(["Invariant"] as const), name: enumOf(INVARIANT_NAMES) }),
+  obj("ToolCheckAssertion", {
+    kind: enumOf(["ToolCheck"] as const),
+    check: enumOf(TOOL_CHECKS),
+    expect: enumOf(["Pass", "Fail"] as const, "What the fixture claims the check reports; Fail states a defect the fixture exists to pin"),
+  }),
   obj("HashEqualVariantAssertion", {
     kind: enumOf(["HashEqualVariant"] as const),
     variant: enumOf(HASH_VARIANTS),
@@ -112,7 +140,7 @@ export const AssertionShape = contracts.union("kind", [
 export const FixtureShape = obj(
   "Fixture",
   {
-    schemaVersion: int({ min: 1, max: 1, description: "Fixture DSL version; pinned at 1" }),
+    schemaVersion: int({ min: 1, max: 2, description: "Fixture DSL version: 1, or 2 for fixtures using ToolCheck assertions" }),
     id: str({ pattern: FIXTURE_ID_PATTERN, maxLength: 64 }),
     gate: enumOf(GATES),
     evidenceStatus: enumOf(EVIDENCE_STATUSES),

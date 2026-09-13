@@ -81,8 +81,19 @@ describe("acceptance 3 — the three supplied example fixtures parse", () => {
 });
 
 describe("acceptance 1 — unknown versions, fields, units, IDs and assertion kinds are rejected before any world exists", () => {
+  it("accepts both supported DSL versions", () => {
+    const v1 = baseFixture();
+    expect(parseFixtureValue(v1).ok).toBe(true);
+    const v2 = baseFixture();
+    v2["schemaVersion"] = 2;
+    v2["assertions"] = [{ kind: "ToolCheck", check: "ActionIconsDistinct", expect: "Pass" }];
+    expect(parseFixtureValue(v2).ok).toBe(true);
+  });
+
   it("an unknown schema version is refused with its own code, not a field error", () => {
-    for (const version of [0, 2, "1", undefined, null]) {
+    // v2 is now a supported version (the ToolCheck assertion kind), so the
+    // refusal cases are the ones that remain genuinely unknown.
+    for (const version of [0, 3, 99, "1", undefined, null]) {
       const f = baseFixture();
       f["schemaVersion"] = version;
       const result = parseFixtureValue(f);

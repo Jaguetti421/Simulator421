@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -180,5 +180,33 @@ describe("clanlab render", () => {
     const rendered = drawScene(buildScene(snapshotAt(120)));
     expect(rendered.byteLength).toBeGreaterThan(0);
     expect(readFileSync(out).byteLength).toBe(result.summary.bytes);
+  });
+});
+
+describe("fixture DSL v2 tool checks (12 Sep debt pass)", () => {
+  it("performs the readability checks the fixture states, instead of leaving them in a test", () => {
+    const result = renderFixture({ fixturePath: FIXTURE, tick: 300, outPath: join(dir, "tc.png"), version: "test" });
+    if (!("summary" in result)) throw new Error("expected a summary");
+    expect(result.summary.toolChecks.map((c) => c.check)).toEqual([
+      "NameplateOverlapWithinThreshold",
+      "RingContrastAboveThreshold",
+      "ActionIconsDistinct",
+    ]);
+    expect(result.summary.toolChecks.every((c) => c.status === "Passed")).toBe(true);
+    expect(result.exitCode).toBe(0);
+  });
+
+  it("fails the run when a stated check does not hold", () => {
+    const raw = JSON.parse(readFileSync(FIXTURE, "utf8")) as { assertions: unknown[] };
+    const path = join(dir, "expect-fail.json");
+    writeFileSync(
+      path,
+      `${JSON.stringify({ ...raw, id: "PRESENT-READ-02", assertions: [{ kind: "ToolCheck", check: "ActionIconsDistinct", expect: "Fail" }] }, null, 1)}\n`,
+    );
+    const result = renderFixture({ fixturePath: path, tick: 10, outPath: join(dir, "tc2.png"), version: "test" });
+    if (!("summary" in result)) throw new Error("expected a summary");
+    // The icons ARE distinct, so a fixture claiming they are not must fail.
+    expect(result.summary.toolChecks[0]?.status).toBe("Failed");
+    expect(result.exitCode).toBe(1);
   });
 });

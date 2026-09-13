@@ -32,6 +32,16 @@ import { BoundedLog, DEFAULT_LOG_MAX_BYTES } from "./logfile.js";
 
 export const RUN_SUMMARY_SCHEMA_VERSION = 1;
 
+/** Which tool performs each registered check (fixture DSL v2). */
+export const TOOL_CHECK_PROVIDERS: Readonly<Record<string, string>> = {
+  NameplateOverlapWithinThreshold: "`clanlab render` (readability report)",
+  RingContrastAboveThreshold: "`clanlab render` (readability report)",
+  ActionIconsDistinct: "`clanlab render` (readability report)",
+  DecisionContextHasNoWorldHandle: "the sim host provider-composition test; no CLI provider yet",
+  RouteProgressAdvancesOrRecovers: "the spatial route suite; no CLI provider yet",
+  SightIgnoresUnobservedTerrain: "the spatial route suite; no CLI provider yet",
+};
+
 export type RunStatus = "Passed" | "Failed" | "Blocked" | "Invalid" | "Unreadable";
 
 export interface AssertionRecord {
@@ -170,8 +180,22 @@ function nearMisses(assertion: FixtureAssertion, events: readonly MatchableEvent
  * of them may come out as Passed or as Failed.
  */
 export function judgeAssertion(assertion: FixtureAssertion, index: number, host: RunHost): AssertionRecord {
+  const counting = assertion.kind === "EventCountGte" || assertion.kind === "EventCountEq" ? assertion : undefined;
   const window = matchWindowOf(assertion);
   const base = { index, kind: assertion.kind, evaluatedAtTick: host.finalTick, ...(window === undefined ? {} : { matchWindow: window }) };
+
+  if (assertion.kind === "ToolCheck") {
+    // Fixture DSL v2 lets a fixture *state* a tool check; `clanlab run` is not
+    // the tool that performs them. Naming the provider is the honest answer —
+    // far better than the four years these claims spent living only in a test
+    // because the DSL had no way to say them.
+    return {
+      ...base,
+      status: "Blocked",
+      detail: `"${assertion.check}" is a tool check; \`clanlab run\` judges events and hashes, not presentation or module boundaries`,
+      availableFrom: TOOL_CHECK_PROVIDERS[assertion.check] ?? "no provider yet",
+    };
+  }
 
   if (assertion.kind === "HashEqualVariant" && assertion.variant === "SaveReload" && host.saveReload !== undefined) {
     // Answerable now (12 Sep debt pass): the kernel host owns snapshots, so
@@ -193,20 +217,16 @@ export function judgeAssertion(assertion: FixtureAssertion, index: number, host:
     return { ...base, status: "Blocked", detail: outcome.detail ?? "needs a running simulation", ...(outcome.availableFrom === undefined ? {} : { availableFrom: outcome.availableFrom }) };
   }
 
-  if (assertion.match.reasonId !== undefined && host.acks === undefined) {
+  if (counting !== undefined && counting.match.reasonId !== undefined && host.acks === undefined) {
     return {
       ...base,
       status: "Blocked",
-      detail: `this assertion matches on reasonId=${assertion.match.reasonId}, and ${REASON_NOT_REPRESENTABLE.reason}; this host supplied no acknowledgement stream, and judging it against committed events would blame the game for a gap in the contract`,
+      detail: `this assertion matches on reasonId=${counting.match.reasonId}, and ${REASON_NOT_REPRESENTABLE.reason}; this host supplied no acknowledgement stream, and judging it against committed events would blame the game for a gap in the contract`,
       availableFrom: "`clanlab run --host kernel`, or an event tape at version 2 or later carrying `acks`",
     };
   }
 
-  if (
-    (assertion.kind === "EventCountGte" || assertion.kind === "EventCountEq") &&
-    host.emittableEventTypes !== undefined &&
-    !host.emittableEventTypes.includes(assertion.match.type)
-  ) {
+  if (counting !== undefined && host.emittableEventTypes !== undefined && !host.emittableEventTypes.includes(counting.match.type)) {
     // Neither Passed nor Failed. This host cannot emit that type at all, so a
     // count of zero is a fact about the build, not about the game: reporting
     // Failed would blame a system that does not exist yet, and reporting a
@@ -214,8 +234,8 @@ export function judgeAssertion(assertion: FixtureAssertion, index: number, host:
     return {
       ...base,
       status: "Blocked",
-      detail: `this host cannot emit "${assertion.match.type}" at all, so neither its presence nor its absence is evidence`,
-      availableFrom: `the packet that implements ${assertion.match.type.split(".")[0] ?? "this system"}`,
+      detail: `this host cannot emit "${counting.match.type}" at all, so neither its presence nor its absence is evidence`,
+      availableFrom: `the packet that implements ${counting.match.type.split(".")[0] ?? "this system"}`,
     };
   }
 

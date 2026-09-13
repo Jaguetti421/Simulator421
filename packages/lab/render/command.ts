@@ -36,6 +36,8 @@ export interface RenderSummary {
   readonly pngSha256: string;
   readonly scene: { readonly width: number; readonly height: number; readonly actors: number; readonly laws: number; readonly terrain: unknown };
   readonly readability: ReturnType<typeof assessReadability>;
+  /** Verdicts for the fixture's own `ToolCheck` assertions (fixture DSL v2). */
+  readonly toolChecks: readonly { readonly check: string; readonly expect: string; readonly observed?: string; readonly status: "Passed" | "Failed" | "Blocked"; readonly detail?: string }[];
   readonly skippedChecks: readonly { readonly code: string; readonly message: string; readonly availableFrom: string }[];
   readonly buildHash: string;
   readonly note: string;
@@ -100,8 +102,27 @@ export function renderFixture(options: RenderOptions): { summary: RenderSummary;
   writeFileSync(options.outPath, png);
 
   const readability = assessReadability(scene, iconDistinctness());
+
+  // Fixture DSL v2: the fixture can now *state* its readability claims, and this
+  // is the tool that performs them. A check the renderer does not provide stays
+  // Blocked rather than being counted either way.
+  const checkResults: Record<string, boolean> = {
+    NameplateOverlapWithinThreshold: readability.nameplates.pass,
+    RingContrastAboveThreshold: readability.ringContrast.pass,
+    ActionIconsDistinct: readability.actionIcons.pass,
+  };
+  const toolChecks = fixture.assertions
+    .filter((a): a is Extract<typeof a, { kind: "ToolCheck" }> => a.kind === "ToolCheck")
+    .map((a) => {
+      const actual = checkResults[a.check];
+      if (actual === undefined) {
+        return { check: a.check, expect: a.expect, status: "Blocked" as const, detail: "the readability renderer does not perform this check" };
+      }
+      const verdict = actual ? "Pass" : "Fail";
+      return { check: a.check, expect: a.expect, observed: verdict, status: verdict === a.expect ? ("Passed" as const) : ("Failed" as const) };
+    });
   return {
-    exitCode: readability.pass ? 0 : 1,
+    exitCode: readability.pass && toolChecks.every((c) => c.status !== "Failed") ? (toolChecks.some((c) => c.status === "Blocked") ? 4 : 0) : 1,
     summary: {
       tool: "clanlab",
       command: "render",
@@ -113,6 +134,7 @@ export function renderFixture(options: RenderOptions): { summary: RenderSummary;
       pngSha256: `sha256:${createHash("sha256").update(png).digest("hex")}`,
       scene: { width: scene.width, height: scene.height, actors: scene.actors.length, laws: scene.laws.length, terrain: scene.terrain },
       readability,
+      toolChecks,
       skippedChecks,
       buildHash: build.sourceDigest,
       note: `${core.WORKLOAD_OMISSIONS.length} workload omissions apply (the world is the W0-07 synthetic kernel). This is evidence for layout and readability, not for 3D quality.`,

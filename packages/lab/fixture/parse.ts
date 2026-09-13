@@ -15,7 +15,9 @@ import { registerAssertion } from "./assertions.js";
 import { validateSemantics } from "./semantics.js";
 import type { SemanticOptions } from "./semantics.js";
 
-export const FIXTURE_SCHEMA_VERSION = 1;
+export const FIXTURE_SCHEMA_VERSION = 2;
+/** Versions this build reads. v1 fixtures keep working unchanged; v2 adds ToolCheck assertions. */
+export const SUPPORTED_FIXTURE_VERSIONS: readonly number[] = [1, 2];
 
 export type ParseResult =
   | { readonly ok: true; readonly fixture: Fixture; readonly skipped: readonly FixtureSkippedCheck[] }
@@ -49,7 +51,7 @@ export function parseFixtureValue(value: unknown, options: ParseOptions = {}): P
     return { ok: false, skipped, errors: [fixtureError("StructureInvalid", "/", "fixture must be a JSON object")] };
   }
   const declaredVersion = (value as Record<string, unknown>)["schemaVersion"];
-  if (declaredVersion !== FIXTURE_SCHEMA_VERSION) {
+  if (typeof declaredVersion !== "number" || !SUPPORTED_FIXTURE_VERSIONS.includes(declaredVersion)) {
     return {
       ok: false,
       skipped,
@@ -57,7 +59,7 @@ export function parseFixtureValue(value: unknown, options: ParseOptions = {}): P
         fixtureError(
           "UnknownSchemaVersion",
           "/schemaVersion",
-          `this build implements fixture DSL v${FIXTURE_SCHEMA_VERSION}; got ${JSON.stringify(declaredVersion)}. A decoder refuses an unknown version rather than guessing.`,
+          `this build implements fixture DSL v${SUPPORTED_FIXTURE_VERSIONS.join(" and v")}; got ${JSON.stringify(declaredVersion)}. A decoder refuses an unknown version rather than guessing.`,
         ),
       ],
     };

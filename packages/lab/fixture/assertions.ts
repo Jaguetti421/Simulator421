@@ -142,13 +142,14 @@ function countOutcome(assertion: FixtureAssertion, count: number, described: str
     };
   }
   if (assertion.kind === "EventCountEq") {
-    const ok = count === assertion.count;
+    const expected = assertion.count;
+    const ok = count === expected;
     return {
       kind: assertion.kind,
       status: ok ? "Passed" : "Failed",
       observed: count,
-      expected: `== ${assertion.count}`,
-      ...(ok ? {} : { detail: `${count} ${noun} matched (${described}), expected exactly ${assertion.count}` }),
+      expected: `== ${expected}`,
+      ...(ok ? {} : { detail: `${count} ${noun} matched (${described}), expected exactly ${expected}` }),
     };
   }
   return { kind: assertion.kind, status: "Blocked", detail: "not a counting assertion" };
@@ -180,38 +181,25 @@ export function evaluateAssertion(assertion: FixtureAssertion, events: readonly 
   // TP v2.0 §3 sends acks and events as separate channels. So a match on
   // reasonId resolves against the ack stream — and when a host supplies none,
   // it stays Blocked rather than being judged against the wrong stream.
-  if (assertion.match.reasonId !== undefined) {
+  const counting = assertion.kind === "EventCountGte" || assertion.kind === "EventCountEq" ? assertion : undefined;
+  if (counting !== undefined && counting.match.reasonId !== undefined) {
     if (acks === undefined) {
       return {
         kind: assertion.kind,
         status: "Blocked",
-        detail: `this assertion matches on reasonId=${assertion.match.reasonId}, and this host supplied no acknowledgement stream to match it against`,
+        detail: `this assertion matches on reasonId=${counting.match.reasonId}, and this host supplied no acknowledgement stream to match it against`,
         availableFrom: "`clanlab run --host kernel`, or an event tape at version 2 or later carrying `acks`",
       };
     }
-    const ackCount = acks.filter((a) => matchesAck(a, assertion.match)).length;
-    return countOutcome(assertion, ackCount, describeMatch(assertion.match), "acknowledgements");
+    const ackCount = acks.filter((a) => matchesAck(a, counting.match)).length;
+    return countOutcome(assertion, ackCount, describeMatch(counting.match), "acknowledgements");
   }
 
-  const count = events.filter((e) => matches(e, assertion.match)).length;
-  if (assertion.kind === "EventCountGte") {
-    const ok = count >= assertion.minimum;
-    return {
-      kind: assertion.kind,
-      status: ok ? "Passed" : "Failed",
-      observed: count,
-      expected: `>= ${assertion.minimum}`,
-      ...(ok ? {} : { detail: `no assertion passes on an empty match: ${count} events matched (${describeMatch(assertion.match)}), needed at least ${assertion.minimum}` }),
-    };
+  if (counting === undefined) {
+    return { kind: assertion.kind, status: "Blocked", detail: "this assertion kind is judged by the runner, not by the event matcher", availableFrom: "`clanlab run` with a provider for this check" };
   }
-  const ok = count === assertion.count;
-  return {
-    kind: assertion.kind,
-    status: ok ? "Passed" : "Failed",
-    observed: count,
-    expected: `== ${assertion.count}`,
-    ...(ok ? {} : { detail: `${count} events matched (${describeMatch(assertion.match)}), expected exactly ${assertion.count}` }),
-  };
+  const count = events.filter((e) => matches(e, counting.match)).length;
+  return countOutcome(counting, count, describeMatch(counting.match), "events");
 }
 
 export interface AssertionSummary {

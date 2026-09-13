@@ -1,5 +1,5 @@
 {
- "schemaVersion": 1,
+ "schemaVersion": 2,
  "id": "PRESENT-READ-01",
  "gate": "G0",
  "evidenceStatus": "IMPLEMENTED_UNVERIFIED",
@@ -2219,7 +2219,22 @@
     "type": "tick.committed"
    },
    "count": 600
+  },
+  {
+   "kind": "ToolCheck",
+   "check": "NameplateOverlapWithinThreshold",
+   "expect": "Pass"
+  },
+  {
+   "kind": "ToolCheck",
+   "check": "RingContrastAboveThreshold",
+   "expect": "Pass"
+  },
+  {
+   "kind": "ToolCheck",
+   "check": "ActionIconsDistinct",
+   "expect": "Pass"
   }
  ],
- "notes": "Readability scene for `clanlab render` (W0-09). The readability checks — nameplate overlap ratio, ring contrast, action-icon distinctness — are NOT expressible in fixture DSL v1: its assertion kinds are EventCount*, Invariant (four registered names, none of them about presentation) and HashEqualVariant. They are executed instead by `clanlab render`, which exits 1 when any of them fails, and by packages/lab/render/render.test.ts. Adding a readability assertion kind to the DSL is a named gap for a later lab packet; until then this fixture carries only what the DSL can honestly express, and the render summary is where the readability verdict lives."
+ "notes": "Readability scene for `clanlab render` (W0-09), upgraded to fixture DSL v2 on 12 Sep so the fixture finally STATES its readability claims as ToolCheck assertions instead of leaving them in a test. `clanlab render` performs them; `clanlab run` reports them Blocked and names the renderer as the provider. Historical note: they were NOT expressible in fixture DSL v1: its assertion kinds are EventCount*, Invariant (four registered names, none of them about presentation) and HashEqualVariant. They are executed instead by `clanlab render`, which exits 1 when any of them fails, and by packages/lab/render/render.test.ts. Adding a readability assertion kind to the DSL is a named gap for a later lab packet; until then this fixture carries only what the DSL can honestly express, and the render summary is where the readability verdict lives."
 }

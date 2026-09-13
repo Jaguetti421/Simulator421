@@ -264,7 +264,7 @@ describe("the machine summary", () => {
 
 describe("exit codes", () => {
   it("uses 1 for an invalid fixture and 1 for an unreadable one", () => {
-    const invalid = writeFixture(fixtureDoc({ schemaVersion: 2 }), "invalid.json");
+    const invalid = writeFixture(fixtureDoc({ schemaVersion: 3 }), "invalid.json");
     const invalidRun = run([invalid]);
     expect(invalidRun.exitCode).toBe(1);
     expect(invalidRun.summary.runs[0]?.status).toBe("Invalid");
