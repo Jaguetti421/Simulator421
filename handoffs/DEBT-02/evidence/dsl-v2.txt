@@ -1,0 +1,18 @@
+=== DEBT-02: fixture DSL v2 ===
+
+--- clanlab render performs the readability checks the fixture states ---
+exit=0
+   NameplateOverlapWithinThreshold    Passed   expect=Pass observed=Pass
+   RingContrastAboveThreshold         Passed   expect=Pass observed=Pass
+   ActionIconsDistinct                Passed   expect=Pass observed=Pass
+
+--- clanlab run reports them Blocked and names the provider ---
+exit=4
+   EventCountEq   Passed   
+   ToolCheck      Blocked  `clanlab render` (readability report)
+   ToolCheck      Blocked  `clanlab render` (readability report)
+   ToolCheck      Blocked  `clanlab render` (readability report)
+
+--- v1 fixtures still parse unchanged ---
+three supplied v1 examples: exit 0
+SAVE-ROUNDTRIP (v1): exit 0
