@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Int } from "../primitives/index.js";
 import {
+  canonicalGeometryBytes,
   CELL_COUNT,
   CELL_MM,
   cellOf,
@@ -159,3 +160,41 @@ function findCell(traversalClass: number): { xMm: Int; yMm: Int } {
   }
   throw new Error(`no cell of class ${traversalClass} was compiled`);
 }
+
+/**
+ * Canonical serialization (REVIEW-EXTERNAL-01, P1-02 Medium).
+ *
+ * The first geometry hash XOR-combined five separate hashes. XOR is commutative
+ * and self-cancelling, so array order carried no weight and collisions were
+ * cheap to construct. These tests pin the properties the replacement must have,
+ * and one of them constructs a collision the old scheme would have accepted.
+ */
+describe("the geometry hash is canonical", () => {
+  it("serializes to one byte stream whose length is the sum of its declared parts", () => {
+    const bytes = canonicalGeometryBytes(terrain);
+    // header + heights + four byte arrays + fine cells, each length-prefixed
+    const expected = 24 + (4 + CELL_COUNT * 4) + 4 * (4 + CELL_COUNT) + 4 + terrain.fine.size * (4 + 4 + 16);
+    expect(bytes.byteLength).toBe(expected);
+  });
+
+  it("writes little-endian explicitly rather than trusting the platform", () => {
+    const bytes = canonicalGeometryBytes(terrain);
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    expect(view.getUint32(0, true)).toBe(0x4c43_4730);
+    expect(view.getUint32(8, true)).toBe(GRID_SIZE);
+    expect(view.getUint32(12, true)).toBe(CELL_MM);
+  });
+
+  it("would reject the swap the old XOR scheme accepted: exchanging two arrays changes the hash", () => {
+    const swapped = { ...terrain, region: terrain.coverMilli, coverMilli: terrain.region } as typeof terrain;
+    // Under XOR-of-hashes this combination is identical to the original.
+    expect(canonicalGeometryBytes(swapped)).not.toEqual(canonicalGeometryBytes(terrain));
+  });
+
+  it("puts the grid shape inside the hash, so the same cells on a different grid are a different world", () => {
+    const bytes = canonicalGeometryBytes(terrain);
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    expect(view.getUint32(4, true)).toBe(terrain.manifest.manifestVersion);
+    expect(view.getUint32(16, true)).toBe(terrain.manifest.fineCellMm);
+  });
+});

@@ -111,6 +111,8 @@ export interface CompiledTerrain {
   readonly manifest: GeometryManifest;
 }
 
+export { canonicalGeometryBytes };
+
 export function cellIndex(cx: number, cy: number): number {
   return cy * GRID_SIZE + cx;
 }
@@ -290,6 +292,81 @@ export function compileTerrain(recipe: TerrainRecipe): CompiledTerrain {
   return { recipe, heightMm, traversal, region, coverMilli, opennessMilli, fine, manifest };
 }
 
+/**
+ * Canonical geometry serialization (REVIEW-EXTERNAL-01, P1-02 Medium).
+ *
+ * The first version XOR-combined five separate hashes and folded fine cells in
+ * by sorted key. XOR is commutative and self-cancelling: two different worlds
+ * could collide, and the order of the arrays carried no weight. "One geometry
+ * hash for render and simulation" was satisfied in the letter and not the
+ * intent.
+ *
+ * This is one running hash over one canonical byte stream: a header, then each
+ * array in a fixed order, each length-prefixed, each written **explicitly
+ * little-endian** rather than relying on the platform's typed-array order.
+ */
+function canonicalGeometryBytes(parts: {
+  heightMm: Int32Array;
+  traversal: Uint8Array;
+  region: Uint8Array;
+  coverMilli: Uint8Array;
+  opennessMilli: Uint8Array;
+  fine: ReadonlyMap<number, Uint8Array>;
+}): Uint8Array {
+  const fineKeys = [...parts.fine.keys()].sort((a, b) => a - b);
+  const header = 24;
+  const byteLength =
+    header +
+    (4 + parts.heightMm.length * 4) +
+    (4 + parts.traversal.length) +
+    (4 + parts.region.length) +
+    (4 + parts.coverMilli.length) +
+    (4 + parts.opennessMilli.length) +
+    4 +
+    fineKeys.reduce((sum, key) => sum + 4 + 4 + (parts.fine.get(key) as Uint8Array).length, 0);
+
+  const buffer = new ArrayBuffer(byteLength);
+  const view = new DataView(buffer);
+  const bytes = new Uint8Array(buffer);
+  let at = 0;
+  const u32 = (value: number): void => {
+    view.setUint32(at, value >>> 0, true);
+    at += 4;
+  };
+
+  // Header: format, grid, cell sizes. A grid or cell-size change is a different
+  // world even if every cell happens to match.
+  u32(0x4c43_4730); // "LCG0"
+  u32(GEOMETRY_MANIFEST_VERSION);
+  u32(GRID_SIZE);
+  u32(CELL_MM);
+  u32(FINE_CELL_MM);
+  u32(FINE_PER_CELL);
+
+  u32(parts.heightMm.length);
+  for (const value of parts.heightMm) {
+    view.setInt32(at, value, true);
+    at += 4;
+  }
+  for (const array of [parts.traversal, parts.region, parts.coverMilli, parts.opennessMilli]) {
+    u32(array.length);
+    bytes.set(array, at);
+    at += array.length;
+  }
+
+  u32(fineKeys.length);
+  for (const key of fineKeys) {
+    const cell = parts.fine.get(key) as Uint8Array;
+    u32(key);
+    u32(cell.length);
+    bytes.set(cell, at);
+    at += cell.length;
+  }
+
+  if (at !== byteLength) throw new Error(`canonical geometry serialization wrote ${at} bytes, expected ${byteLength}`);
+  return bytes;
+}
+
 function hashArrays(parts: {
   heightMm: Int32Array;
   traversal: Uint8Array;
@@ -298,17 +375,7 @@ function hashArrays(parts: {
   opennessMilli: Uint8Array;
   fine: ReadonlyMap<number, Uint8Array>;
 }): Int {
-  let h = hashBytes(HashDomain.Authoritative, new Uint8Array(parts.heightMm.buffer, parts.heightMm.byteOffset, parts.heightMm.byteLength));
-  for (const array of [parts.traversal, parts.region, parts.coverMilli, parts.opennessMilli]) {
-    h = asInt((h ^ hashBytes(HashDomain.Authoritative, array)) >>> 0, "geometryHash");
-  }
-  // Fine cells fold in by sorted index, so map insertion order cannot change the hash.
-  for (const index of [...parts.fine.keys()].sort((a, b) => a - b)) {
-    const header = new Uint8Array(4);
-    new DataView(header.buffer).setInt32(0, index, true);
-    h = asInt((h ^ hashBytes(HashDomain.Authoritative, header) ^ hashBytes(HashDomain.Authoritative, parts.fine.get(index) as Uint8Array)) >>> 0, "geometryHash");
-  }
-  return h;
+  return hashBytes(HashDomain.Authoritative, canonicalGeometryBytes(parts));
 }
 
 function buildManifest(
