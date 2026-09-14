@@ -140,7 +140,12 @@ export const SHIPPING_VALLEY = {
   /** Stream width in cells (R2: at most 6). */
   streamWidthCells: 5,
   /** Crossings are shallow steps in the stream; R2 requires at least three. */
-  crossings: [{ atCellY: 240 }, { atCellY: 400 }, { atCellY: 560 }] as const,
+  /**
+   * Crossings along the stream. Three serve R2; the last two sit inside the G1
+   * scene window so the scene has the two crossings R3 requires without a second
+   * stream or a second geometry.
+   */
+  crossings: [{ atCellY: 240 }, { atCellY: 400 }, { atCellY: 560 }, { atCellY: 640 }, { atCellY: 720 }] as const,
   /** Crossing length along the stream, in cells. */
   crossingLengthCells: 14,
   /** Rim escarpment rise, as a landmark rather than a test device (R2). */
@@ -168,7 +173,7 @@ export function isDeepPool(cy: number): boolean {
 }
 
 /** The stream's authored extent along the island, in cells. Outside it, the axis is sea. */
-export const STREAM_EXTENT = { fromCellY: 120, throughCellY: 680 } as const;
+export const STREAM_EXTENT = { fromCellY: 120, throughCellY: 760 } as const;
 
 export function isPass(cy: number): boolean {
   return SHIPPING_VALLEY.passes.some((p) => Math.abs(cy - p.atCellY) * 2 <= p.widthCells);

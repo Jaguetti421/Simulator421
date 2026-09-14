@@ -1,0 +1,14 @@
+=== FIX-06: the G1 scene (DESIGN-RULINGS-01 R3) ===
+geometryHash 45dd33b6 | window 320,600 size 180
+sockets: 8 starts, 4 food, 1 camp, 3 obstacles
+walk to food (s): 7, 5, 5, 11, 5, 5, 18, 16
+walk to camp (s): 33, 25, 32, 29, 21, 9, 19, 15
+  PASS  the scene is 180 × 180 m  ->  180 × 180 cells
+  PASS  land majority inside the window  ->  83.6 % land
+  PASS  the sea reaches one edge of the window  ->  deep water on an edge
+  PASS  one stream with at least two crossings inside the window  ->  2 authored crossings
+  PASS  one obstacle cluster  ->  3 obstacles
+  PASS  8 starts  ->  8 starts
+  PASS  every start is within 45 s of food  ->  slowest 18 s
+  PASS  every start is within 90 s of a camp socket  ->  slowest 33 s
+  PASS  cliffs only where the window also contains a rim pass  ->  211 cliff cells

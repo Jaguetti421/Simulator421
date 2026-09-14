@@ -308,7 +308,14 @@ export function compileTerrain(recipe: TerrainRecipe): CompiledTerrain {
           // Near the shore, blend toward the island profile so the valley never
           // cuts a cliff into the coastline.
           const blend = Math.min(1_000, island.distanceInsideCells * 40);
-          heightMm[i] = Math.trunc((shaped * blend + island.baseMm * (1_000 - blend)) / 1_000) + noise;
+          const blended = Math.trunc((shaped * blend + island.baseMm * (1_000 - blend)) / 1_000) + noise;
+          // A crossing is authored to be *shallow* (R2), so it is clamped below
+          // the waterline. Without this, height noise lifted the crossing at
+          // y=640 into dry ground — walkable, but not the wadeable ford the
+          // ruling asks for, and the kind of difference that only shows up on
+          // one seed.
+          const isStreamCell = Math.abs(cx - GRID_SIZE / 2) <= SHIPPING_VALLEY.streamWidthCells / 2;
+          heightMm[i] = isStreamCell && isCrossing(cy) ? clamp(asInt(blended, "crossing"), -800 as Int, -80 as Int) : blended;
         }
       } else {
         const base = templateHeightMm(recipe.template, cx, cy);
