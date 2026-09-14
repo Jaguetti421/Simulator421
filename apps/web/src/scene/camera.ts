@@ -61,8 +61,8 @@ export function cameraPosition(state: CameraState): [number, number, number] {
 }
 
 /** Parse a `camera=` query value: `pitch,yaw,distance`. Invalid parts fall back to the default, clamped. */
-export function parseCameraParam(raw: string | null): CameraState {
-  const base = defaultCamera();
+export function parseCameraParam(raw: string | null, targetM: readonly [number, number, number] = [0, 0, 0]): CameraState {
+  const base = defaultCamera(targetM);
   if (raw === null || raw.trim() === "") return base;
   const [pitch, yaw, distance] = raw.split(",").map((n) => Number(n.trim()));
   return applyCamera(base, {

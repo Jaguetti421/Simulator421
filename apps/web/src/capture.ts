@@ -31,6 +31,8 @@ export interface CaptureMetadata {
   readonly watermark: "FakeSim";
   readonly warmupFrames: number;
   readonly mode: "world" | "recipes";
+  readonly cameraTargetM: readonly [number, number, number];
+  readonly actorsInViewport: number;
   /** Instances actually drawn, per primitive shape — proof that parts were rendered, not skipped. */
   readonly instances: Readonly<Record<string, number>>;
 }
@@ -52,7 +54,7 @@ export function startCapture(): void {
   const tick = Math.max(0, Math.trunc(number(params, "tick", 0)));
   const textScale = Math.min(3, Math.max(0.5, number(params, "textScale", 1)));
   const cameraRaw = params.get("camera");
-  const camera = parseCameraParam(cameraRaw);
+
   const width = Math.trunc(number(params, "width", 1280));
   const height = Math.trunc(number(params, "height", 720));
 
@@ -87,8 +89,34 @@ export function startCapture(): void {
   const actors: SceneActorState[] = recipeParade
     ? // One actor per supplied recipe, evenly spaced at default tabletop distance,
       // so the eight identities can be compared side by side (GDD 14.1).
-      PROTOTYPE8_RECIPES.map((recipe, index) => ({ id: recipe.id, xMm: 400_000 - 21_000 + index * 6_000, yMm: 400_000, recipeIndex: index }))
+      // 1.6 m apart: eight adults shoulder to shoulder, so a 28-degree frame at
+      // tabletop distance actually contains them at a size a person can judge.
+      PROTOTYPE8_RECIPES.map((recipe, index) => ({ id: recipe.id, xMm: 400_000 - 5_600 + index * 1_600, yMm: 400_000, recipeIndex: index }))
     : snapshot.actors.map((actor, index) => ({ id: actor.id, xMm: actor.xMm, yMm: actor.yMm, recipeIndex: index }));
+
+  // The camera looks at the subjects. Before 14 Sep 2026 it targeted [0,0,0]
+  // while every actor stood near 400 m, so both evidence captures were empty
+  // background — cited as gate evidence and never looked at. The centroid is
+  // computed from the actors actually being drawn.
+  const centroidM: [number, number, number] = ((): [number, number, number] => {
+    if (actors.length === 0) return [400, 0, 400];
+    const cx = actors.reduce((sum, a) => sum + a.xMm, 0) / actors.length;
+    const cy = actors.reduce((sum, a) => sum + a.yMm, 0) / actors.length;
+    // Aim at the actor nearest the centroid, not at the centroid itself: with a
+    // scattered population the mean position is usually empty ground, which is
+    // how a camera pointed "at the crowd" still photographs nothing.
+    let nearest = actors[0] as { xMm: number; yMm: number };
+    let best = Number.MAX_SAFE_INTEGER;
+    for (const actor of actors) {
+      const d = (actor.xMm - cx) ** 2 + (actor.yMm - cy) ** 2;
+      if (d < best) {
+        best = d;
+        nearest = actor;
+      }
+    }
+    return [nearest.xMm / 1000, 0, nearest.yMm / 1000];
+  })();
+  const camera = parseCameraParam(cameraRaw, centroidM);
 
   caption.textContent = `${recipeParade ? "identity kit: 8 recipes" : fixture} · t=${tick} · ${actors.length} actors · camera ${camera.pitchDeg}°/${camera.yawDeg}°/${camera.distanceM}m`;
 
@@ -111,6 +139,9 @@ export function startCapture(): void {
       digest: host.authoritativeDigest(),
       watermark: "FakeSim",
       warmupFrames: WARMUP_FRAMES,
+      cameraTargetM: centroidM,
+      /** Sanity: actors whose projection lands inside the viewport. Zero means the picture is empty. */
+      actorsInViewport: scene.projectedInsideViewport(actors),
       mode: recipeParade ? "recipes" : "world",
       instances: scene.stats(),
     };

@@ -56,6 +56,12 @@ function geometryFor(shape: Shape): BoxGeometry | SphereGeometry | CylinderGeome
 
 export interface TabletopScene {
   render: (actors: readonly SceneActorState[], camera: CameraState) => void;
+  /**
+   * How many of the given actors project inside the viewport after the last
+   * render. A capture whose subjects are all off-screen is not evidence of
+   * anything, and until 14 September 2026 this build produced exactly that.
+   */
+  projectedInsideViewport: (actors: readonly SceneActorState[]) => number;
   /** Instance counts per shape — recorded so a test can assert what was actually drawn. */
   stats: () => Readonly<Record<Shape, number>>;
   dispose: () => void;
@@ -132,6 +138,15 @@ export function createTabletopScene(canvas: HTMLCanvasElement, options: { width:
       camera.position.set(cx, cy, cz);
       camera.lookAt(cameraState.targetM[0] as number, cameraState.targetM[1] as number, cameraState.targetM[2] as number);
       renderer.render(scene, camera);
+    },
+    projectedInsideViewport(actors) {
+      let inside = 0;
+      for (const actor of actors) {
+        position.set(actor.xMm * MM_TO_M, 0.9, actor.yMm * MM_TO_M);
+        position.project(camera);
+        if (position.x >= -1 && position.x <= 1 && position.y >= -1 && position.y <= 1 && position.z <= 1) inside += 1;
+      }
+      return inside;
     },
     stats: () => ({ ...counts }),
     dispose: () => {
