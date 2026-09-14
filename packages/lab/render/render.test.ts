@@ -13,6 +13,7 @@ import {
   iconDistinctness,
   nameplateOverlaps,
   PALETTE,
+  PLAYER_SCALE,
   READABILITY_THRESHOLDS,
   RENDERER_ID,
   RING_CLASSES,
@@ -208,5 +209,55 @@ describe("fixture DSL v2 tool checks (12 Sep debt pass)", () => {
     // The icons ARE distinct, so a fixture claiming they are not must fail.
     expect(result.summary.toolChecks[0]?.status).toBe("Failed");
     expect(result.exitCode).toBe(1);
+  });
+});
+
+/**
+ * Readability is measured at player scale (REVIEW-EXTERNAL-01, W0-09 Medium).
+ *
+ * The first thresholds came from a 900 × 900 render of the whole 800 m island —
+ * a scale no player uses. Crowding at 1080p around a camp is the question that
+ * matters, and it is a different question.
+ */
+describe("readability at player scale", () => {
+  const playerScene = (): ReturnType<typeof buildScene> =>
+    buildScene(snapshotAt(300), { width: PLAYER_SCALE.widthPx, height: PLAYER_SCALE.heightPx, metresAcross: PLAYER_SCALE.viewMetres, windowMm: { xMm: 320_000, yMm: 600_000, sizeMm: 180_000 } });
+
+  it("records the scale it measured at, so a number cannot be quoted without one", () => {
+    const report = assessReadability(playerScene(), iconDistinctness());
+    expect(report.scale.widthPx).toBe(1920);
+    expect(report.scale.heightPx).toBe(1080);
+    expect(report.scale.metresAcross).toBe(180);
+    expect(report.scale.label).toContain("first-playable");
+  });
+
+  it("draws only the actors inside the window, not the whole island", () => {
+    const windowed = playerScene();
+    const whole = buildScene(snapshotAt(300));
+    expect(windowed.actors.length).toBeLessThan(whole.actors.length);
+    expect(windowed.actors.length).toBeGreaterThan(0);
+  });
+
+  it("passes the tightened overlap budget at the framing the first playable uses", () => {
+    const report = assessReadability(playerScene(), iconDistinctness());
+    expect(READABILITY_THRESHOLDS.maxNameplateOverlapRatio).toBe(0.2);
+    expect(report.nameplates.ratio).toBeLessThanOrEqual(READABILITY_THRESHOLDS.maxNameplateOverlapRatio);
+    expect(report.nameplates.pass).toBe(true);
+  });
+
+  it("still detects crowding at player scale, so the budget is not passing by emptiness", () => {
+    const snapshot = snapshotAt(300);
+    const stacked = { ...snapshot, actors: snapshot.actors.map((a) => ({ ...a, xMm: 400_000, yMm: 680_000 })) };
+    const report = assessReadability(
+      buildScene(stacked, { width: PLAYER_SCALE.widthPx, height: PLAYER_SCALE.heightPx, metresAcross: PLAYER_SCALE.viewMetres, windowMm: { xMm: 320_000, yMm: 600_000, sizeMm: 180_000 } }),
+      iconDistinctness(),
+    );
+    expect(report.nameplates.total).toBeGreaterThan(50);
+    expect(report.nameplates.pass).toBe(false);
+  });
+
+  it("says in its own note that only a person can settle these numbers", () => {
+    expect(READABILITY_THRESHOLDS.tuneNote).toContain("player scale");
+    expect(READABILITY_THRESHOLDS.tuneNote).toContain("human readability review");
   });
 });

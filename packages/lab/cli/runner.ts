@@ -217,6 +217,18 @@ export function judgeAssertion(assertion: FixtureAssertion, index: number, host:
     return { ...base, status: "Blocked", detail: outcome.detail ?? "needs a running simulation", ...(outcome.availableFrom === undefined ? {} : { availableFrom: outcome.availableFrom }) };
   }
 
+  if (assertion.kind === "AckCountGte") {
+    const outcome = evaluateAssertion(assertion, host.events, host.acks);
+    return {
+      ...base,
+      status: outcome.status,
+      ...(outcome.expected === undefined ? {} : { expected: outcome.expected }),
+      ...(outcome.observed === undefined ? {} : { observed: outcome.observed }),
+      ...(outcome.detail === undefined ? {} : { detail: outcome.detail }),
+      ...(outcome.availableFrom === undefined ? {} : { availableFrom: outcome.availableFrom }),
+    };
+  }
+
   if (counting !== undefined && counting.match.reasonId !== undefined && host.acks === undefined) {
     return {
       ...base,
@@ -407,6 +419,21 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
 
     // ---- assertions --------------------------------------------------------
     const assertions = fixture.assertions.map((a, i) => judgeAssertion(a, i, host));
+    // R5: an event-count assertion matching on a reason still works, because v1
+    // fixtures exist and the supplied examples use it — but it is asserting
+    // against the acknowledgement stream under an event-shaped name, and the
+    // fixture should say so. Recorded as a skipped check, not an error.
+    const borrowing = fixture.assertions.filter((a) => (a.kind === "EventCountGte" || a.kind === "EventCountEq") && a.match.reasonId !== undefined).length;
+    const migrationChecks: RunSkippedCheck[] =
+      borrowing === 0
+        ? []
+        : [
+            {
+              code: "EventAssertionMatchesOnReason",
+              message: `${borrowing} assertion(s) match on reasonId through an EventCount kind; acknowledgements are a separate stream and AckCountGte states that directly`,
+              availableFrom: "fixture DSL v2: replace with { kind: \"AckCountGte\", match: { type, reasonId }, minimum }",
+            },
+          ];
     for (const a of assertions) {
       log.write(`assertion ${a.index} ${a.kind}: ${a.status}${a.observed === undefined ? "" : ` (observed ${a.observed}, expected ${a.expected ?? "?"})`}`);
       if (a.detail !== undefined) log.write(`  ${a.detail}`);
@@ -418,7 +445,7 @@ export function runFixtures(options: RunOptions): { readonly summary: RunSummary
     const failed = assertions.filter((a) => a.status === "Failed").length;
     const blocked = assertions.filter((a) => a.status === "Blocked").length;
     const status: RunStatus = failed > 0 ? "Failed" : blocked > 0 ? "Blocked" : "Passed";
-    const skippedChecks = [...parsed.skipped, ...hostSkipped];
+    const skippedChecks = [...parsed.skipped, ...hostSkipped, ...migrationChecks];
     log.write(`result ${status}: ${passed} passed, ${failed} failed, ${blocked} blocked, ${skippedChecks.length} skipped check(s)`);
 
     const artifacts = writeArtifacts(options.evidenceDir, fileKey(file), {

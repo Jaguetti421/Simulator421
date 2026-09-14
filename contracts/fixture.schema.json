@@ -542,6 +542,54 @@
        }
       },
       "description": "A named check a tool performs and reports (DSL v2). The fixture states the claim; a provider runs it."
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "kind",
+       "match",
+       "minimum"
+      ],
+      "properties": {
+       "kind": {
+        "const": "AckCountGte"
+       },
+       "match": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "type"
+        ],
+        "properties": {
+         "type": {
+          "type": "string",
+          "maxLength": 64
+         },
+         "reasonId": {
+          "type": "string",
+          "maxLength": 64
+         },
+         "actorId": {
+          "type": "string",
+          "maxLength": 64
+         },
+         "fromTick": {
+          "type": "integer",
+          "minimum": 0
+         },
+         "throughTick": {
+          "type": "integer",
+          "minimum": 0
+         }
+        }
+       },
+       "minimum": {
+        "type": "integer",
+        "minimum": 1
+       }
+      },
+      "description": "Count acknowledgements, not committed events (DSL v2). The reason a command was rejected lives on the ack; this kind says which stream is being asserted against."
      }
     ]
    }

@@ -70,6 +70,19 @@ v2 adds one assertion kind:
   and names the provider that would run it. A check with no provider is Blocked,
   never Passed — the rule the rest of this document already applies.
 
+v2 also adds **`AckCountGte`**:
+
+```json
+{ "kind": "AckCountGte", "match": { "type": "CommandRejected", "reasonId": "NoticeTooShort" }, "minimum": 1 }
+```
+
+Acknowledgements are a separate stream from committed events: contract v0 puts a
+rejection reason on the ack and nowhere else, and TP v2.0 §3 sends the two
+channels separately. An `EventCountGte` whose match carries a `reasonId` is still
+judged against acknowledgements so v1 fixtures keep working, but the run records
+a skipped check telling the author to migrate — a fixture should say which stream
+it asserts against.
+
 v1 fixtures are unchanged and still parse. `schemaVersion` is now `1` or `2`;
 anything else is refused as before. The supplied `contracts/fixture.schema.json`
 carries the same addendum so the conformance check still compares the parser

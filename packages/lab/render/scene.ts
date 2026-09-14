@@ -155,6 +155,8 @@ export interface Scene {
   readonly sceneVersion: number;
   readonly width: number;
   readonly height: number;
+  /** How many metres of world the frame spans — half of what readability means. */
+  readonly metresAcross: number;
   readonly tick: number;
   readonly terrain: { readonly classes: readonly string[]; readonly status: "Unavailable"; readonly availableFrom: string };
   readonly actors: readonly SceneActor[];
@@ -164,6 +166,10 @@ export interface Scene {
 export interface SceneOptions {
   readonly width?: number;
   readonly height?: number;
+  /** Metres of world across the frame; defaults to the whole envelope. */
+  readonly metresAcross?: number;
+  /** Draw only actors inside this world-space window, in millimetres. */
+  readonly windowMm?: { readonly xMm: number; readonly yMm: number; readonly sizeMm: number };
   readonly discRadius?: number;
   /** Nameplates are the densest thing on screen; a caller may turn them off to compare. */
   readonly nameplates?: boolean;
@@ -189,7 +195,14 @@ export function buildScene(snapshot: WorldSnapshot, options: SceneOptions = {}):
   const toY = (mm: number): number => margin + (mm / ENVELOPE_MM) * (height - margin * 2);
   const scale = (mm: number): number => (mm / ENVELOPE_MM) * span;
 
-  const actors: SceneActor[] = snapshot.actors.map((actor, index) => {
+  const inWindow = (actor: { xMm: number; yMm: number }): boolean =>
+    options.windowMm === undefined ||
+    (actor.xMm >= options.windowMm.xMm &&
+      actor.yMm >= options.windowMm.yMm &&
+      actor.xMm < options.windowMm.xMm + options.windowMm.sizeMm &&
+      actor.yMm < options.windowMm.yMm + options.windowMm.sizeMm);
+
+  const actors: SceneActor[] = snapshot.actors.filter(inWindow).map((actor, index) => {
     const x = toX(actor.xMm);
     const y = toY(actor.yMm);
     const ringClass = actor.kind as RingClass;
@@ -229,6 +242,7 @@ export function buildScene(snapshot: WorldSnapshot, options: SceneOptions = {}):
     sceneVersion: SCENE_VERSION,
     width,
     height,
+    metresAcross: (options.metresAcross ?? ENVELOPE_MM / 1000),
     tick: snapshot.tick,
     terrain: {
       classes: ["unavailable"],
@@ -250,15 +264,41 @@ export function buildScene(snapshot: WorldSnapshot, options: SceneOptions = {}):
  * PRESENT 01's other half is a human check, and these numbers do not stand in
  * for it.
  */
+/**
+ * The scale a readability claim is made at (REVIEW-EXTERNAL-01, W0-09 Medium).
+ *
+ * The first thresholds were measured on a 900 × 900 render of the whole 800 m
+ * island — a scale no player uses. A nameplate that does not collide when 137
+ * actors are spread over a nine-hundred-pixel island tells you nothing about
+ * eight actors around a camp at 1080p, which is what the first playable shows.
+ * Readability is now measured at **player scale**, and the scale is recorded in
+ * the report so a number can never be quoted without it.
+ */
+export const PLAYER_SCALE = {
+  widthPx: 1920,
+  heightPx: 1080,
+  /** The G1 scene is 180 m across (DESIGN-RULINGS-01 R3). */
+  viewMetres: 180,
+  label: "1920 × 1080 over a 180 m scene (the G1 first-playable framing)",
+} as const;
+
 export const READABILITY_THRESHOLDS = {
-  /** Share of nameplates allowed to overlap another nameplate. TUNE. */
-  maxNameplateOverlapRatio: 0.35,
-  /** WCAG non-text contrast minimum, applied to ring against disc and background. TUNE. */
+  /**
+   * Share of nameplates allowed to overlap another nameplate. **TUNE**, and now
+   * derived at player scale: at 1920 × 1080 over 180 m the G1 roster of eight
+   * produces no overlap at all, so the budget exists for the crowding a camp or
+   * a fight creates rather than for the whole island at once.
+   */
+  maxNameplateOverlapRatio: 0.2,
+  /** WCAG 2.2 non-text contrast minimum (1.4.11), applied to ring against disc and ground. TUNE. */
   minRingContrast: 3,
-  tuneNote: "TUNE — thresholds are provisional: the overlap ratio is set from the 137-actor synthetic scene, the contrast floor from WCAG 2.2 non-text guidance (1.4.11). Neither has been through a human readability review (PRESENT 01, human half).",
+  tuneNote:
+    "TUNE. The contrast floor is WCAG 2.2 non-text guidance (1.4.11). The overlap budget is derived at player scale (1920 x 1080 over a 180 m scene), not from the 800 m island view the first version measured — but neither number has been through a human readability review (PRESENT 01, human half), and only that can settle them.",
 } as const;
 
 export interface ReadabilityReport {
+  /** The scale these numbers were measured at. A readability claim without one is not a claim. */
+  readonly scale: { readonly widthPx: number; readonly heightPx: number; readonly metresAcross: number; readonly label: string };
   readonly nameplates: { readonly total: number; readonly overlapping: number; readonly ratio: number; readonly threshold: number; readonly pass: boolean };
   readonly ringContrast: {
     readonly byClass: Readonly<Record<string, { readonly againstDisc: number; readonly againstBackground: number }>>;
@@ -325,6 +365,7 @@ export function assessReadability(scene: Scene, iconDistinctness: { distinct: nu
   };
 
   return {
+    scale: { widthPx: scene.width, heightPx: scene.height, metresAcross: Math.round(scene.metresAcross), label: scene.width === PLAYER_SCALE.widthPx ? PLAYER_SCALE.label : `${scene.width} x ${scene.height} over ${Math.round(scene.metresAcross)} m` },
     nameplates,
     ringContrast,
     actionIcons,

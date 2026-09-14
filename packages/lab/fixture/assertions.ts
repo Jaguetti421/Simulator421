@@ -181,6 +181,29 @@ export function evaluateAssertion(assertion: FixtureAssertion, events: readonly 
   // TP v2.0 §3 sends acks and events as separate channels. So a match on
   // reasonId resolves against the ack stream — and when a host supplies none,
   // it stays Blocked rather than being judged against the wrong stream.
+  if (assertion.kind === "AckCountGte") {
+    // The dedicated kind (R5): it says which stream it asserts against, so a
+    // reader does not have to know that a `reasonId` on an event match quietly
+    // redirects to acknowledgements.
+    if (acks === undefined) {
+      return {
+        kind: assertion.kind,
+        status: "Blocked",
+        detail: "this host supplied no acknowledgement stream",
+        availableFrom: "`clanlab run --host kernel`, or an event tape at version 2 or later carrying `acks`",
+      };
+    }
+    const matched = acks.filter((a) => matchesAck(a, assertion.match)).length;
+    const ok = matched >= assertion.minimum;
+    return {
+      kind: assertion.kind,
+      status: ok ? "Passed" : "Failed",
+      observed: matched,
+      expected: `>= ${assertion.minimum}`,
+      ...(ok ? {} : { detail: `${matched} acknowledgements matched (${describeMatch(assertion.match)}), needed at least ${assertion.minimum}` }),
+    };
+  }
+
   const counting = assertion.kind === "EventCountGte" || assertion.kind === "EventCountEq" ? assertion : undefined;
   if (counting !== undefined && counting.match.reasonId !== undefined) {
     if (acks === undefined) {

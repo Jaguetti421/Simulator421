@@ -25,7 +25,7 @@ export const LAW_IDS = ["Truce", "BuildingsProtected", "PropertyProtected", "San
 export const FACT_SOURCES = ["Self", "DirectObservation", "PublicNotice", "Report"] as const;
 export const INVARIANT_NAMES = ["NoIllegalEffects", "ConserveInventory", "NoUnexplainedStallOver100Ticks", "GuestExcludedFromContestantWins"] as const;
 export const HASH_VARIANTS = ["SaveReload", "ObserverToggle", "Checkpoint10sVs60s"] as const;
-export const ASSERTION_KINDS = ["EventCountGte", "EventCountEq", "Invariant", "HashEqualVariant", "ToolCheck"] as const;
+export const ASSERTION_KINDS = ["EventCountGte", "EventCountEq", "AckCountGte", "Invariant", "HashEqualVariant", "ToolCheck"] as const;
 
 /**
  * Named checks a **tool** performs and reports, added in fixture DSL v2.
@@ -124,6 +124,26 @@ export const AssertionShape = contracts.union("kind", [
     count: int({ min: 0, description: "Exact count; 0 asserts an explicit absence" }),
   }),
   obj("InvariantAssertion", { kind: enumOf(["Invariant"] as const), name: enumOf(INVARIANT_NAMES) }),
+  /**
+   * `AckCountGte` (DSL v2, DESIGN-RULINGS-01 R5).
+   *
+   * Acknowledgements are a different stream from committed events — contract v0
+   * puts the reason a command was rejected on the ack and nowhere else, and TP
+   * v2.0 §3 sends the two channels separately. Counting them with `EventCountGte`
+   * worked, but it left a reader unable to tell from the fixture which stream was
+   * being asserted against. This kind says it.
+   */
+  obj("AckCountGteAssertion", {
+    kind: enumOf(["AckCountGte"] as const),
+    match: obj("AckMatch", {
+      type: str({ maxLength: 64 }),
+      reasonId: opt(str({ maxLength: 64 })),
+      actorId: opt(str({ maxLength: 64 })),
+      fromTick: opt(tick("Inclusive lower bound")),
+      throughTick: opt(tick("Inclusive upper bound")),
+    }),
+    minimum: int({ min: 1, description: "At least one: a vacuous proof of behaviour is not allowed" }),
+  }),
   obj("ToolCheckAssertion", {
     kind: enumOf(["ToolCheck"] as const),
     check: enumOf(TOOL_CHECKS),

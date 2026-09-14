@@ -179,3 +179,65 @@ describe("an event type the host cannot emit is Blocked, not Failed", () => {
     expect(summary.runs[0]?.assertions[0]?.status).toBe("Passed");
   });
 });
+
+/**
+ * `AckCountGte` (DESIGN-RULINGS-01 R5).
+ *
+ * Acknowledgements are their own stream. Counting them through `EventCountGte`
+ * worked after the debt pass, but a reader could not tell from the fixture which
+ * stream was being asserted against — so the kind now says it, and a fixture
+ * still using the old shape is told, in its skipped checks, how to migrate.
+ */
+describe("acknowledgement assertions say so", () => {
+  const rejectingSchedule = [
+    { atTick: 1, sequence: 1, expectedRulesVersion: 0, operation: "ScheduleLaw", payload: { lawId: "Truce", startTick: 101, endTick: 1301 }, expectAck: "Rejected", expectedReasonId: "NoticeTooShort" },
+  ];
+
+  it("passes when the acknowledgement stream carries the reason", () => {
+    const path = fixture({
+      schemaVersion: 2,
+      maxTicks: 100,
+      schedule: rejectingSchedule,
+      assertions: [{ kind: "AckCountGte", match: { type: "CommandRejected", reasonId: "NoticeTooShort" }, minimum: 1 }],
+    });
+    const { summary, exitCode } = run(path);
+    expect(exitCode).toBe(0);
+    expect(summary.runs[0]?.assertions[0]?.kind).toBe("AckCountGte");
+    expect(summary.runs[0]?.assertions[0]?.status).toBe("Passed");
+    expect(summary.runs[0]?.assertions[0]?.observed).toBe(1);
+  });
+
+  it("fails rather than passing vacuously when that reason never occurs", () => {
+    const path = fixture({
+      schemaVersion: 2,
+      maxTicks: 100,
+      schedule: rejectingSchedule,
+      assertions: [{ kind: "AckCountGte", match: { type: "CommandRejected", reasonId: "ReservationLost" }, minimum: 1 }],
+    });
+    const { summary, exitCode } = run(path);
+    expect(exitCode).toBe(1);
+    expect(summary.runs[0]?.assertions[0]?.status).toBe("Failed");
+  });
+
+  it("is Blocked, never Failed, when the host supplies no acknowledgements", () => {
+    const path = fixture({ schemaVersion: 2, assertions: [{ kind: "AckCountGte", match: { type: "CommandRejected" }, minimum: 1 }] });
+    const { summary, exitCode } = runFixtures({ files: [path], evidenceDir: join(dir, "no-acks"), nowIso: "2026-09-14T00:00:00.000Z", version: "r5" });
+    expect(exitCode).toBe(4);
+    expect(summary.runs[0]?.assertions[0]?.status).toBe("Blocked");
+    expect(summary.runs[0]?.assertions[0]?.availableFrom).toContain("--host kernel");
+  });
+
+  it("tells a fixture still matching reasons through an event kind how to migrate", () => {
+    const path = fixture({
+      maxTicks: 100,
+      schedule: rejectingSchedule,
+      assertions: [{ kind: "EventCountGte", match: { type: "CommandRejected", reasonId: "NoticeTooShort" }, minimum: 1 }],
+    });
+    const { summary } = run(path);
+    const skipped = summary.runs[0]?.skippedChecks.find((s) => s.code === "EventAssertionMatchesOnReason");
+    expect(skipped).toBeDefined();
+    expect(skipped?.availableFrom).toContain("AckCountGte");
+    // Still judged, not broken: v1 fixtures and the supplied examples keep working.
+    expect(summary.runs[0]?.assertions[0]?.status).toBe("Passed");
+  });
+});
