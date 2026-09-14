@@ -289,3 +289,49 @@ export function stepDurationTicks(traversalClass: TraversalClass, walkMmPerSecon
 }
 
 export { TRAVERSAL };
+
+/**
+ * Walking time along a route at the GDD's 3.5 m/s, in milliseconds.
+ *
+ * Each step pays the cell it enters, so shallow water costs its 0.8 multiplier
+ * exactly where the route crosses it. Integer throughout: this number feeds the
+ * D05 anchor checks, which are acceptance criteria, not diagnostics.
+ */
+export function routeMilliseconds(terrain: CompiledTerrain, path: readonly RouteCell[], walkMmPerSecond: Int = 3_500 as Int): number {
+  let ms = 0;
+  for (let i = 1; i < path.length; i += 1) {
+    const cell = path[i] as RouteCell;
+    const multiplier = SPEED_MULTIPLIER_MILLI[terrain.traversal[cellIndex(cell.cx, cell.cy)] as TraversalClass];
+    if (multiplier === 0) return Number.MAX_SAFE_INTEGER;
+    // mm / (mm per second) -> seconds; in milliseconds, with integer division.
+    ms += Math.trunc((CELL_MM * 1_000 * 1_000) / (walkMmPerSecond * multiplier));
+  }
+  return ms;
+}
+
+/** Knowledge of the whole compiled world — for generator validation, never for an actor. */
+export function omniscientKnowledge(terrain: CompiledTerrain): RouteKnowledge {
+  const knowledge = RouteKnowledge.empty();
+  for (let cy = 0; cy < GRID_SIZE; cy += 1) {
+    for (let cx = 0; cx < GRID_SIZE; cx += 1) knowledge.observe(terrain, cx, cy);
+  }
+  return knowledge;
+}
+
+/**
+ * Walking seconds between two positions over the compiled world, or `null` when
+ * no route exists. Used by the generator validators (D05 anchor times, the G1
+ * scene's food and camp distances) — never by an actor, which is why it takes
+ * omniscient knowledge explicitly rather than quietly.
+ */
+export function walkingSecondsBetween(
+  terrain: CompiledTerrain,
+  knowledge: RouteKnowledge,
+  from: { readonly xMm: Int; readonly yMm: Int },
+  to: { readonly xMm: Int; readonly yMm: Int },
+  budget = 400_000,
+): number | null {
+  const result = findRoute(terrain, knowledge, from, to, { budget });
+  if (result.status !== "Complete") return null;
+  return Math.trunc(routeMilliseconds(terrain, result.path) / 1_000);
+}

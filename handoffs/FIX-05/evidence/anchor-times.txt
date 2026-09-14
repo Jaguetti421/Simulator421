@@ -1,0 +1,8 @@
+=== FIX-05: D05 anchor crossing times at 3.5 m/s (R1, R4) ===
+  N-S: 196 s
+  W-E: 356 s
+  N-E: 201 s
+  W-S: 199 s
+  PASS  every anchor pair is reachable on foot  ->  4 of 4 pairs routable
+  PASS  the longest anchor crossing is within D05's 240–360 s at 3.5 m/s  ->  W-E 356 s
+  PASS  shortest anchor crossing (informational)  ->  N-S 196 s

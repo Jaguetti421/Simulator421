@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { Int } from "../primitives/index.js";
 import { compileTerrain, TRAVERSAL } from "./terrain.js";
 import type { CompiledTerrain } from "./terrain.js";
-import { DEFAULT_ROUTE_BUDGET, findRoute, PORTAL_REPEAT_LIMIT, RouteKnowledge, RouteProgress } from "./route.js";
+import { DEFAULT_ROUTE_BUDGET, findRoute, omniscientKnowledge, PORTAL_REPEAT_LIMIT, RouteKnowledge, RouteProgress, walkingSecondsBetween } from "./route.js";
+import { validateAnchorTimes } from "./island.js";
 
 /**
  * P1-04. The world is the `ridge` template: mostly walkable ground, so a route
@@ -154,5 +155,70 @@ describe("repeated partials advance or recover (criterion 3)", () => {
     expect(afterwards.status).toBe("NoKnownRoute");
     expect(afterwards.recovery?.kind).toBe("GaveUp");
     expect(afterwards.path).toEqual([]);
+  });
+});
+
+/**
+ * The shipping island under the route suite (DESIGN-RULINGS-01 R4).
+ *
+ * Testing only on `ridge` and `trough` proves the algorithm, not the game. These
+ * run against `valley`, the island the game would ship, and include the D05
+ * anchor crossing times R1 asks a generator validator to assert.
+ */
+describe("routes on the shipping island (R4)", () => {
+  const island = compileTerrain({ recipeId: "valley-shipping", seed: 4107 as Int, template: "valley", sockets: [] });
+  const known = omniscientKnowledge(island);
+  const P = (cx: number, cy: number): { xMm: Int; yMm: Int } => ({ xMm: (cx * 1_000 + 500) as Int, yMm: (cy * 1_000 + 500) as Int });
+  const landward = (sx: number, sy: number, dx: number, dy: number): { cx: number; cy: number } => {
+    let cx = sx;
+    let cy = sy;
+    while (cx >= 0 && cy >= 0 && cx < 800 && cy < 800) {
+      const cls = island.traversal[cy * 800 + cx] as number;
+      if (cls === TRAVERSAL.Ground || cls === TRAVERSAL.Cliff) return { cx, cy };
+      cx += dx;
+      cy += dy;
+    }
+    throw new Error("no land found on this ray");
+  };
+
+  const anchors = {
+    north: landward(420, 60, 0, 1),
+    south: landward(420, 740, 0, -1),
+    west: landward(60, 400, 1, 0),
+    east: landward(740, 400, -1, 0),
+  };
+
+  it("routes between every D05 anchor pair, and the longest crossing is inside the band", () => {
+    const crossings = ([
+      ["N-S", anchors.north, anchors.south],
+      ["W-E", anchors.west, anchors.east],
+      ["N-E", anchors.north, anchors.east],
+      ["W-S", anchors.west, anchors.south],
+    ] as const).map(([label, a, b]) => ({ label, seconds: walkingSecondsBetween(island, known, P(a.cx, a.cy), P(b.cx, b.cy)) }));
+
+    for (const finding of validateAnchorTimes(crossings)) {
+      expect(finding.ok, `${finding.rule} -> ${finding.detail}`).toBe(true);
+    }
+    // The shape shows in the numbers: along the valley floor is fast, across the
+    // stream and the lagoon is slow.
+    const northSouth = crossings.find((c) => c.label === "N-S")?.seconds ?? 0;
+    const westEast = crossings.find((c) => c.label === "W-E")?.seconds ?? 0;
+    expect(westEast).toBeGreaterThan(northSouth);
+  });
+
+  it("crosses the stream at an authored crossing rather than swimming", () => {
+    const west = P(360, 400);
+    const east = P(440, 400);
+    const route = findRoute(island, known, west, east, { budget: 200_000 });
+    expect(route.status).toBe("Complete");
+    for (const cell of route.path) {
+      expect(island.traversal[cell.cy * 800 + cell.cx], `route entered impassable water at ${cell.cx},${cell.cy}`).not.toBe(TRAVERSAL.DeepWater);
+    }
+  });
+
+  it("refuses to route into the sea", () => {
+    const inland = P(420, 300);
+    const offshore = P(20, 20);
+    expect(findRoute(island, known, inland, offshore, { budget: 200_000 }).status).not.toBe("Complete");
   });
 });

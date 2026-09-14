@@ -7,5 +7,5 @@
 export * from "./terrain.js";
 export * from "./island.js";
 export * from "./visibility.js";
-export { DEFAULT_ROUTE_BUDGET, findRoute, PORTAL_REPEAT_LIMIT, RouteKnowledge, RouteProgress, stepDurationTicks, UNKNOWN } from "./route.js";
+export { DEFAULT_ROUTE_BUDGET, findRoute, omniscientKnowledge, PORTAL_REPEAT_LIMIT, RouteKnowledge, RouteProgress, routeMilliseconds, stepDurationTicks, UNKNOWN, walkingSecondsBetween } from "./route.js";
 export type { RouteCell, RouteResult, RouteStatus } from "./route.js";

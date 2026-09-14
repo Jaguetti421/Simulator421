@@ -193,3 +193,55 @@ describe("static visibility is terrain only (criterion 3)", () => {
     expect(Object.keys(result).sort()).toEqual(["cellsStepped", "distanceMm", "status", "visible"]);
   });
 });
+
+/**
+ * The shipping island under the sight suite (DESIGN-RULINGS-01 R4).
+ *
+ * `ridge` and `trough` prove the algorithm; these prove it on the map the game
+ * would ship — open ground at the sight limit, across the stream, and at the
+ * coast, where the world simply ends.
+ */
+describe("sight on the shipping island (R4)", () => {
+  const island: CompiledTerrain = compileTerrain({ recipeId: "valley-shipping", seed: 4107 as Int, template: "valley", sockets: [] });
+  const P = (cx: number, cy: number): Int[] => [(cx * 1_000 + 500) as Int, (cy * 1_000 + 500) as Int];
+
+  it("sees across open valley floor at the sight limit", () => {
+    const [ax, ay] = P(430, 300) as [Int, Int];
+    const [bx, by] = P(470, 300) as [Int, Int];
+    const result = lineOfSight(island, ax, ay, bx, by, { rangeMm: 60_000 as Int });
+    expect(result.status).toBe("Visible");
+    expect(result.distanceMm).toBe(40_000);
+  });
+
+  it("sees across the stream at a crossing — water does not block sight", () => {
+    const [ax, ay] = P(380, 240) as [Int, Int];
+    const [bx, by] = P(420, 240) as [Int, Int];
+    const result = lineOfSight(island, ax, ay, bx, by, { rangeMm: 60_000 as Int });
+    expect(result.status).toBe("Visible");
+  });
+
+  it("looks out to sea from the shore without inventing an occluder", () => {
+    // Find the waterline on the western shore, then look further west.
+    let shore = 0;
+    for (let cx = 0; cx < 400; cx += 1) {
+      if (island.traversal[400 * 800 + cx] === TRAVERSAL.Ground) {
+        shore = cx;
+        break;
+      }
+    }
+    expect(shore).toBeGreaterThan(0);
+    const [ax, ay] = P(shore + 2, 400) as [Int, Int];
+    const [bx, by] = P(shore - 20, 400) as [Int, Int];
+    const result = lineOfSight(island, ax, ay, bx, by, { rangeMm: 60_000 as Int });
+    expect(result.status).toBe("Visible");
+  });
+
+  it("is blocked by a rim escarpment away from its passes", () => {
+    // Across the eastern rim at a y with no pass: the escarpment stands between.
+    const [ax, ay] = P(470, 420) as [Int, Int];
+    const [bx, by] = P(560, 420) as [Int, Int];
+    const result = lineOfSight(island, ax, ay, bx, by, { rangeMm: 200_000 as Int, budgetCells: 200 });
+    expect(result.status).toBe("Blocked");
+    expect(result.blockedAt?.reason).toBe("Terrain");
+  });
+});

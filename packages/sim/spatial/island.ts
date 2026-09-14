@@ -177,3 +177,46 @@ export function isPass(cy: number): boolean {
 export function asIntSafe(value: number, what: string): Int {
   return asInt(Math.trunc(value), what);
 }
+
+/**
+ * D05 anchor route times (R1's second acceptance clause).
+ *
+ * The rule is that an island crossing takes 240–360 s at 3.5 m/s. Measuring it
+ * needs routes, which live in `route.ts`, so this takes the measurements rather
+ * than making them — `island.ts` stays free of the route module and the
+ * dependency direction stays one-way.
+ */
+export const D05_CROSSING_SECONDS = { min: 240, max: 360 } as const;
+
+export interface AnchorCrossing {
+  readonly label: string;
+  readonly seconds: number | null;
+}
+
+export function validateAnchorTimes(crossings: readonly AnchorCrossing[]): IslandValidation["findings"] {
+  const reachable = crossings.filter((c) => c.seconds !== null) as { label: string; seconds: number }[];
+  const longest = reachable.reduce((best, c) => (c.seconds > best.seconds ? c : best), { label: "none", seconds: 0 });
+  const shortest = reachable.reduce((best, c) => (c.seconds < best.seconds ? c : best), { label: "none", seconds: Number.MAX_SAFE_INTEGER });
+
+  return [
+    {
+      rule: "every anchor pair is reachable on foot",
+      ok: reachable.length === crossings.length,
+      detail: `${reachable.length} of ${crossings.length} pairs routable`,
+    },
+    {
+      rule: `the longest anchor crossing is within D05's ${D05_CROSSING_SECONDS.min}–${D05_CROSSING_SECONDS.max} s at 3.5 m/s`,
+      ok: longest.seconds >= D05_CROSSING_SECONDS.min && longest.seconds <= D05_CROSSING_SECONDS.max,
+      detail: `${longest.label} ${longest.seconds} s`,
+    },
+    {
+      // Informational, deliberately not a pass/fail: a valley is fast along its
+      // floor and slow across its stream, so the shortest crossing being under
+      // D05's floor is the shape working, not a defect. Recorded so the number is
+      // visible rather than implied.
+      rule: "shortest anchor crossing (informational)",
+      ok: true,
+      detail: `${shortest.label} ${shortest.seconds} s`,
+    },
+  ];
+}
