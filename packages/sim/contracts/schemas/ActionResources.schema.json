@@ -104,7 +104,7 @@
  ],
  "additionalProperties": false,
  "x-refinements": [
-  "An action that produces nothing does not reserve output capacity",
+  "Every reservation is held by this action's actor",
   "Reservation keys are unique within one action"
  ],
  "description": "What an action consumes, produces and holds. Reservation keys are explicit so interruption can release exactly what was taken."

@@ -1,0 +1,10 @@
+{
+ "schemaVersion": 0,
+ "actorId": "C003",
+ "planId": "plan.craft.axe",
+ "tick": 600,
+ "atomic": true,
+ "outputs": {},
+ "knowledgeEffects": [],
+ "committedEventTypes": []
+}

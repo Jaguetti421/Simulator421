@@ -3,6 +3,13 @@
  "contractVersion": 0,
  "samples": [
   {
+   "file": "action-completion.reject-no-committed-event-type.json",
+   "record": "ActionCompletion",
+   "expect": "reject",
+   "enforcedBy": "refinement",
+   "rule": "A completion commits at least one event type"
+  },
+  {
    "file": "action-completion.reject-outputs-nowhere.json",
    "record": "ActionCompletion",
    "expect": "reject",
@@ -13,6 +20,13 @@
    "file": "action-completion.valid.json",
    "record": "ActionCompletion",
    "expect": "accept"
+  },
+  {
+   "file": "action-execution.reject-milestone-at-zero-progress.json",
+   "record": "ActionExecution",
+   "expect": "reject",
+   "enforcedBy": "refinement",
+   "rule": "Milestones lie inside the action"
   },
   {
    "file": "action-execution.reject-unordered-milestones.json",
@@ -39,6 +53,18 @@
    "expect": "accept"
   },
   {
+   "file": "action-instance.reject-interrupted-holds-reservations.json",
+   "record": "ActionInstance",
+   "expect": "reject",
+   "enforcedBy": "refinement",
+   "rule": "An interrupted action holds no reservations"
+  },
+  {
+   "file": "action-instance.valid.json",
+   "record": "ActionInstance",
+   "expect": "accept"
+  },
+  {
    "file": "action-interruption.reject-item-both-consumed-and-returned.json",
    "record": "ActionInterruption",
    "expect": "reject",
@@ -56,6 +82,13 @@
    "expect": "reject",
    "enforcedBy": "refinement",
    "rule": "Reservation keys are unique within one action"
+  },
+  {
+   "file": "action-resources.reject-reservation-held-by-another.json",
+   "record": "ActionResources",
+   "expect": "reject",
+   "enforcedBy": "refinement",
+   "rule": "Every reservation is held by this action's actor"
   },
   {
    "file": "action-resources.valid.json",
@@ -224,6 +257,13 @@
    "expect": "reject",
    "enforcedBy": "refinement",
    "note": "Partial requires a certified nearer portal and a stable progress measure"
+  },
+  {
+   "file": "state-section-set.reject-empty-section-set.json",
+   "record": "StateSectionSet",
+   "expect": "reject",
+   "enforcedBy": "refinement",
+   "rule": "A set declares at least one section"
   },
   {
    "file": "state-section-set.reject-missing-required-section.json",

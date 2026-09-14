@@ -14,7 +14,7 @@ import { contracts } from "@lastclan/sim";
  * contract change diffs against.
  */
 const samplesDir = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "contracts", "samples");
-const NEW_RECORDS = ["ActionResources", "ActionExecution", "ActionInterruption", "ActionCompletion", "ActionFailure", "StateSectionSet", "AppearanceRecipe"] as const;
+const NEW_RECORDS = ["ActionInstance", "ActionResources", "ActionExecution", "ActionInterruption", "ActionCompletion", "ActionFailure", "StateSectionSet", "AppearanceRecipe"] as const;
 
 interface ManifestEntry {
   file: string;
@@ -32,9 +32,9 @@ function samplesFor(record: string, expectation: "accept" | "reject"): { entry: 
 }
 
 describe("P1-01 lifecycle records", () => {
-  it("registers seven new records, taking the contract surface from 16 to 23", () => {
+  it("registers eight new records, taking the contract surface from 16 to 24", () => {
     expect(Object.keys(contracts.LIFECYCLE_RECORDS)).toEqual([...NEW_RECORDS]);
-    expect(Object.keys(contracts.CONTRACT_RECORDS)).toHaveLength(23);
+    expect(Object.keys(contracts.CONTRACT_RECORDS)).toHaveLength(24);
   });
 
   it.each(NEW_RECORDS)("%s has a valid golden sample that round-trips through the canonical codec", (record) => {
@@ -86,5 +86,64 @@ describe("P1-01 lifecycle records", () => {
     expect(schema.properties["headwear"]?.enum).toHaveLength(10);
     expect(schema.properties["accessory"]?.enum).toHaveLength(6);
     expect(Object.keys(schema.properties)).not.toEqual(expect.arrayContaining(["skills", "traits", "stats"]));
+  });
+});
+
+/**
+ * Refinement liveness (REVIEW-EXTERNAL-01, P1-01 Medium).
+ *
+ * Two refinements in this packet could never fail: one ended in `length >= 0`,
+ * the other returned `true`. Both read as checks and were not. This test makes
+ * that class of defect impossible to ship again: **every refinement on every
+ * record must reject at least one value.** A refinement nothing can violate is
+ * decoration, and decoration in a contract is worse than an absent rule, because
+ * a reader trusts it.
+ */
+describe("every refinement is live", () => {
+  /**
+   * A refinement that can never fail is decoration, and decoration in a contract
+   * is worse than an absent rule because a reader trusts it. Liveness is checked
+   * against **crafted samples**, not against generic junk: for each refinement on
+   * a P1-01 record there must be a sample it actually rejects.
+   *
+   * Only one test guards this, on purpose: a weaker heuristic version (does the
+   * refinement accept an empty object and a generic one?) mislabelled live
+   * refinements as dead, and a check that cries wolf is worse than no check.
+   *
+   * Scope, stated rather than implied: this covers the eight records this packet
+   * owns. Extending it to the sixteen W0-04 records needs a reject sample per
+   * refinement authored for each of them — real work, named as a follow-up
+   * rather than skipped silently.
+   */
+  const refinementsOf = (name: string): { rule: string; check: (v: Record<string, unknown>) => boolean }[] =>
+    (contracts.CONTRACT_RECORDS[name] as { node?: { refinements?: { rule: string; check: (v: Record<string, unknown>) => boolean }[] } }).node?.refinements ?? [];
+
+  it.each(NEW_RECORDS)("%s: every refinement rejects at least one crafted sample", (record) => {
+    const samples = [...samplesFor(record, "reject"), ...samplesFor(record, "accept")].map(({ value }) => value as Record<string, unknown>);
+    expect(samples.length, `${record} has no samples`).toBeGreaterThan(0);
+    for (const refinement of refinementsOf(record)) {
+      const rejectsOne = samples.some((sample) => {
+        try {
+          return refinement.check(sample) === false;
+        } catch {
+          return true;
+        }
+      });
+      expect(rejectsOne, `${record}: "${refinement.rule}" accepts every crafted sample — it may be unable to fail at all`).toBe(true);
+    }
+  });
+});
+
+describe("the in-flight action record", () => {
+  it("exists, so a save taken mid-action can restore it", () => {
+    expect(Object.keys(contracts.CONTRACT_RECORDS)).toContain("ActionInstance");
+    const fields = Object.keys((contracts.toJsonSchema(contracts.CONTRACT_RECORDS["ActionInstance"] as never, "ActionInstance") as { properties?: Record<string, unknown> }).properties ?? {});
+    expect(fields).toEqual(expect.arrayContaining(["instanceId", "progressMilli", "state", "consumedInputs", "heldReservations", "revalidateEveryTicks"]));
+  });
+
+  it("refuses an interrupted action that still holds reservations", () => {
+    const base = { schemaVersion: 0, instanceId: "act.craft.1", actorId: "C003", planId: "plan.craft", actionDefId: "action.craft", startedAtTick: 10, progressMilli: 40_000, state: "Interrupted", consumedInputs: {}, heldReservations: ["station.workbench.01"], revalidateEveryTicks: 10 };
+    expect(contracts.validate(contracts.CONTRACT_RECORDS["ActionInstance"] as never, base).ok).toBe(false);
+    expect(contracts.validate(contracts.CONTRACT_RECORDS["ActionInstance"] as never, { ...base, heldReservations: [] }).ok).toBe(true);
   });
 });

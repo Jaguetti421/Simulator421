@@ -51,7 +51,7 @@ describe("contract consumer map", () => {
       .filter(([, consumers]) => consumers.length === 0)
       .map(([name]) => name);
     expect(orphans, `records with no consumer test: ${orphans.join(", ")}`).toEqual([]);
-    expect(Object.keys(map)).toHaveLength(23);
+    expect(Object.keys(map)).toHaveLength(24);
   });
 
   it("maps the records a change to the action lifecycle would touch", () => {

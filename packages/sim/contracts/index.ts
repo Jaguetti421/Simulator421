@@ -32,6 +32,7 @@ export { ACTOR_ID_PATTERN, actorId, DURABLE_ID_PATTERN, durableId, entityId, HEX
 /** P1-01: action lifecycle, the complete state-section set, and AppearanceRecipe. */
 export {
   ActionCompletionShape,
+  ActionInstanceShape,
   ActionExecutionShape,
   ActionFailureShape,
   ActionInterruptionShape,
@@ -45,6 +46,7 @@ export {
 } from "./lifecycle.js";
 export type {
   ActionCompletion,
+  ActionInstance,
   ActionExecution,
   ActionFailure,
   ActionInterruption,

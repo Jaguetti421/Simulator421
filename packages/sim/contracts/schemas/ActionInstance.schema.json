@@ -1,0 +1,104 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ActionInstance",
+ "type": "object",
+ "$comment": "record ActionInstance",
+ "properties": {
+  "schemaVersion": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 0,
+   "description": "Contract schema version (0 = design version 0)"
+  },
+  "instanceId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Identity of this running action"
+  },
+  "actorId": {
+   "type": "string",
+   "pattern": "^(C0(0[1-9]|[1-9][0-9])|C100|G001|W[0-9]{3})$",
+   "maxLength": 8,
+   "description": "Durable actor ID (C001–C100, G001, Wxxx)"
+  },
+  "planId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Plan this action belongs to"
+  },
+  "actionDefId": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+   "maxLength": 64,
+   "description": "Action definition"
+  },
+  "startedAtTick": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "Tick the action began"
+  },
+  "progressMilli": {
+   "type": "integer",
+   "description": "Progress so far, in thousandths of the duration"
+  },
+  "lastMilestoneIndex": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 7,
+   "description": "Index of the last milestone passed"
+  },
+  "state": {
+   "type": "string",
+   "enum": [
+    "Running",
+    "Paused",
+    "AwaitingResource",
+    "Interrupted"
+   ]
+  },
+  "consumedInputs": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 1,
+    "description": "Whole items already consumed"
+   },
+   "maxProperties": 32
+  },
+  "heldReservations": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$",
+    "maxLength": 64,
+    "description": "Reservation key held while running"
+   },
+   "maxItems": 16
+  },
+  "revalidateEveryTicks": {
+   "type": "integer",
+   "minimum": 1,
+   "description": "How often legality is rechecked while running (TP v1.1 §8)"
+  }
+ },
+ "required": [
+  "schemaVersion",
+  "instanceId",
+  "actorId",
+  "planId",
+  "actionDefId",
+  "startedAtTick",
+  "progressMilli",
+  "state",
+  "consumedInputs",
+  "heldReservations",
+  "revalidateEveryTicks"
+ ],
+ "additionalProperties": false,
+ "x-refinements": [
+  "An interrupted action holds no reservations"
+ ],
+ "description": "An action between start and completion, as a snapshot must carry it: progress, what it has already consumed, and what it still holds."
+}

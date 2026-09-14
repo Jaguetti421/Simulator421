@@ -92,9 +92,14 @@
    "schemaHash": "068b63a3"
   },
   {
+   "name": "ActionInstance",
+   "schemaFile": "packages/sim/contracts/schemas/ActionInstance.schema.json",
+   "schemaHash": "6a5cfae6"
+  },
+  {
    "name": "ActionResources",
    "schemaFile": "packages/sim/contracts/schemas/ActionResources.schema.json",
-   "schemaHash": "7d69c058"
+   "schemaHash": "fbe1763d"
   },
   {
    "name": "ActionExecution",
@@ -124,7 +129,7 @@
   {
    "name": "AppearanceRecipe",
    "schemaFile": "packages/sim/contracts/schemas/AppearanceRecipe.schema.json",
-   "schemaHash": "3b507efe"
+   "schemaHash": "44bbdb37"
   }
  ],
  "mandatoryV0ReasonIds": [

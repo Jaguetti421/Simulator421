@@ -1,0 +1,18 @@
+{
+ "schemaVersion": 0,
+ "instanceId": "act.craft.1",
+ "actorId": "C003",
+ "planId": "plan.craft.axe",
+ "actionDefId": "action.craft",
+ "startedAtTick": 480,
+ "progressMilli": 40000,
+ "lastMilestoneIndex": 0,
+ "state": "Running",
+ "consumedInputs": {
+  "item.flint": 1
+ },
+ "heldReservations": [
+  "station.workbench.01"
+ ],
+ "revalidateEveryTicks": 10
+}

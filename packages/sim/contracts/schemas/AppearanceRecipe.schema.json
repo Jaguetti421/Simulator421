@@ -87,8 +87,5 @@
   "accentColorIndex"
  ],
  "additionalProperties": false,
- "x-refinements": [
-  "Appearance never carries stats: it selects from declared families only"
- ],
  "description": "Identity separated from implementation: the same recipe renders as primitives today and as a rigged kit later, with no data change."
 }

@@ -4,9 +4,16 @@
  *
  * TP §8 requires eight things of every action: identity, preconditions,
  * resources, execution, revalidation, interruption, completion and failure.
- * `ActionRequest` and `ActionResult` (contract v0) cover identity,
- * preconditions, revalidation dependencies and the typed failure reason. The
- * records below complete the table.
+ * `ActionRequest` and `ActionResult` (contract v0) cover identity, revalidation
+ * dependencies and the typed failure reason. The records below **cover the
+ * remaining categories as declarations**.
+ *
+ * That is not the same as completing §8, and the earlier wording claimed it was
+ * (REVIEW-EXTERNAL-01, P1-01 Medium). Preconditions are still implied by
+ * `dependencies` rather than enumerated as distance, procedure, tools and
+ * permissions; and nothing executes any of these records yet, so their shapes
+ * are proven by samples, not by use. The first action packet is what will show
+ * whether they can express a real action.
  *
  * These are **new records rather than extensions** of the existing two, so the
  * sixteen frozen shapes stay byte-identical and the change to
@@ -52,7 +59,10 @@ export const ActionResourcesShape = obj(
   },
   {
     refinements: [
-      refine("An action that produces nothing does not reserve output capacity", (v) => (v["outputCapacity"] as number) === 0 || Object.keys(v["inputs"] as object).length >= 0),
+      // Was dead: the second clause was `length >= 0`, which is always true
+      // (REVIEW-EXTERNAL-01, P1-01 Medium). The real rule: a reservation is held
+      // by the actor whose action it is.
+      refine("Every reservation is held by this action's actor", (v) => (v["reservations"] as readonly { heldByActorId: string }[]).every((r) => r.heldByActorId === v["actorId"])),
       refine("Reservation keys are unique within one action", (v) => {
         const keys = (v["reservations"] as readonly { key: string }[]).map((r) => r.key);
         return new Set(keys).size === keys.length;
@@ -244,14 +254,60 @@ export const AppearanceRecipeShape = obj(
     accentColorIndex: int({ min: 0, max: 31, description: "Index into the personal accent palette" }),
   },
   {
-    refinements: [refine("Appearance never carries stats: it selects from declared families only", () => true)],
+    // No refinement here on purpose. "Appearance never carries stats" is
+    // enforced by the closed-record rule — an unknown field is rejected — not by
+    // a refinement that returns true (DESIGN-RULINGS-01 R6; REVIEW-EXTERNAL-01,
+    // P1-01 Medium: a refinement that can never fail is not a check).
     description: "Identity separated from implementation: the same recipe renders as primitives today and as a rigged kit later, with no data change.",
   },
 );
 export type AppearanceRecipe = Infer<typeof AppearanceRecipeShape>;
 
+// ---------------------------------------------------------------------------
+// In-flight action (REVIEW-EXTERNAL-01, P1-01 Medium: nothing modelled an action
+// that is *running*, so a save could not restore one)
+// ---------------------------------------------------------------------------
+
+/**
+ * An action between start and completion. This is the record a snapshot must
+ * carry: without it, a save taken mid-action either loses the action or silently
+ * restarts it, and both are visible to a player as an actor forgetting what it
+ * was doing. Its section ID is `actions`, and `StateSectionSet` treats it as
+ * required from the first packet that starts an action.
+ */
+export const ActionInstanceShape = obj(
+  "ActionInstance",
+  {
+    schemaVersion: schemaVersion(),
+    instanceId: durableId("Identity of this running action"),
+    actorId: actorId(),
+    planId: durableId("Plan this action belongs to"),
+    actionDefId: durableId("Action definition"),
+    startedAtTick: tick("Tick the action began"),
+    progressMilli: milli("Progress so far, in thousandths of the duration"),
+    lastMilestoneIndex: opt(int({ min: 0, max: 7, description: "Index of the last milestone passed" })),
+    state: enumOf(["Running", "Paused", "AwaitingResource", "Interrupted"] as const),
+    /** Consumed already; an interruption decides whether these are returned. */
+    consumedInputs: mapOf(int({ min: 1, description: "Whole items already consumed" }), { maxEntries: 32 }),
+    heldReservations: arr(durableId("Reservation key held while running"), { maxItems: 16 }),
+    revalidateEveryTicks: int({ min: 1, description: "How often legality is rechecked while running (TP v1.1 §8)" }),
+  },
+  {
+    refinements: [
+      // No refinement for "progress <= 100000": `milli()` already bounds the
+      // field, so a refinement saying the same thing can never be the rule that
+      // rejects anything. Duplicating a schema bound in a refinement is the same
+      // defect as a tautology, one step subtler.
+      refine("An interrupted action holds no reservations", (v) => v["state"] !== "Interrupted" || (v["heldReservations"] as readonly string[]).length === 0),
+    ],
+    description: "An action between start and completion, as a snapshot must carry it: progress, what it has already consumed, and what it still holds.",
+  },
+);
+export type ActionInstance = Infer<typeof ActionInstanceShape>;
+
 /** The records this packet adds, in registration order. */
 export const LIFECYCLE_RECORDS = {
+  ActionInstance: ActionInstanceShape,
   ActionResources: ActionResourcesShape,
   ActionExecution: ActionExecutionShape,
   ActionInterruption: ActionInterruptionShape,
