@@ -17,7 +17,7 @@
  * knowledge distribution and phase-escape validation are the later steps of TP
  * §5's ordered pipeline and are **not** here.
  */
-import { add, asInt, clamp, fnv1a32, hashBytes, HashDomain, isqrt, mulDiv, RandomStream, sub } from "../primitives/index.js";
+import { add, asInt, clamp, divCeil, divFloor, fnv1a32, hashBytes, HashDomain, isqrt, modFloor, mul, mulDiv, RandomStream, sub } from "../primitives/index.js";
 import { coastRadiusCells, ISLAND, isCrossing, isDeepPool, isLagoon, isPass, SHIPPING_VALLEY, validateIsland } from "./island.js";
 import type { IslandValidation } from "./island.js";
 import type { Int } from "../primitives/index.js";
@@ -132,7 +132,7 @@ export function cellIndex(cx: number, cy: number): number {
 export function cellOf(xMm: Int, yMm: Int): { cx: number; cy: number } {
   // `| 0` normalizes negative zero: Math.trunc(-5 / 1000) is -0, and a cell
   // index of -0 compares unequal to 0 in a structural assertion.
-  const axis = (mm: Int): number => clamp(asInt(Math.trunc(mm / CELL_MM) | 0, "cell"), 0 as Int, (GRID_SIZE - 1) as Int) | 0;
+  const axis = (mm: Int): number => (clamp(divFloor(mm, CELL_MM), 0 as Int, (GRID_SIZE - 1) as Int) as number) | 0;
   return { cx: axis(xMm), cy: axis(yMm) };
 }
 
@@ -147,7 +147,7 @@ function latticeValue(seed: Int, lx: number, ly: number, amplitudeMm: number): n
   new DataView(bytes.buffer).setInt32(4, lx, true);
   new DataView(bytes.buffer).setInt32(8, ly, true);
   const h = fnv1a32(bytes);
-  return ((h % (2 * amplitudeMm + 1)) | 0) - amplitudeMm;
+  return (modFloor(h, asInt(2 * amplitudeMm + 1, "noiseRange")) as number) - amplitudeMm;
 }
 
 /** Integer bilinear interpolation on a lattice of the given spacing, in cells. */
@@ -224,7 +224,7 @@ function islandHeightMm(seed: Int, cx: number, cy: number): { readonly baseMm: n
   // sampled, which noise does not care about.
   const angleIndex = pseudoAngle1024(dx, dy);
   const coast = coastRadiusCells(seed, angleIndex);
-  const inside = coast - distance;
+  const inside = coast - (distance as number);
 
   if (inside <= -ISLAND.coastBandCells) {
     // Open sea: deepens toward the envelope edge so the edge is unambiguously deep.
@@ -362,16 +362,17 @@ export function compileTerrain(recipe: TerrainRecipe): CompiledTerrain {
   for (const socket of recipe.sockets) {
     if (socket.kind !== "Obstacle") continue;
     const radius = socket.radiusMm ?? (1_000 as Int);
-    const cells = Math.ceil(radius / CELL_MM);
+    const cells = divCeil(radius, CELL_MM) as number;
     const centre = cellOf(socket.xMm, socket.yMm);
     for (let dy = -cells; dy <= cells; dy += 1) {
       for (let dx = -cells; dx <= cells; dx += 1) {
         const nx = centre.cx + dx;
         const ny = centre.cy + dy;
         if (nx < 0 || ny < 0 || nx >= GRID_SIZE || ny >= GRID_SIZE) continue;
-        const dxMm = sub(asInt(nx * CELL_MM + CELL_MM / 2, "x"), socket.xMm);
-        const dyMm = sub(asInt(ny * CELL_MM + CELL_MM / 2, "y"), socket.yMm);
-        if (dxMm * dxMm + dyMm * dyMm <= radius * radius) traversal[cellIndex(nx, ny)] = TRAVERSAL.Obstacle;
+        const half = divFloor(CELL_MM, 2 as Int);
+        const dxMm = sub(add(mul(asInt(nx, "nx"), CELL_MM), half), socket.xMm);
+        const dyMm = sub(add(mul(asInt(ny, "ny"), CELL_MM), half), socket.yMm);
+        if (add(mul(dxMm, dxMm), mul(dyMm, dyMm)) <= mul(radius, radius)) traversal[cellIndex(nx, ny)] = TRAVERSAL.Obstacle;
       }
     }
   }
@@ -586,7 +587,7 @@ function buildManifest(
     classCounts,
     fineCells: parts.fine.size,
     sockets: recipe.sockets,
-    geometryHash: (hashArrays(parts) >>> 0).toString(16).padStart(8, "0"),
+    geometryHash: ((hashArrays(parts) as number) >>> 0).toString(16).padStart(8, "0"),
   };
 }
 
@@ -621,8 +622,8 @@ export function fineClearance(terrain: CompiledTerrain, xMm: Int, yMm: Int): { r
   const index = cellIndex(cx, cy);
   const sub16 = terrain.fine.get(index);
   if (sub16 === undefined) return { detailed: false, passable: isPassable(terrain, xMm, yMm) };
-  const fx = Math.min(FINE_PER_SIDE - 1, Math.trunc((xMm - cx * CELL_MM) / FINE_CELL_MM));
-  const fy = Math.min(FINE_PER_SIDE - 1, Math.trunc((yMm - cy * CELL_MM) / FINE_CELL_MM));
+  const fx = Math.min(FINE_PER_SIDE - 1, divFloor(sub(xMm, mul(asInt(cx, "cx"), CELL_MM)), FINE_CELL_MM));
+  const fy = Math.min(FINE_PER_SIDE - 1, divFloor(sub(yMm, mul(asInt(cy, "cy"), CELL_MM)), FINE_CELL_MM));
   const value = sub16[fy * FINE_PER_SIDE + fx] as number;
   return { detailed: true, passable: SPEED_MULTIPLIER_MILLI[value as TraversalClass] > 0 };
 }

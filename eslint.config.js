@@ -292,13 +292,13 @@ export default defineConfig([
             "packages/sim/primitives/serialize\\.ts$",
             "\\.test\\.ts$",
             // ---------------------------------------------------------------
-            // Debt, 14 Sep 2026. Started at 53 sites across six files. Cleaned
-            // so far: visibility.ts (20), terrain.ts is the last one left.
-            // Removing this entry is the acceptance test for fixing it.
-            //
-            //   spatial/terrain.ts  19   <- all that remains
-            "packages/sim/spatial/terrain\\.ts$",
-          ],
+            // Debt cleared, 14 Sep 2026: this list started at five files and 53
+            // sites (visibility 20, terrain 19, route 4, tick 3, island 2, host
+            // 1). All of them now route through checkedMath, so nothing in
+            // `packages/sim` is allow-listed except the arithmetic primitives
+            // themselves and the tests. Adding a file back here should require
+            // the same argument the primitives have.
+                      ],
         },
       ],
     },
