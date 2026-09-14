@@ -13,7 +13,7 @@
  * distinct, because collapsing "I ran out of time" into "there is no way" is how
  * an actor ends up standing still for reasons no one can explain.
  */
-import { add, asInt, isqrt, mulDiv } from "../primitives/index.js";
+import { add, asInt, divFloor, isqrt, mul, mulDiv } from "../primitives/index.js";
 import type { Int } from "../primitives/index.js";
 import { CELL_MM, cellIndex, cellOf, GRID_SIZE, SPEED_MULTIPLIER_MILLI, TRAVERSAL } from "./terrain.js";
 import type { CompiledTerrain, TraversalClass } from "./terrain.js";
@@ -117,7 +117,7 @@ function stepCostMilli(traversalClass: TraversalClass): number {
 function heuristicMilli(from: RouteCell, to: RouteCell): number {
   const dx = from.cx - to.cx;
   const dy = from.cy - to.cy;
-  return isqrt(asInt(dx * dx + dy * dy, "h")) * 1000;
+  return mul(isqrt(asInt(dx * dx + dy * dy, "h")), 1_000 as Int);
 }
 
 /**
@@ -285,7 +285,7 @@ export function stepDurationTicks(traversalClass: TraversalClass, walkMmPerSecon
   const multiplier = SPEED_MULTIPLIER_MILLI[traversalClass];
   if (multiplier === 0) return 0 as Int;
   const mmPerTick = mulDiv(mulDiv(walkMmPerSecond, asInt(multiplier, "multiplier"), 1000 as Int), 1 as Int, tickHz);
-  return mmPerTick <= 0 ? (0 as Int) : (add(asInt(Math.trunc(CELL_MM / mmPerTick), "ticks"), 1 as Int) as Int);
+  return mmPerTick <= 0 ? (0 as Int) : add(divFloor(CELL_MM, mmPerTick), 1 as Int);
 }
 
 export { TRAVERSAL };
@@ -298,13 +298,15 @@ export { TRAVERSAL };
  * D05 anchor checks, which are acceptance criteria, not diagnostics.
  */
 export function routeMilliseconds(terrain: CompiledTerrain, path: readonly RouteCell[], walkMmPerSecond: Int = 3_500 as Int): number {
-  let ms = 0;
+  // Accumulated as a branded Int: the total is a duration the caller compares
+  // against acceptance thresholds, so it stays checked to the end.
+  let ms = 0 as Int;
   for (let i = 1; i < path.length; i += 1) {
     const cell = path[i] as RouteCell;
     const multiplier = SPEED_MULTIPLIER_MILLI[terrain.traversal[cellIndex(cell.cx, cell.cy)] as TraversalClass];
     if (multiplier === 0) return Number.MAX_SAFE_INTEGER;
     // mm / (mm per second) -> seconds; in milliseconds, with integer division.
-    ms += Math.trunc((CELL_MM * 1_000 * 1_000) / (walkMmPerSecond * multiplier));
+    ms = add(ms, divFloor(mul(CELL_MM, 1_000_000 as Int), mul(walkMmPerSecond, asInt(multiplier, "multiplier"))));
   }
   return ms;
 }

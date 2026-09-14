@@ -10,7 +10,7 @@
  *
  * Every number here is **TUNE** (R7): a starting point for the G1 playtest.
  */
-import { asInt, fnv1a32 } from "../primitives/index.js";
+import { add, asInt, divFloor, fnv1a32, modFloor, mul, sub } from "../primitives/index.js";
 import type { Int } from "../primitives/index.js";
 
 export const ISLAND = {
@@ -59,14 +59,29 @@ export const COAST_LATTICE = 16;
 export function coastRadiusCells(seed: Int, angleIndex: number, lattice: number = COAST_LATTICE): number {
   const bytes = new Uint8Array(8);
   const view = new DataView(bytes.buffer);
-  view.setInt32(0, seed, true);
+  // `seed` is the only branded value here; the lattice indices are array
+  // bookkeeping, so they stay plain numbers rather than being dressed as world
+  // quantities.
+  view.setInt32(0, seed as number, true);
   view.setInt32(4, Math.floor(angleIndex / lattice), true);
-  const a = fnv1a32(bytes) % 2_001;
+  const a = modFloor(fnv1a32(bytes), 2_001 as Int);
   view.setInt32(4, Math.floor(angleIndex / lattice) + 1, true);
-  const b = fnv1a32(bytes) % 2_001;
+  const b = modFloor(fnv1a32(bytes), 2_001 as Int);
   const t = angleIndex - Math.floor(angleIndex / lattice) * lattice;
-  const blended = a + Math.trunc(((b - a) * t) / lattice);
-  return ISLAND.radiusCells + Math.trunc(((blended - 1_000) * ISLAND.coastWanderCells) / 1_000);
+  // `a` and `b` are branded (they come from the hash), so the interpolation
+  // stays in checkedMath; the result is a cell radius, which is a plain number
+  // like every other grid index in this module.
+  //
+  // **This moved the coastline.** The old code used `Math.trunc` (toward zero)
+  // and checkedMath divides toward negative infinity, so the two disagree by one
+  // wherever the interpolation went negative — about a cell of shoreline in
+  // places, and a new geometry hash. Floor is the house convention for every
+  // other consequential value, no hash was pinned as a golden, and a lint fix
+  // that quietly kept two different rounding rules in the same codebase would be
+  // worse than a map that shifted by a metre.
+  const blended = add(a, divFloor(mul(sub(b, a), asInt(t, "latticeOffset")), asInt(lattice, "lattice")));
+  const wander = divFloor(mul(sub(blended, 1_000 as Int), asInt(ISLAND.coastWanderCells, "wander")), 1_000 as Int);
+  return ISLAND.radiusCells + (wander as number);
 }
 
 /** Is this land cell inside the authored lagoon (shallow, wadeable)? */

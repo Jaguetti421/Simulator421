@@ -9,8 +9,7 @@
  * The pause barrier is explicit: `pause()` takes effect at a tick boundary, and
  * a paused host runs zero ticks and says so rather than silently doing nothing.
  */
-import { add, asInt, formatDigest } from "../primitives/index.js";
-import type { Int } from "../primitives/index.js";
+import { asInt, formatDigest, sub } from "../primitives/index.js";
 import { authoritativeHash, createWorld, runTick, STAGE_ORDER, WORKLOAD_OMISSIONS } from "../core/index.js";
 import { decodeWorld, encodeWorld } from "./snapshot.js";
 import type { CommandOutcome, Counters, KernelEvent, QueuedCommand, World, WorldConfig } from "../core/index.js";
@@ -217,6 +216,6 @@ export class SimHost {
   /** Ticks remaining in a Standard match from here — used by callers that pace a run. */
   ticksUntil(target: number): number {
     const t = asInt(target, "target");
-    return Math.max(0, add(t, 0 as Int) - this.#world.tick);
+    return Math.max(0, sub(t, this.#world.tick));
   }
 }

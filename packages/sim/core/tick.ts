@@ -11,7 +11,7 @@
  * types and the fixture that counts them fails. The stage bodies are synthetic
  * (see `WORKLOAD_OMISSIONS`); the transaction around them is not.
  */
-import { add, asInt, isqrt, mixInt53, mixWord, mul, sub } from "../primitives/index.js";
+import { add, asInt, divFloor, isqrt, mixInt53, mixWord, modFloor, mul, sub } from "../primitives/index.js";
 import type { Int } from "../primitives/index.js";
 import { clampToEnvelope, distanceSquaredMm, ENVELOPE_MM } from "./world.js";
 import type { KernelEvent, QueuedCommand, World } from "./world.js";
@@ -85,7 +85,7 @@ export const STAGES: readonly Stage[] = [
     name: "commands",
     guarantee: "Queued player commands apply in authoritative sequence with acknowledgements",
     run: (world, ordinal) => {
-      const due = world.pending.filter((c) => c.atTick <= world.tick).sort((a, b) => a.sequence - b.sequence);
+      const due = world.pending.filter((c) => c.atTick <= world.tick).sort((a, b) => sub(a.sequence, b.sequence));
       if (due.length === 0) return;
       world.pending = world.pending.filter((c) => c.atTick > world.tick);
       for (const command of due) {
@@ -135,7 +135,7 @@ export const STAGES: readonly Stage[] = [
     name: "advance",
     guarantee: "Needs, timers, movement and running actions advance with rechecked legality",
     run: (world) => {
-      const jitter = world.tick % MOTION_JITTER_INTERVAL === 0;
+      const jitter = modFloor(world.tick, asInt(MOTION_JITTER_INTERVAL, "jitterInterval")) === 0;
       for (const actor of world.actors) {
         if (jitter) {
           actor.vxMm = world.streams.motion.nextRange(-500 as Int, 500 as Int);
@@ -152,7 +152,7 @@ export const STAGES: readonly Stage[] = [
 
         // Synthetic route query: straight-line distance to the island centre and
         // a budget check. No graph, no portals, no congestion.
-        const centre = asInt(ENVELOPE_MM / 2, "centre");
+        const centre = divFloor(ENVELOPE_MM, 2 as Int);
         const distance = isqrt(distanceSquaredMm(actor.xMm, actor.yMm, centre, centre));
         world.counters.routeQueries += 1;
         if (distance > mul(centre, 2 as Int)) throw new Error("route budget invariant violated: distance exceeds the envelope diagonal");

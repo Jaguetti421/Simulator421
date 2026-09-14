@@ -292,22 +292,12 @@ export default defineConfig([
             "packages/sim/primitives/serialize\\.ts$",
             "\\.test\\.ts$",
             // ---------------------------------------------------------------
-            // Debt, 14 Sep 2026: these five files still hold bare `Int`
-            // arithmetic the rule catches — 29 sites in total, counted below.
-            // They are listed individually, with counts, so the debt shrinks
-            // visibly and cannot be forgotten the way the rule itself was for
-            // four packets. `visibility.ts` was cleaned first and is NOT here.
+            // Debt, 14 Sep 2026. Started at 53 sites across six files. Cleaned
+            // so far: visibility.ts (20), terrain.ts is the last one left.
+            // Removing this entry is the acceptance test for fixing it.
             //
-            //   spatial/terrain.ts  19    spatial/route.ts   4
-            //   core/tick.ts         3    spatial/island.ts  2
-            //   host/index.ts        1
-            //
-            // Removing an entry is the acceptance test for fixing that file.
+            //   spatial/terrain.ts  19   <- all that remains
             "packages/sim/spatial/terrain\\.ts$",
-            "packages/sim/spatial/route\\.ts$",
-            "packages/sim/spatial/island\\.ts$",
-            "packages/sim/core/tick\\.ts$",
-            "packages/sim/host/index\\.ts$",
           ],
         },
       ],
