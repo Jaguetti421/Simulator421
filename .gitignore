@@ -29,3 +29,4 @@ Thumbs.db
 /playwright-report/
 # vite output for apps/web (rebuilt by npm run build)
 /apps/web/dist-site/
+/tools/eslint/dist/

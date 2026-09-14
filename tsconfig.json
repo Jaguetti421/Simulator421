@@ -2,10 +2,23 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "files": [],
   "references": [
-    { "path": "packages/sim" },
-    { "path": "packages/content" },
-    { "path": "packages/lab" },
-    { "path": "apps/web" },
-    { "path": "tests" }
+    {
+      "path": "packages/sim"
+    },
+    {
+      "path": "packages/content"
+    },
+    {
+      "path": "packages/lab"
+    },
+    {
+      "path": "apps/web"
+    },
+    {
+      "path": "tests"
+    },
+    {
+      "path": "./tools/eslint"
+    }
   ]
 }

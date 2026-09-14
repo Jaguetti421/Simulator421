@@ -18,7 +18,7 @@
  * reject an illegal interaction without telling the planner who is hiding behind
  * a wall").
  */
-import { asInt, isqrt, mulDiv } from "../primitives/index.js";
+import { add, asInt, divCeil, divFloor, isqrt, mul, mulDiv, sub } from "../primitives/index.js";
 import type { Int } from "../primitives/index.js";
 import { CELL_MM, cellIndex, cellOf, GRID_SIZE, TRAVERSAL } from "./terrain.js";
 import type { CompiledTerrain } from "./terrain.js";
@@ -29,7 +29,12 @@ import type { CompiledTerrain } from "./terrain.js";
 
 /** Bucket edge in millimetres. 16 m keeps a sight-range query to a handful of buckets. */
 export const BUCKET_MM = 16_000 as Int;
-const BUCKETS_PER_SIDE = Math.ceil((GRID_SIZE * CELL_MM) / BUCKET_MM);
+/**
+ * Bucket count per side. Computed with checkedMath and then held as a plain
+ * `number`: it is an array-shape constant, not a world quantity, and keeping it
+ * branded would push `Int` into every index expression that uses it.
+ */
+const BUCKETS_PER_SIDE: number = divCeil(mul(asInt(GRID_SIZE, "gridSize"), CELL_MM), BUCKET_MM);
 
 export interface SpatialEntry {
   readonly id: string;
@@ -47,8 +52,8 @@ export class SpatialHash {
   #size = 0;
 
   static bucketOf(xMm: Int, yMm: Int): number {
-    const bx = Math.min(BUCKETS_PER_SIDE - 1, Math.max(0, Math.trunc(xMm / BUCKET_MM) | 0));
-    const by = Math.min(BUCKETS_PER_SIDE - 1, Math.max(0, Math.trunc(yMm / BUCKET_MM) | 0));
+    const bx = Math.min(BUCKETS_PER_SIDE - 1, Math.max(0, divFloor(xMm, BUCKET_MM)));
+    const by = Math.min(BUCKETS_PER_SIDE - 1, Math.max(0, divFloor(yMm, BUCKET_MM)));
     return by * BUCKETS_PER_SIDE + bx;
   }
 
@@ -80,20 +85,21 @@ export class SpatialHash {
    * Results are sorted by id so two runs order them identically.
    */
   candidates(xMm: Int, yMm: Int, radiusMm: Int): readonly SpatialEntry[] {
-    const reach = Math.ceil(radiusMm / BUCKET_MM);
-    const bx = Math.min(BUCKETS_PER_SIDE - 1, Math.max(0, Math.trunc(xMm / BUCKET_MM) | 0));
-    const by = Math.min(BUCKETS_PER_SIDE - 1, Math.max(0, Math.trunc(yMm / BUCKET_MM) | 0));
+    const reach = divCeil(radiusMm, BUCKET_MM);
+    const bx = Math.min(BUCKETS_PER_SIDE - 1, Math.max(0, divFloor(xMm, BUCKET_MM)));
+    const by = Math.min(BUCKETS_PER_SIDE - 1, Math.max(0, divFloor(yMm, BUCKET_MM)));
     const found: SpatialEntry[] = [];
-    const radiusSquared = radiusMm * radiusMm;
-    for (let dy = -reach; dy <= reach; dy += 1) {
-      for (let dx = -reach; dx <= reach; dx += 1) {
+    const radiusSquared = mul(radiusMm, radiusMm);
+    const span: number = reach;
+    for (let dy = -span; dy <= span; dy += 1) {
+      for (let dx = -span; dx <= span; dx += 1) {
         const nx = bx + dx;
         const ny = by + dy;
         if (nx < 0 || ny < 0 || nx >= BUCKETS_PER_SIDE || ny >= BUCKETS_PER_SIDE) continue;
         for (const entry of this.#buckets.get(ny * BUCKETS_PER_SIDE + nx) ?? []) {
-          const ex = entry.xMm - xMm;
-          const ey = entry.yMm - yMm;
-          if (ex * ex + ey * ey <= radiusSquared) found.push(entry);
+          const ex = sub(entry.xMm, xMm);
+          const ey = sub(entry.yMm, yMm);
+          if (add(mul(ex, ex), mul(ey, ey)) <= radiusSquared) found.push(entry);
         }
       }
     }
@@ -133,15 +139,15 @@ export interface SightOptions {
   readonly targetEyeMm?: Int;
 }
 
-function groundHeightAt(terrain: CompiledTerrain, cx: number, cy: number): number {
-  return terrain.heightMm[cellIndex(cx, cy)] as number;
+function groundHeightAt(terrain: CompiledTerrain, cx: number, cy: number): Int {
+  return asInt(terrain.heightMm[cellIndex(cx, cy)] as number, "groundHeight");
 }
 
 /** Sight-blocking height of a cell: its ground, plus an obstacle's own rise. */
-function occluderHeightAt(terrain: CompiledTerrain, cx: number, cy: number): { height: number; reason: "Terrain" | "Obstacle" } {
+function occluderHeightAt(terrain: CompiledTerrain, cx: number, cy: number): { height: Int; reason: "Terrain" | "Obstacle" } {
   const i = cellIndex(cx, cy);
-  const ground = terrain.heightMm[i] as number;
-  return terrain.traversal[i] === TRAVERSAL.Obstacle ? { height: ground + OBSTACLE_HEIGHT_MM, reason: "Obstacle" } : { height: ground, reason: "Terrain" };
+  const ground = asInt(terrain.heightMm[i] as number, "groundHeight");
+  return terrain.traversal[i] === TRAVERSAL.Obstacle ? { height: add(ground, OBSTACLE_HEIGHT_MM), reason: "Obstacle" } : { height: ground, reason: "Terrain" };
 }
 
 /**
@@ -153,13 +159,13 @@ function occluderHeightAt(terrain: CompiledTerrain, cx: number, cy: number): { h
  * everywhere.
  */
 export function lineOfSight(terrain: CompiledTerrain, fromXMm: Int, fromYMm: Int, toXMm: Int, toYMm: Int, options: SightOptions): VisibilityResult {
-  const dx = toXMm - fromXMm;
-  const dy = toYMm - fromYMm;
-  const distanceSquared = dx * dx + dy * dy;
+  const dx = sub(toXMm, fromXMm);
+  const dy = sub(toYMm, fromYMm);
+  const distanceSquared = add(mul(dx, dx), mul(dy, dy));
   // Integer square root: distance is consequential, so it never goes through a float.
   const distanceMm = isqrt(asInt(distanceSquared, "distanceSquared"));
 
-  if (distanceSquared > options.rangeMm * options.rangeMm) {
+  if (distanceSquared > mul(options.rangeMm, options.rangeMm)) {
     return { status: "OutOfRange", visible: false, distanceMm, cellsStepped: 0 };
   }
 
@@ -186,13 +192,13 @@ export function lineOfSight(terrain: CompiledTerrain, fromXMm: Int, fromYMm: Int
 
   const observerEye = options.observerEyeMm ?? EYE_HEIGHT_MM;
   const targetEye = options.targetEyeMm ?? EYE_HEIGHT_MM;
-  const eyeFrom = groundHeightAt(terrain, from.cx, from.cy) + (swap ? targetEye : observerEye);
-  const eyeTo = groundHeightAt(terrain, to.cx, to.cy) + (swap ? observerEye : targetEye);
+  const eyeFrom = add(groundHeightAt(terrain, from.cx, from.cy), swap ? targetEye : observerEye);
+  const eyeTo = add(groundHeightAt(terrain, to.cx, to.cy), swap ? observerEye : targetEye);
 
   for (let step = 1; step < steps; step += 1) {
     const cx = from.cx + Math.trunc(((to.cx - from.cx) * step) / steps);
     const cy = from.cy + Math.trunc(((to.cy - from.cy) * step) / steps);
-    const rayHeight = eyeFrom + mulDiv(asInt(eyeTo - eyeFrom, "eyeDelta"), asInt(step, "step"), asInt(steps, "steps"));
+    const rayHeight = add(eyeFrom, mulDiv(sub(eyeTo, eyeFrom), asInt(step, "step"), asInt(steps, "steps")));
     const occluder = occluderHeightAt(terrain, cx, cy);
     if (occluder.height > rayHeight) {
       return { status: "Blocked", visible: false, distanceMm, cellsStepped: step, blockedAt: { cx, cy, reason: occluder.reason } };

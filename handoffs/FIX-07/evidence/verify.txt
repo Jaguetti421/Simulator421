@@ -1,0 +1,14 @@
+
+> lastclan@0.0.0 verify
+> npm run build && npm run lint && npm test && npm run test:tools && npm run check:workboard
+
+
+> lastclan@0.0.0 build
+> tsc -b tsconfig.json && vite build --config apps/web/vite.config.ts
+
+packages/sim/spatial/int-arithmetic.test.ts(1,30): error TS2591: Cannot find name 'node:child_process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+packages/sim/spatial/int-arithmetic.test.ts(2,31): error TS2591: Cannot find name 'node:path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+packages/sim/spatial/int-arithmetic.test.ts(3,31): error TS2591: Cannot find name 'node:url'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+packages/sim/spatial/int-arithmetic.test.ts(15,57): error TS2339: Property 'url' does not exist on type 'ImportMeta'.
+packages/sim/spatial/int-arithmetic.test.ts(31,70): error TS2591: Cannot find name 'require'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+packages/sim/spatial/int-arithmetic.test.ts(31,144): error TS2591: Cannot find name 'require'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.

@@ -3,6 +3,23 @@
 //
 // The boundaries below implement AGENTS.md "Non-negotiable engineering boundaries"
 // and TP v2.0 §21: nothing in packages/sim may import three, react, DOM types or
+import { existsSync } from "node:fs";
+import { createRequire } from "node:module";
+
+/**
+ * The typed rule banning bare arithmetic on branded `Int` (REVIEW-REQUEST-01
+ * §5.1, delivered by the reviewing agent, wired here after four deferrals).
+ *
+ * It is TypeScript, so it is compiled by `npm run build` like everything else.
+ * If it is missing we fail loudly rather than lint without it: a silently
+ * skipped rule is how a guard stops guarding without anyone noticing.
+ */
+const ruleRequire = createRequire(import.meta.url);
+const compiledRulePath = "./tools/eslint/dist/no-bare-int-arithmetic.js";
+if (!existsSync(new URL("tools/eslint/dist/no-bare-int-arithmetic.js", import.meta.url))) {
+  throw new Error("eslint.config.js: tools/eslint/dist is missing — run `npm run build` before linting (the no-bare-int-arithmetic rule is compiled from TypeScript).");
+}
+const noBareIntArithmetic = ruleRequire(compiledRulePath).default ?? ruleRequire(compiledRulePath);
 // apps/web; no wall clock, Math.random, floats or timers may determine outcomes.
 // tests/arch/boundaries.test.ts proves each rule fires. W0-04 extends this file
 // with the intra-sim direction (ai may not import core implementation, ...).
@@ -236,6 +253,65 @@ export default defineConfig([
   {
     files: ["packages/sim/**/*.ts", "packages/content/**/*.ts", "packages/lab/**/*.ts"],
     rules: noRenderOrAppImports,
+  },
+
+  /**
+   * Typed rule: no bare arithmetic on branded `Int` inside `packages/sim`.
+   *
+   * The compiler already rejects `const x: Int = a + b` because the brand is lost
+   * by arithmetic. This closes the gap the type system leaves: arithmetic on
+   * `Int` consumed as a plain `number` — a comparison of sums, an array index, a
+   * `number` parameter. Typed linting is enabled only for this block, because it
+   * costs real time and nothing else needs it.
+   */
+  {
+    files: ["packages/sim/**/*.ts"],
+    // The architecture probes lint synthetic files that exist only in memory
+    // (`__boundary_probe__.ts`). Type-aware parsing needs a real file in a real
+    // project, so those paths are excluded here rather than the probes being
+    // rewritten — they are testing the untyped boundary rules, not this one.
+    ignores: ["**/__boundary_probe__*.ts"],
+    languageOptions: { parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname } },
+    plugins: { lastclan: { rules: { "no-bare-int-arithmetic": noBareIntArithmetic } } },
+    rules: {
+      "lastclan/no-bare-int-arithmetic": [
+        "error",
+        {
+          brandTypeNames: ["Int"],
+          // The modules whose whole job is the arithmetic everything else must
+          // route through, plus the PRNG and hashing, which are bitwise by
+          // definition.
+          allowFiles: [
+            // The modules whose whole job is the arithmetic everything else
+            // routes through, plus the PRNG and hashing, which are bitwise by
+            // definition.
+            "packages/sim/primitives/checkedMath\\.ts$",
+            "packages/sim/primitives/int\\.ts$",
+            "packages/sim/primitives/random\\.ts$",
+            "packages/sim/primitives/hash\\.ts$",
+            "packages/sim/primitives/serialize\\.ts$",
+            "\\.test\\.ts$",
+            // ---------------------------------------------------------------
+            // Debt, 14 Sep 2026: these five files still hold bare `Int`
+            // arithmetic the rule catches — 29 sites in total, counted below.
+            // They are listed individually, with counts, so the debt shrinks
+            // visibly and cannot be forgotten the way the rule itself was for
+            // four packets. `visibility.ts` was cleaned first and is NOT here.
+            //
+            //   spatial/terrain.ts  19    spatial/route.ts   4
+            //   core/tick.ts         3    spatial/island.ts  2
+            //   host/index.ts        1
+            //
+            // Removing an entry is the acceptance test for fixing that file.
+            "packages/sim/spatial/terrain\\.ts$",
+            "packages/sim/spatial/route\\.ts$",
+            "packages/sim/spatial/island\\.ts$",
+            "packages/sim/core/tick\\.ts$",
+            "packages/sim/host/index\\.ts$",
+          ],
+        },
+      ],
+    },
   },
 
   // packages/lab and packages/content are Node programs (compiler, CLI, renderer).
