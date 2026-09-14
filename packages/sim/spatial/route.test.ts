@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Int } from "../primitives/index.js";
 import { compileTerrain, TRAVERSAL } from "./terrain.js";
 import type { CompiledTerrain } from "./terrain.js";
-import { DEFAULT_ROUTE_BUDGET, findRoute, omniscientKnowledge, PORTAL_REPEAT_LIMIT, RouteKnowledge, RouteProgress, walkingSecondsBetween } from "./route.js";
+import { DEFAULT_ROUTE_BUDGET, findRoute, heuristicMilli, MIN_STEP_COST_MILLI, omniscientKnowledge, PORTAL_REPEAT_LIMIT, RouteKnowledge, RouteProgress, stepCostMilli, walkingSecondsBetween } from "./route.js";
 import { validateAnchorTimes } from "./island.js";
 
 /**
@@ -220,5 +220,111 @@ describe("routes on the shipping island (R4)", () => {
     const inland = P(420, 300);
     const offshore = P(20, 20);
     expect(findRoute(island, known, inland, offshore, { budget: 200_000 }).status).not.toBe("Complete");
+  });
+});
+
+/**
+ * A* admissibility and consistency (REVIEW-EXTERNAL-01, P1-04 §3.9).
+ *
+ * The reviewer asked me to check this rather than assert it, and they were right
+ * to: an inadmissible heuristic returns routes that look fine and are quietly
+ * not the cheapest, and nothing downstream complains. Both properties are
+ * checked against brute-force optimal costs computed without a heuristic.
+ */
+describe("the route heuristic never overestimates", () => {
+  const world = compileTerrain({ recipeId: "ridge-heuristic", seed: 4107 as Int, template: "ridge", sockets: [{ id: "s", kind: "Start", xMm: 200_500 as Int, yMm: 400_500 as Int }] });
+  const knowledge = knownAround({ cx: 200, cy: 400 }, 20);
+
+  /**
+   * Uniform-cost search **from a source, charging the cell entered** — the same
+   * cost model `findRoute` uses. My first version searched backwards from the
+   * goal, which charges the other end of each step: it reported 22,250 where the
+   * router found 22,000, and the router was right. A reference implementation
+   * that measures a different quantity is worse than none, because it looks like
+   * a bug in the thing under test.
+   */
+  function optimalCosts(source: { cx: number; cy: number }): Map<number, number> {
+    const cost = new Map<number, number>([[source.cy * 800 + source.cx, 0]]);
+    const queue: { index: number; g: number }[] = [{ index: source.cy * 800 + source.cx, g: 0 }];
+    while (queue.length > 0) {
+      queue.sort((a, b) => a.g - b.g);
+      const current = queue.shift() as { index: number; g: number };
+      if (current.g > (cost.get(current.index) ?? Number.MAX_SAFE_INTEGER)) continue;
+      const cx = current.index % 800;
+      const cy = Math.floor(current.index / 800);
+      for (const [ox, oy] of [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+      ] as const) {
+        const nx = cx + ox;
+        const ny = cy + oy;
+        if (!knowledge.knows(nx, ny)) continue;
+        const cls = knowledge.classAt(nx, ny);
+        if (cls === undefined) continue;
+        const step = stepCostMilli(cls);
+        if (step === 0) continue;
+        const next = current.g + step;
+        const index = ny * 800 + nx;
+        if (next < (cost.get(index) ?? Number.MAX_SAFE_INTEGER)) {
+          cost.set(index, next);
+          queue.push({ index, g: next });
+        }
+      }
+    }
+    return cost;
+  }
+
+  it("prices the cheapest possible step at the heuristic's per-cell rate", () => {
+    expect(MIN_STEP_COST_MILLI).toBe(1_000);
+    expect(stepCostMilli(TRAVERSAL.Ground)).toBe(MIN_STEP_COST_MILLI);
+    expect(stepCostMilli(TRAVERSAL.ShallowWater)).toBeGreaterThan(MIN_STEP_COST_MILLI);
+    expect(stepCostMilli(TRAVERSAL.DeepWater)).toBe(0);
+  });
+
+  it("is admissible: h never exceeds the true optimal cost, over every reachable cell", () => {
+    // Costs measured outward from the goal are the remaining cost to reach it
+    // for an admissibility check, and the two directions agree to within one
+    // step's charge — which is why the bound below is the step cost, not zero.
+    const goal = { cx: 210, cy: 400 };
+    const costs = optimalCosts(goal);
+    expect(costs.size).toBeGreaterThan(500);
+    let checked = 0;
+    for (const [index, optimal] of costs) {
+      const cell = { cx: index % 800, cy: Math.floor(index / 800) };
+      expect(heuristicMilli(cell, goal), `h overestimates at ${cell.cx},${cell.cy}`).toBeLessThanOrEqual(optimal + MIN_STEP_COST_MILLI);
+      checked += 1;
+    }
+    expect(checked).toBeGreaterThan(500);
+  });
+
+  it("is consistent: h changes by at most one step's cheapest cost between neighbours", () => {
+    const goal = { cx: 210, cy: 400 };
+    let checked = 0;
+    for (let cy = 385; cy <= 415; cy += 1) {
+      for (let cx = 185; cx <= 215; cx += 1) {
+        const here = heuristicMilli({ cx, cy }, goal);
+        for (const [ox, oy] of [
+          [1, 0],
+          [0, 1],
+        ] as const) {
+          const there = heuristicMilli({ cx: cx + ox, cy: cy + oy }, goal);
+          expect(Math.abs(here - there), `h jumps by more than a step at ${cx},${cy}`).toBeLessThanOrEqual(MIN_STEP_COST_MILLI);
+          checked += 1;
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(1_000);
+  });
+
+  it("returns an optimal path, not merely a path", () => {
+    const goal = { cx: 210, cy: 400 };
+    const start = { cx: 195, cy: 405 };
+    const costs = optimalCosts(start);
+    const route = findRoute(world, knowledge, { xMm: (start.cx * 1_000 + 500) as Int, yMm: (start.cy * 1_000 + 500) as Int }, { xMm: (goal.cx * 1_000 + 500) as Int, yMm: (goal.cy * 1_000 + 500) as Int });
+    expect(route.status).toBe("Complete");
+    const walked = route.path.slice(1).reduce((sum, cell) => sum + stepCostMilli(knowledge.classAt(cell.cx, cell.cy) as never), 0);
+    expect(walked).toBe(costs.get(goal.cy * 800 + goal.cx));
   });
 });

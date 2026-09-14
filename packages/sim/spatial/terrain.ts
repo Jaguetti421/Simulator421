@@ -115,6 +115,17 @@ export interface CompiledTerrain {
   readonly recipe: TerrainRecipe;
   readonly heightMm: Int32Array;
   readonly traversal: Uint8Array;
+  /**
+   * **Spatial tiles, not named places** (DESIGN-RULINGS-01 R9).
+   *
+   * Each cell carries the ID of the 128 × 128-cell tile it sits in. These are a
+   * partition for the route graph's coarse layer and nothing else: a tile has no
+   * name, no content, no ownership and no meaning to an actor, and two cells
+   * sharing one is not evidence that they belong to the same place. Named
+   * regions — a valley, a camp's surroundings, a clan's territory — are content,
+   * and will arrive as their own records rather than by reinterpreting this
+   * array.
+   */
   readonly region: Uint8Array;
   readonly coverMilli: Uint8Array;
   readonly opennessMilli: Uint8Array;
@@ -323,6 +334,8 @@ export function compileTerrain(recipe: TerrainRecipe): CompiledTerrain {
         const fineNoise = valueNoiseMm(add(recipe.seed, 7919 as Int), cx, cy, 8, 300);
         heightMm[i] = base + coarse + fineNoise;
       }
+      // Tile ID from the cell's 128-cell block. Deliberately arithmetic on the
+      // grid, so a tile is a rectangle and nothing more (R9).
       region[i] = ((cx >> 7) + (cy >> 7) * 7) & 0xff;
     }
   }

@@ -104,17 +104,36 @@ export class RouteKnowledge {
 
 interface SearchOptions {
   readonly budget?: number;
-  /** Region IDs from the compiled terrain, used for the coarse layer. */
+  /** Tile IDs from the compiled terrain (R9: spatial tiles, not named places), used for the coarse layer. */
   readonly regions?: Uint8Array;
 }
 
-function stepCostMilli(traversalClass: TraversalClass): number {
+/**
+ * Step cost in thousandths of a walk-second per cell. Ground is 1,000; shallow
+ * water is 1,250 because it is walked at 0.8. **The cheapest possible step is
+ * 1,000**, which is what makes the heuristic below admissible — exported so a
+ * test can assert that relationship rather than a comment claiming it.
+ */
+export const MIN_STEP_COST_MILLI = 1_000;
+
+export function stepCostMilli(traversalClass: TraversalClass): number {
   const multiplier = SPEED_MULTIPLIER_MILLI[traversalClass];
   // Impassable cells are never expanded, so a zero multiplier cannot divide here.
   return multiplier === 0 ? 0 : Math.trunc(1_000_000 / multiplier);
 }
 
-function heuristicMilli(from: RouteCell, to: RouteCell): number {
+/**
+ * Straight-line distance in cells, priced at the cheapest step.
+ *
+ * Admissible: a 4-neighbour move changes Euclidean distance by at most one cell,
+ * and every step costs at least `MIN_STEP_COST_MILLI`, so the estimate can never
+ * exceed the true remaining cost. `isqrt` floors, which only lowers it further.
+ * Consistent for the same reason: |h(a) − h(b)| ≤ 1,000 ≤ cost(a,b) for
+ * neighbours. An inadmissible heuristic would return plausible routes that are
+ * quietly not the cheapest, which is the worst kind of defect to find late — so
+ * `route.test.ts` checks both properties against brute-force optimal costs.
+ */
+export function heuristicMilli(from: RouteCell, to: RouteCell): number {
   const dx = from.cx - to.cx;
   const dy = from.cy - to.cy;
   return mul(isqrt(asInt(dx * dx + dy * dy, "h")), 1_000 as Int);
