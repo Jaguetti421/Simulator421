@@ -20,6 +20,7 @@ import {
   WALK_MM_PER_SECOND,
 } from "./terrain.js";
 import type { CompiledTerrain, TerrainRecipe } from "./terrain.js";
+import { SHIPPING_VALLEY, STREAM_EXTENT } from "./island.js";
 
 /**
  * P1-02. A compile takes ~3 s on this sandbox's single CPU, so the suite
@@ -33,7 +34,7 @@ const SOCKETS = [
   { id: "obstacle.boulder", kind: "Obstacle", xMm: 300_000 as Int, yMm: 300_000 as Int, radiusMm: 2_500 as Int },
 ] as const;
 
-const recipe: TerrainRecipe = { recipeId: "valley-standard", seed: 4107 as Int, template: "valley", sockets: SOCKETS };
+const recipe: TerrainRecipe = { recipeId: "trough-test", seed: 4107 as Int, template: "trough", sockets: SOCKETS };
 const terrain: CompiledTerrain = compileTerrain(recipe);
 
 describe("one geometry, one hash (criterion 1)", () => {
@@ -196,5 +197,84 @@ describe("the geometry hash is canonical", () => {
     const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     expect(view.getUint32(4, true)).toBe(terrain.manifest.manifestVersion);
     expect(view.getUint32(16, true)).toBe(terrain.manifest.fineCellMm);
+  });
+});
+
+/**
+ * The shipping island (FIX-04; DESIGN-RULINGS-01 R1, R2).
+ *
+ * `valley` is now an island: sea at the envelope edge, a shallow coastal band,
+ * land interior, a stream with authored crossings and rims with passes. The old
+ * full-envelope trough is kept as `trough`, a **test** template, because it is
+ * the only one that instances every traversal class — a test property, not a
+ * design one.
+ */
+describe("the shipping valley is an island", () => {
+  const island = compileTerrain({ recipeId: "valley-shipping", seed: 4107 as Int, template: "valley", sockets: [] });
+  const classOf = (cx: number, cy: number): number => island.traversal[cy * GRID_SIZE + cx] as number;
+
+  it("passes every R1 rule, measured from the compiled cells", () => {
+    expect(island.manifest.shipping).toBe(true);
+    const validation = island.manifest.island;
+    expect(validation).not.toBeNull();
+    for (const finding of validation?.findings ?? []) expect(finding.ok, `${finding.rule} -> ${finding.detail}`).toBe(true);
+    expect(validation?.ok).toBe(true);
+  });
+
+  it("lands inside the fraction bands rather than near them", () => {
+    const f = island.manifest.island?.fractions;
+    expect(f?.landMilli).toBeGreaterThanOrEqual(550);
+    expect(f?.landMilli).toBeLessThanOrEqual(650);
+    expect(f?.shallowMilli).toBeGreaterThanOrEqual(80);
+    expect(f?.shallowMilli).toBeLessThanOrEqual(120);
+  });
+
+  it("puts sea on every envelope edge and land in the middle", () => {
+    for (const [cx, cy] of [
+      [0, 400],
+      [799, 400],
+      [400, 0],
+      [400, 799],
+    ] as const) {
+      expect(classOf(cx, cy), `edge ${cx},${cy} is not sea`).toBe(TRAVERSAL.DeepWater);
+    }
+    expect([TRAVERSAL.Ground, TRAVERSAL.Cliff]).toContain(classOf(600, 400));
+  });
+
+  it("has a stream with authored crossings that are wadeable", () => {
+    for (const crossing of SHIPPING_VALLEY.crossings) {
+      expect(classOf(400, crossing.atCellY), `crossing at ${crossing.atCellY} is not wadeable`).toBe(TRAVERSAL.ShallowWater);
+      expect(SPEED_MULTIPLIER_MILLI[classOf(400, crossing.atCellY) as 1]).toBe(800);
+    }
+    expect(SHIPPING_VALLEY.crossings.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("keeps every deep stretch of the stream inside R2's 40-cell cap", () => {
+    // Measured over the stream's authored extent only: north and south of the
+    // island the same axis is open sea, and the sea is allowed to be deep.
+    let run = 0;
+    let longest = 0;
+    for (let cy = STREAM_EXTENT.fromCellY; cy <= STREAM_EXTENT.throughCellY; cy += 1) {
+      run = classOf(400, cy) === TRAVERSAL.DeepWater ? run + 1 : 0;
+      longest = Math.max(longest, run);
+    }
+    expect(longest, "a deep segment of the stream is longer than 40 cells").toBeLessThanOrEqual(40);
+  });
+
+  it("gives each rim at least two passes, so an escarpment is a landmark and not a wall", () => {
+    expect(SHIPPING_VALLEY.passes.length).toBeGreaterThanOrEqual(2);
+    for (const pass of SHIPPING_VALLEY.passes) {
+      const onRim = 400 + Math.trunc(SHIPPING_VALLEY.floorWidthCells / 2) + 20;
+      expect([TRAVERSAL.Ground, TRAVERSAL.ShallowWater], `no walkable pass at y=${pass.atCellY}`).toContain(classOf(onRim, pass.atCellY));
+    }
+  });
+
+  it("keeps `trough` as an unshipped test template that still instances every class", () => {
+    const trough = compileTerrain({ recipeId: "trough-test", seed: 4107 as Int, template: "trough", sockets: [] });
+    expect(trough.manifest.shipping).toBe(false);
+    expect(trough.manifest.island).toBeNull();
+    for (const name of ["Ground", "ShallowWater", "DeepWater", "Cliff"]) {
+      expect(trough.manifest.classCounts[name], `${name} has no cells in trough`).toBeGreaterThan(0);
+    }
   });
 });

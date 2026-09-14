@@ -13,9 +13,9 @@ import { BUCKET_MM, DEFAULT_SIGHT_BUDGET_CELLS, lineOfSight, SpatialHash, static
  * against rather than a flat plane where every ray trivially passes.
  */
 const recipe: TerrainRecipe = {
-  recipeId: "valley-standard",
+  recipeId: "trough-test",
   seed: 4107 as Int,
-  template: "valley",
+  template: "trough",
   sockets: [
     { id: "start.north", kind: "Start", xMm: 400_000 as Int, yMm: 120_000 as Int },
     { id: "work.camp", kind: "Work", xMm: 412_000 as Int, yMm: 398_000 as Int },
@@ -77,7 +77,7 @@ describe("occlusion, distance and boundaries (criterion 1)", () => {
     expect(result.cellsStepped).toBeGreaterThan(0);
   });
 
-  it("sees across the valley, because that template has nothing to occlude with", () => {
+  it("sees across the trough, because that template has nothing to occlude with", () => {
     const result = lineOfSight(terrain, 400_000 as Int, 400_000 as Int, 680_000 as Int, 400_000 as Int, { rangeMm: 400_000 as Int, budgetCells: 400 });
     expect(result.status).toBe("Visible");
   });

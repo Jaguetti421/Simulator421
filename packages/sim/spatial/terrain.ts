@@ -17,7 +17,9 @@
  * knowledge distribution and phase-escape validation are the later steps of TP
  * §5's ordered pipeline and are **not** here.
  */
-import { add, asInt, clamp, fnv1a32, hashBytes, HashDomain, mulDiv, RandomStream, sub } from "../primitives/index.js";
+import { add, asInt, clamp, fnv1a32, hashBytes, HashDomain, isqrt, mulDiv, RandomStream, sub } from "../primitives/index.js";
+import { coastRadiusCells, ISLAND, isCrossing, isDeepPool, isLagoon, isPass, SHIPPING_VALLEY, validateIsland } from "./island.js";
+import type { IslandValidation } from "./island.js";
 import type { Int } from "../primitives/index.js";
 
 export const GEOMETRY_MANIFEST_VERSION = 1;
@@ -79,7 +81,13 @@ export interface TerrainRecipe {
   readonly recipeId: string;
   readonly seed: Int;
   /** One of the three authored macro-layout templates (TP §5). */
-  readonly template: "valley" | "basin" | "ridge";
+  /**
+   * `valley` is the shipping island (DESIGN-RULINGS-01 R2). `trough` is the
+   * former `valley` — a north–south flooded trough kept as a **test** template
+   * because it instances every traversal class; it is not an island and is not
+   * shipped. `basin` and `ridge` are the other authored macro layouts.
+   */
+  readonly template: "valley" | "trough" | "basin" | "ridge";
   readonly sockets: readonly Socket[];
 }
 
@@ -95,6 +103,10 @@ export interface GeometryManifest {
   readonly classCounts: Readonly<Record<string, number>>;
   readonly fineCells: number;
   readonly sockets: readonly Socket[];
+  /** Is this template an island the game ships, or a test landform? (R1, R2) */
+  readonly shipping: boolean;
+  /** R1 validation, measured from the compiled cells. `null` for test templates. */
+  readonly island: IslandValidation | null;
   /** The single hash both the simulation and the render export must agree on. */
   readonly geometryHash: string;
 }
@@ -155,7 +167,14 @@ function valueNoiseMm(seed: Int, cx: number, cy: number, spacing: number, amplit
   return top + Math.trunc(((bottom - top) * fy) / spacing);
 }
 
-/** The authored macro shape, before seeded variation (TP §5: three templates). */
+/**
+ * The authored macro shape, before seeded variation.
+ *
+ * `trough`, `basin` and `ridge` are full-envelope landforms. `valley` is the
+ * shipping island: its macro shape is applied **inside** the island mask, so the
+ * coast and the sea come from `islandHeightMm` and the valley only sculpts the
+ * land interior (DESIGN-RULINGS-01 R1, R2).
+ */
 function templateHeightMm(template: TerrainRecipe["template"], cx: number, cy: number): number {
   const half = GRID_SIZE / 2;
   const dx = cx - half;
@@ -163,13 +182,91 @@ function templateHeightMm(template: TerrainRecipe["template"], cx: number, cy: n
   const radial = Math.trunc((dx * dx + dy * dy) / 40);
   if (template === "basin") return -2_000 + radial;
   if (template === "ridge") return 3_000 - Math.trunc(Math.abs(dx) * 8);
-  // "valley": a trough running north–south with an escarpment at each rim. The
-  // rim is authored, not noise: a valley that never produces a cliff would give
-  // the Cliff traversal class no instances, and a class with no instances is a
-  // class nothing is testing.
-  const fromAxis = Math.abs(dx);
-  const escarpment = fromAxis > 250 ? 2_600 : 0;
-  return Math.trunc(fromAxis * 9) - 1_500 + escarpment;
+  if (template === "trough") {
+    // The former `valley`: a flooded trough with an authored escarpment at each
+    // rim. Kept because it is the only template that instances every traversal
+    // class, which is a test property, not a design one (R2).
+    const fromAxis = Math.abs(dx);
+    const escarpment = fromAxis > 250 ? 2_600 : 0;
+    return Math.trunc(fromAxis * 9) - 1_500 + escarpment;
+  }
+  // `valley` handled by valleyInteriorMm inside the island mask.
+  return 0;
+}
+
+/** Integer pseudo-angle in [0, 1024), monotonic in the true angle. */
+function pseudoAngle1024(dx: number, dy: number): number {
+  const adx = Math.abs(dx);
+  const ady = Math.abs(dy);
+  const sum = adx + ady;
+  if (sum === 0) return 0;
+  const p = Math.trunc((ady * 256) / sum);
+  if (dx >= 0 && dy >= 0) return p;
+  if (dx < 0 && dy >= 0) return 512 - p;
+  if (dx < 0) return 512 + p;
+  return (1024 - p) % 1024;
+}
+
+/**
+ * The shipping island's surface (R1): sea at the edge, a shallow coastal band at
+ * the waterline, land inside. Returns the base height before the macro shape and
+ * noise are added on land.
+ */
+function islandHeightMm(seed: Int, cx: number, cy: number): { readonly baseMm: number; readonly onLand: boolean; readonly distanceInsideCells: number } {
+  const half = GRID_SIZE / 2;
+  const dx = cx - half;
+  const dy = cy - half;
+  const distance = isqrt(asInt(dx * dx + dy * dy, "islandDistance"));
+  // 1024 samples around the island. The index is an integer **pseudo-angle** —
+  // monotonic in the real angle, computed with division rather than `atan2` —
+  // because terrain is consequential and the float ban applies to it. A
+  // coastline indexed by pseudo-angle is no less varied; it is only unevenly
+  // sampled, which noise does not care about.
+  const angleIndex = pseudoAngle1024(dx, dy);
+  const coast = coastRadiusCells(seed, angleIndex);
+  const inside = coast - distance;
+
+  if (inside <= -ISLAND.coastBandCells) {
+    // Open sea: deepens toward the envelope edge so the edge is unambiguously deep.
+    const beyond = -inside - ISLAND.coastBandCells;
+    return { baseMm: Math.max(ISLAND.seaFloorMm, -1_400 - beyond * 40), onLand: false, distanceInsideCells: inside };
+  }
+  if (inside <= 0) {
+    // Shallow coastal band: between the deep line and the waterline.
+    const t = (inside + ISLAND.coastBandCells) / ISLAND.coastBandCells; // 0 at deep edge, 1 at shore
+    return { baseMm: Math.trunc(-1_180 + t * 1_100), onLand: false, distanceInsideCells: inside };
+  }
+  // Land: rises from the shore toward the interior.
+  const rise = Math.min(ISLAND.interiorRiseMm, Math.trunc((inside * ISLAND.interiorRiseMm) / 180));
+  return { baseMm: 200 + rise, onLand: true, distanceInsideCells: inside };
+}
+
+/**
+ * The shipping valley, sculpted into the island's land (R2): a floor 190 cells
+ * wide running north–south, a stream down its length with authored shallow
+ * crossings, and rim escarpments with passes.
+ */
+function valleyInteriorMm(baseMm: number, cx: number, cy: number): number {
+  const half = GRID_SIZE / 2;
+  const fromAxis = Math.abs(cx - half);
+  const halfFloor = SHIPPING_VALLEY.floorWidthCells / 2;
+
+  if (fromAxis <= SHIPPING_VALLEY.streamWidthCells / 2) {
+    // The stream. Authored crossings are firm and shallow; elsewhere the channel
+    // alternates shallow reaches with short deep pools, none longer than R2's
+    // 40-cell cap, so the stream is an obstacle with character rather than a
+    // wall or a formality.
+    if (isCrossing(cy)) return -260;
+    return isDeepPool(cy) ? -1_600 : -700;
+  }
+  if (fromAxis <= halfFloor) {
+    // Valley floor: gently rising away from the stream.
+    return Math.trunc(300 + (fromAxis - SHIPPING_VALLEY.streamWidthCells) * 6);
+  }
+  // Rim: the floor climbs, with an escarpment landmark except at the passes.
+  const up = Math.trunc((fromAxis - halfFloor) * 26);
+  const escarpment = isPass(cy) ? 0 : SHIPPING_VALLEY.escarpmentRiseMm;
+  return Math.min(baseMm + up + escarpment, baseMm + 6_000);
 }
 
 // ---------------------------------------------------------------------------
@@ -195,10 +292,30 @@ export function compileTerrain(recipe: TerrainRecipe): CompiledTerrain {
   for (let cy = 0; cy < GRID_SIZE; cy += 1) {
     for (let cx = 0; cx < GRID_SIZE; cx += 1) {
       const i = cellIndex(cx, cy);
-      const base = templateHeightMm(recipe.template, cx, cy);
-      const coarse = valueNoiseMm(recipe.seed, cx, cy, 64, 2_400);
-      const fineNoise = valueNoiseMm(add(recipe.seed, 7919 as Int), cx, cy, 8, 300);
-      heightMm[i] = base + coarse + fineNoise;
+      if (recipe.template === "valley") {
+        const island = islandHeightMm(recipe.seed, cx, cy);
+        if (!island.onLand) {
+          // Sea and coast take the island's own height, with only gentle noise so
+          // the waterline stays where the mask put it.
+          heightMm[i] = island.baseMm + valueNoiseMm(recipe.seed, cx, cy, 64, 160);
+        } else if (isLagoon(cx, cy)) {
+          // The lagoon: land height replaced by a wadeable shallow, with a firm
+          // rim so it reads as a bay rather than a hole in the island.
+          heightMm[i] = -420 + valueNoiseMm(recipe.seed, cx, cy, 32, 220);
+        } else {
+          const shaped = valleyInteriorMm(island.baseMm, cx, cy);
+          const noise = valueNoiseMm(recipe.seed, cx, cy, 64, 700) + valueNoiseMm(add(recipe.seed, 7919 as Int), cx, cy, 8, 160);
+          // Near the shore, blend toward the island profile so the valley never
+          // cuts a cliff into the coastline.
+          const blend = Math.min(1_000, island.distanceInsideCells * 40);
+          heightMm[i] = Math.trunc((shaped * blend + island.baseMm * (1_000 - blend)) / 1_000) + noise;
+        }
+      } else {
+        const base = templateHeightMm(recipe.template, cx, cy);
+        const coarse = valueNoiseMm(recipe.seed, cx, cy, 64, 2_400);
+        const fineNoise = valueNoiseMm(add(recipe.seed, 7919 as Int), cx, cy, 8, 300);
+        heightMm[i] = base + coarse + fineNoise;
+      }
       region[i] = ((cx >> 7) + (cy >> 7) * 7) & 0xff;
     }
   }
@@ -378,6 +495,58 @@ function hashArrays(parts: {
   return hashBytes(HashDomain.Authoritative, canonicalGeometryBytes(parts));
 }
 
+/**
+ * The largest body of deep water that does not touch the envelope edge — the sea
+ * is flood-filled from the edge first, so what remains is inland (R1 caps one
+ * inland lake at 15,000 cells).
+ */
+function largestInlandWaterBody(traversal: Uint8Array): number {
+  const seen = new Uint8Array(traversal.length);
+  const stack: number[] = [];
+  for (let cx = 0; cx < GRID_SIZE; cx += 1) {
+    for (const cy of [0, GRID_SIZE - 1]) {
+      const i = cellIndex(cx, cy);
+      if (traversal[i] === TRAVERSAL.DeepWater && seen[i] === 0) {
+        seen[i] = 1;
+        stack.push(i);
+      }
+    }
+  }
+  const flood = (from: number[]): number => {
+    let size = 0;
+    while (from.length > 0) {
+      const i = from.pop() as number;
+      size += 1;
+      const cx = i % GRID_SIZE;
+      const cy = (i - cx) / GRID_SIZE;
+      for (const [ox, oy] of [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+      ] as const) {
+        const nx = cx + ox;
+        const ny = cy + oy;
+        if (nx < 0 || ny < 0 || nx >= GRID_SIZE || ny >= GRID_SIZE) continue;
+        const j = cellIndex(nx, ny);
+        if (seen[j] === 0 && traversal[j] === TRAVERSAL.DeepWater) {
+          seen[j] = 1;
+          from.push(j);
+        }
+      }
+    }
+    return size;
+  };
+  flood(stack); // the sea
+  let largest = 0;
+  for (let i = 0; i < traversal.length; i += 1) {
+    if (traversal[i] !== TRAVERSAL.DeepWater || seen[i] === 1) continue;
+    seen[i] = 1;
+    largest = Math.max(largest, flood([i]));
+  }
+  return largest;
+}
+
 function buildManifest(
   recipe: TerrainRecipe,
   parts: { heightMm: Int32Array; traversal: Uint8Array; region: Uint8Array; coverMilli: Uint8Array; opennessMilli: Uint8Array; fine: ReadonlyMap<number, Uint8Array> },
@@ -386,8 +555,20 @@ function buildManifest(
   for (const name of TRAVERSAL_NAMES) classCounts[name] = 0;
   for (const value of parts.traversal) classCounts[TRAVERSAL_NAMES[value] as string] = (classCounts[TRAVERSAL_NAMES[value] as string] as number) + 1;
 
+  const shipping = recipe.template === "valley";
+  let largestInlandLake = 0;
+  let seaTouchesEdge = false;
+  if (shipping) {
+    for (let cx = 0; cx < GRID_SIZE; cx += 1) {
+      if (parts.traversal[cellIndex(cx, 0)] === TRAVERSAL.DeepWater || parts.traversal[cellIndex(cx, GRID_SIZE - 1)] === TRAVERSAL.DeepWater) seaTouchesEdge = true;
+    }
+    largestInlandLake = largestInlandWaterBody(parts.traversal);
+  }
+
   return {
     manifestVersion: GEOMETRY_MANIFEST_VERSION,
+    shipping,
+    island: shipping ? validateIsland(classCounts, CELL_COUNT, { seaTouchesEdge, largestInlandLakeCells: largestInlandLake }) : null,
     recipeId: recipe.recipeId,
     seed: recipe.seed,
     template: recipe.template,

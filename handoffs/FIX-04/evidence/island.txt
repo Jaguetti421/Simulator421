@@ -1,0 +1,12 @@
+=== FIX-04: the shipping island (DESIGN-RULINGS-01 R1, R2) ===
+template valley | shipping true | geometryHash ef79c145
+classes: {"Ground":360438,"ShallowWater":68962,"DeepWater":199397,"Cliff":11203,"Obstacle":0}
+  PASS  land is 55–65 % of the envelope  ->  58.0 %
+  PASS  shallow water is 8–12 % of the envelope  ->  10.7 %
+  PASS  the sea reaches the envelope edge  ->  edge is deep water
+  PASS  at most one inland lake, up to 15000 cells  ->  largest inland water body 9054 cells
+edges: DeepWater DeepWater DeepWater DeepWater
+stream crossings y=240/400/560: ShallowWater ShallowWater ShallowWater
+rim passes y=300/520 at cx=515: Ground Ground
+lagoon centre: ShallowWater
+trough test template: shipping false | every class present: true
