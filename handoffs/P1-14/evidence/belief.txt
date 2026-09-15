@@ -1,0 +1,8 @@
+=== P1-14: belief records and provenance ===
+  sighting at t200, retold at t900: observedAtTick=200 learnedAtTick=900 provenance=Reported uncertainty=2500mm
+  at t200  : Exact position 410000,395000 ±500mm
+  at t210  : Exact position 410000,395000 ±4000mm
+  at t260  : Area  centre 410000,395000 radius 21500mm, age 60 ticks — no exact point in the result
+  at t3800 : Area  centre 410000,395000 radius 1260500mm, age 3600 ticks — no exact point in the result
+  memory limit 3, one promise + six sightings -> kept: b.promise, b.s4, b.s5
+  the promise is the oldest record and survived: true

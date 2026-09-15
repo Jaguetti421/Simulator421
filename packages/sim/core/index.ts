@@ -34,3 +34,5 @@ export {
 export type { Inventory, InventorySectionRecord, ItemDef, ItemDefId, TransferFailure, TransferResult } from "./inventory.js";
 export { isActiveAt, PermissionService, resolveEffect, ticksForSeconds } from "./permission.js";
 export type { AttemptedEffect, EffectOutcome, HardPermission, Law, LawScope, PermissionRequest, PermissionResult, PermissionVerdict } from "./permission.js";
+export { BeliefStore, COARSE_THRESHOLD_MM, DEFAULT_MEMORY_LIMIT, estimatePosition, POSITION_DRIFT_MM_PER_TICK, retell, uncertaintyAt } from "./belief.js";
+export type { Belief, BeliefKind, EvictionResult, PositionEstimate, Provenance } from "./belief.js";

@@ -522,7 +522,7 @@
    ],
    "refs": "TP 6; GDD 7.1,7.5",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A3"
