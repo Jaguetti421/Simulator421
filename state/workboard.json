@@ -482,7 +482,7 @@
    ],
    "refs": "TP 10; LAW 01,LAW 03",
    "gate": null,
-   "status": "READY_FOR_REVIEW",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A1"
