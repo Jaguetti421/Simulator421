@@ -20,3 +20,15 @@ export {
 export type { Actor, ActorKind, CommandOutcome, Counters, KernelEvent, KernelLaw, QueuedCommand, World, WorldConfig } from "./world.js";
 export { MINIMUM_LAW_NOTICE_TICKS, MOTION_JITTER_INTERVAL, PERCEPTION_SAMPLE, runTick, STAGE_ORDER, STAGES } from "./tick.js";
 export type { Stage } from "./tick.js";
+export {
+  captureInventories,
+  countOf,
+  emptyInventory,
+  INVENTORY_SECTION_ID,
+  INVENTORY_SECTION_VERSION,
+  restoreInventories,
+  totalItems,
+  transfer,
+  weightGrams,
+} from "./inventory.js";
+export type { Inventory, InventorySectionRecord, ItemDef, ItemDefId, TransferFailure, TransferResult } from "./inventory.js";

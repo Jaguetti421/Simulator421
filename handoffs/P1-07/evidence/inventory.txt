@@ -1,0 +1,8 @@
+=== P1-07: inventory transactions ===
+  race for one stack: first=ok, second against the result=InsufficientSource
+  conservation: 5 items where 5 existed
+  overdraw by one       refused: InsufficientSource — C003 holds 3 item.berry, asked for 4
+  over stack limit      refused: OverStackLimit — C009 would hold 2 item.axe, stack limit is 1
+  over carry capacity   refused: OverCapacity — C009 would carry 2700 g, capacity is 2000 g
+  failed transfer returns no inventories: true; source still holds 5
+  round trip identical: true
