@@ -1,0 +1,5 @@
+=== P1-06: passage queues, waits and the stall diagnostic ===
+  twelve contests, C003 always asking first: north=7 grants, south=6 grants, longest streak=1
+  wait issued: trigger="passage gap.01 released by C003" deadline=80 since=2 intentional=true
+  unexplained stall: 100 ticks = 10 s, intent "walking to camp.01" at 400000,400000
+  same stillness while intentionally waiting: no diagnostic — explained by the wait

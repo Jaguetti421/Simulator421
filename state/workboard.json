@@ -362,7 +362,7 @@
    ],
    "refs": "TP 5; BUILD 01 foundation",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A2"
