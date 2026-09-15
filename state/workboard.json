@@ -382,7 +382,7 @@
    ],
    "refs": "TP 8; ECON 01 foundation",
    "gate": null,
-   "status": "READY_FOR_REVIEW",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A1"
@@ -522,7 +522,7 @@
    ],
    "refs": "TP 6; GDD 7.1,7.5",
    "gate": null,
-   "status": "READY_FOR_REVIEW",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A3"

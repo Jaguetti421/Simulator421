@@ -47,7 +47,19 @@ This sandbox resets between sessions. The repository is the memory.
 
 ## Session end and phase end
 
-Every session ends with: tests run and results recorded; `state/STATUS.md` updated (done / next / risks / metrics line); `state/workboard.json` status updated; `handoffs/<packet>/HANDOFF.md` written from the template; commit and push or archive. A packet becomes ACCEPTED only after a fresh-context self-review (new session, `templates/REVIEW.md`, diff and handoff only) found no material issues or they were fixed.
+Every session ends with: tests run and results recorded; `state/STATUS.md` updated (done / next / risks / metrics line); `state/workboard.json` status updated; `handoffs/<packet>/HANDOFF.md` written from the template; commit and push or archive. A packet becomes ACCEPTED after a self-review (`templates/REVIEW.md`) found no material issues, or found them and they were fixed.
+
+**Standing producer authorization, 14 September 2026.** Jani no longer accepts packets one at a time: *"ALL IS ACCEPTED… Jani is looking to the real testable build at the end of your phases. Then we will hear serious feedback."* So the developer marks a packet ACCEPTED itself and moves to the next one, and the producer's review point is the **phase gate**, where a build he can run is waiting for him.
+
+What this changes: the pause after each packet. What it does **not** change, and must not be allowed to erode:
+
+- **Every packet still gets a handoff and a written review**, with findings, severities and a verdict. The review is the quality bar; producer acceptance was never doing that job.
+- **A gate still stops.** Phase-end gates (G0, G1, …) wait for Jani's authorization, and a gate is not self-approved under this authorization — it is the thing the authorization exists to reach.
+- **Nothing is marked PASS that did not run.** BLOCKED, HUMAN_REQUIRED and skipped stay exactly as they were. Faster acceptance is not permission to soften evidence.
+- **Escalate, do not decide, when the question is his**: a change to the GDD or a contract others depend on, anything contradicting the design documents, a finding that would change what the phase is for, or a choice between two defensible designs with a gameplay consequence. Record it in `state/STATUS.md` and keep building around it rather than stopping.
+- **A packet with an unfixed material finding is not ACCEPTED.** It stays READY_FOR_REVIEW or IN_PROGRESS with the finding recorded, exactly as before — self-acceptance is not a rubber stamp on my own work.
+
+The phase end owes him more than a tag: a build that runs, a playtest brief, and the honest list of what is not in it.
 
 At a phase end, the integration packet produces `GATE_EVIDENCE.md`, the build, `PLAYTEST_BRIEF.md` and, if GPU or human checks are pending, `JANI_PC_CHECKLIST.md`; then you stop with: "Jani, phase <X> is ready for your playtest. Waiting for your feedback before starting <next phase>."
 
