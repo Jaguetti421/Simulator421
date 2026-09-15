@@ -1,0 +1,7 @@
+=== P1-12: permission service and law intervals ===
+  boundaries [100,200): t99=Allowed t100=Denied t199=Denied t200=Allowed
+  before the law installs, same tick: effect applies
+  after stage 1 installs it, same tick: denied by law.truce v1, effect=undefined
+  exactly on the sanctuary radius: Denied (Region scope, reason WaitingForLaw)
+  outside reaching in: Denied — both points are tested
+  denial detail: law.sanctuary v1 forbids SentientHarm at tick 10 (region scope, active [0, 1000))

@@ -32,3 +32,5 @@ export {
   weightGrams,
 } from "./inventory.js";
 export type { Inventory, InventorySectionRecord, ItemDef, ItemDefId, TransferFailure, TransferResult } from "./inventory.js";
+export { isActiveAt, PermissionService, resolveEffect, ticksForSeconds } from "./permission.js";
+export type { AttemptedEffect, EffectOutcome, HardPermission, Law, LawScope, PermissionRequest, PermissionResult, PermissionVerdict } from "./permission.js";
