@@ -11,3 +11,4 @@ export type { G1Scene, SceneValidation } from "./scene.js";
 export * from "./visibility.js";
 export { DEFAULT_ROUTE_BUDGET, findRoute, heuristicMilli, MIN_STEP_COST_MILLI, stepCostMilli, omniscientKnowledge, PORTAL_REPEAT_LIMIT, RouteKnowledge, RouteProgress, routeMilliseconds, stepDurationTicks, UNKNOWN, walkingSecondsBetween } from "./route.js";
 export type { RouteCell, RouteResult, RouteStatus } from "./route.js";
+export * from "./movement.js";

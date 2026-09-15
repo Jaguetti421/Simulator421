@@ -1,0 +1,6 @@
+=== P1-05: kinematic movement and obstacle sweep ===
+    3500 mm/s: stopped at x=416950 after 48 ticks, blocked=Obstacle at 417,300
+   20000 mm/s: stopped at x=416750 after 9 ticks, blocked=Obstacle at 417,300
+  120000 mm/s: stopped at x=416750 after 2 ticks, blocked=Obstacle at 417,300
+  diagonal between two obstacles: CornerCut (actor at 300994,300994)
+  10 ticks at 0.93 carry on ground: 3255 mm total (325.5 mm/tick, remainder 0) — truncating each tick would lose 5 mm

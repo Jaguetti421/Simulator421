@@ -342,7 +342,7 @@
    ],
    "refs": "TP 5; AI 05",
    "gate": null,
-   "status": "PLANNED",
+   "status": "READY_FOR_REVIEW",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A2"
