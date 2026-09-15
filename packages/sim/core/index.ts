@@ -36,3 +36,5 @@ export { isActiveAt, PermissionService, resolveEffect, ticksForSeconds } from ".
 export type { AttemptedEffect, EffectOutcome, HardPermission, Law, LawScope, PermissionRequest, PermissionResult, PermissionVerdict } from "./permission.js";
 export { BeliefStore, COARSE_THRESHOLD_MM, DEFAULT_MEMORY_LIMIT, estimatePosition, POSITION_DRIFT_MM_PER_TICK, retell, uncertaintyAt } from "./belief.js";
 export type { Belief, BeliefKind, EvictionResult, PositionEstimate, Provenance } from "./belief.js";
+export { LEASE_TICKS, ReservationBook } from "./reservation.js";
+export type { DenialReason, GrantResult, Lease, Release, ReleaseCause, RenewResult, ReservationKind } from "./reservation.js";

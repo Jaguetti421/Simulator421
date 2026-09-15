@@ -1,0 +1,5 @@
+=== P1-08: reservations and lease lifecycle ===
+  contested stack: C003 granted; C009 -> AlreadyReserved — stack.flint.01 is leased to C003 until tick 60
+  lease length: 50 ticks; at t149 expired=1, at t150 expired=1
+  renewal without progress: NoProgress -> released as NoProgress; key now free=true
+  C003 dies holding 3: released stack.flint.01, station.bench, work.position.7; C009 keeps C009
