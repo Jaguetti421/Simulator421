@@ -1,0 +1,8 @@
+=== P1-13: sanctuary and protected injury ===
+  attacker outside, target inside : blocked
+  attacker inside, target outside : blocked
+  both outside                    : allowed
+  exactly on the radius           : covered=true; one mm past: covered=false
+  wolf bites a protected actor    : allowed — wildlife is not sentient harm
+  starvation inside a sanctuary   : 8 HP per minute — a sanctuary is not a larder
+  hostile bleed: 6000 milli left, 50 ticks covered -> 6000 left (50 paused ticks) — paused, not healed

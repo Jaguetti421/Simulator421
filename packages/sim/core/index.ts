@@ -40,3 +40,5 @@ export { LEASE_TICKS, ReservationBook } from "./reservation.js";
 export type { DenialReason, GrantResult, Lease, Release, ReleaseCause, RenewResult, ReservationKind } from "./reservation.js";
 export { beginEating, continueEating, FOOD, fullnessPoints, PROTOTYPE8_FOOD, startingNeeds, TICKS_PER_MINUTE, tickNeeds } from "./needs.js";
 export type { DamageEvent, DamageSource, EatFailure, EatOutcome, EatProgress, ItemNutrition, NeedsState, TickOutcome } from "./needs.js";
+export { applyDamage, bleedRemaining, healTo, isCovered, newBleed, resolveHarm, tickBleed } from "./sanctuary.js";
+export type { BleedState, BleedTickOutcome, HarmAttempt, HarmOutcome } from "./sanctuary.js";
