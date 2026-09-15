@@ -38,3 +38,5 @@ export { BeliefStore, COARSE_THRESHOLD_MM, DEFAULT_MEMORY_LIMIT, estimatePositio
 export type { Belief, BeliefKind, EvictionResult, PositionEstimate, Provenance } from "./belief.js";
 export { LEASE_TICKS, ReservationBook } from "./reservation.js";
 export type { DenialReason, GrantResult, Lease, Release, ReleaseCause, RenewResult, ReservationKind } from "./reservation.js";
+export { beginEating, continueEating, FOOD, fullnessPoints, PROTOTYPE8_FOOD, startingNeeds, TICKS_PER_MINUTE, tickNeeds } from "./needs.js";
+export type { DamageEvent, DamageSource, EatFailure, EatOutcome, EatProgress, ItemNutrition, NeedsState, TickOutcome } from "./needs.js";

@@ -1,0 +1,9 @@
+=== P1-09: food, hunger and starvation (GDD 30.2 rates) ===
+  start: fullness 85, health 100
+  after  1 min: fullness 79 (expect 79)
+  after  5 min: fullness 55 (expect 55)
+  after 10 min: fullness 25 (expect 25)
+  one tick: 84990 milli — 0.01 points kept that truncation would have lost
+  14 min: fullness 1, starvation damage 0; +5 min: 38.7 HP lost (8 HP/min while at zero)
+  damage tagging: source=Starvation, isSentientHarm=false — no law about sentient harm speaks to starving
+  interrupted after 10 of 30 ticks: Failed/Interrupted, itemConsumed=false, fullness still 85
