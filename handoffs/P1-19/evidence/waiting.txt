@@ -1,0 +1,10 @@
+=== P1-19: timed waiting and law amendment response ===
+  fed and patient       MayWait  fullness 70 leaves room to wait
+  starving but patient  MustAct  fullness 12 is below the urgent threshold 25
+  fed, no patience      MustAct  this actor has no patience trait
+  t11 while the truce holds: Waiting
+  truce extended, next check at t12: Invalidated after 1 tick(s) — law.truce was amended: expiry 500 is now 900 (v1 → v2)
+  t499 Waiting | t500 Ready
+  attacking at t499: began=false (PermissionDenied)
+  attacking at t500: began at t500, earliest contact t506 — the full wind-up, no reward for having waited
+  cadence: a wait checked 10 ticks ago is current; 11 is overdue -> true
