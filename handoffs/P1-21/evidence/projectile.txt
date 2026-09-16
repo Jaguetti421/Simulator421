@@ -1,0 +1,8 @@
+=== P1-21: projectile segment collision ===
+  arrow at 18 m/s covers 1800 mm per tick; an actor is 900 mm across
+  targets placed every 100 mm across one step: 0 passed through (endpoint-only testing would miss most of them)
+  at  18 m/s: hit after 6 ticks
+  at  60 m/s: hit after 2 ticks
+  at 240 m/s: hit after 1 ticks
+  two in the path: first=C009, order=C009@600 then C022@1500
+  contact.appliesDamage=false — geometry reports, the permission service decides
