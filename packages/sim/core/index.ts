@@ -62,3 +62,5 @@ export { applyRevives, BLEED_OUT_TICKS, healthTick, resolveTick, REVIVE_TICKS, R
 export type { ActorHealth, BleedOutOptions, HealthState, PendingHit, ResolveResult, Revive, Transition } from "./health.js";
 export { BANDAGE_ITEM_ID, beginRevive, bleedPauses, EliminationRegistry, stepRevive, tickBleedSource, woundMultiplierMilli, woundPenaltyActive, WOUND_PENALTY_MILLI, WOUND_PENALTY_TICKS } from "./elimination.js";
 export type { BleedSource, BleedTick, CleanupResult, Drop, ReviveEnd, ReviveEpisode, ReviveStep } from "./elimination.js";
+export { DEER_FLIGHT_MM, denPlacementValid, prototypePopulation, speciesPolicy, threatFallback, WILDLIFE, withinInterruptBound, WOLF_AGGRO_MM } from "./wildlife.js";
+export type { Animal, AnimalAction, AnimalPerception, AnimalPolicyResult, FallbackResult, Species, ThreatSighting } from "./wildlife.js";

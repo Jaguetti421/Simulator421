@@ -1,0 +1,11 @@
+=== P1-25: threat fallback and prototype wildlife ===
+  wolf sighted t100, decided t103: interrupt=true, latency 3 ticks (bound 5), candidate emergency=true
+  mid switching delay: chose goal.flee.animal (heldByDelay=false, trigger Emergency)
+  under a global truce: wolf bite applied=true, contestant blow applied=false
+  policy inputs: speciesPolicy takes 2 arguments — the animal and what it perceives; no selection, camera or hidden state can arrive
+  wolf, prey at 10 m              Hunt    prey 10000 mm away, 2 pack mates near
+  wolf, prey at 19 m              Return  no prey within range
+  wolf 50 m from den, prey at 1 m Return  50000 mm from the den, leash is 45000 mm
+  deer, actor at 21 m             Flee    something is 21000 mm away
+  deer, actor at 23 m             Graze   nothing is close
+  population: 12 wolves in 4 packs, 24 deer; den clearance 35000 mm, leash 45000 mm
