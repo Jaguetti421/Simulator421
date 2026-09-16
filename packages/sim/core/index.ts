@@ -50,3 +50,5 @@ export { ACTIONS_SECTION_ID, ACTIONS_SECTION_VERSION, activeActionFields, cancel
 export type { ActionDefinition, ActionFailureRecord, ActionMilestone, ActionState, ActionsSectionRecord, CommittedEventRecord, CompletionRecord, FailureReason, RunningAction, StepOutcome, WorldView } from "./action.js";
 export { considerationsThatDiffer, decide, scoreCandidate, SWITCH_DELAY_TICKS, TRAIT_WEIGHTS } from "./decision.js";
 export type { Candidate, Consideration, ConsiderationId, Decision, DecisionInput, DecisionTraceRecord, EvidenceRef, NoChoiceReason, ScoredCandidate, ScoredConsideration, TraitId } from "./decision.js";
+export { canSprint, canWalk, EXERTION, fatiguePoints, staminaPoints, startingExertion, tickExertion, tickRest } from "./exertion.js";
+export type { Exertion, ExertionState, ExertionTickOutcome, RestIntent, RestOutcome } from "./exertion.js";

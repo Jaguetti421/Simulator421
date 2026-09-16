@@ -1,0 +1,7 @@
+=== P1-10: fatigue, rest and exertion ===
+  1 s sprinting : stamina 88 (12/s)
+  then 1 s walk : stamina 94 (6/s restored)
+  stamina empty : canSprint=false, canWalk=true; a sprint request is downgraded (sprintDenied=true) and the actor keeps moving
+  rest from 70  : ended "ReachedRestEnd" at fatigue 25 after 2250 ticks (3.75 min at 12/min)
+  interrupted   : fatigue 68000 and stamina 100000 unchanged; intent returned = {"reason":"FatigueAboveThreshold","targetSocketId":"shelter.01","startedAtTick":0}
+  thresholds    : rest priority above 60, interrupts work above 85, rest ends at 25
