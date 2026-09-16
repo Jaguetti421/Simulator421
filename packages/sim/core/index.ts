@@ -58,3 +58,5 @@ export { clockAt, coldFrontActive, DAY, EXPOSURE, exposurePoints, exposureTick, 
 export type { ColdFront, ExposureOutcome, ExposureState, MatchClock } from "./daynight.js";
 export { advanceSwing, beginAttack, BOW, earliestContactTick, isFacing, MELEE, swingTotalTicks } from "./combat.js";
 export type { AttackKind, AttackPhase, AttackRefusal, Attacker, AttackTarget, BeginResult, ContactResult, Swing } from "./combat.js";
+export { applyRevives, BLEED_OUT_TICKS, healthTick, resolveTick, REVIVE_TICKS, REVIVED_HEALTH_MILLI, reviveRemaining, standing, tickBleedOut } from "./health.js";
+export type { ActorHealth, BleedOutOptions, HealthState, PendingHit, ResolveResult, Revive, Transition } from "./health.js";

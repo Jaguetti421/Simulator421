@@ -1,0 +1,8 @@
+=== P1-23: simultaneous damage and health states ===
+  three hits, two orders: identical health=true, identical transitions=true
+  C003 Standing at 15000, C009 Downed
+  three killing blows on one target: 1 transition -> Downed (bleed-out at t310)
+  further damage while downed: Downed (laws silent) vs Eliminated (laws permit)
+  terminal damage on a standing actor: Eliminated — bypasses the downed state
+  50 ticks protected: still Downed, bleed-out moved to t450 — paused, nothing accumulated
+  revive and a blow on the same tick: Standing at 15000 — revive first, so a rescuer in time is not robbed
