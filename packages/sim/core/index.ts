@@ -54,3 +54,5 @@ export { canSprint, canWalk, EXERTION, fatiguePoints, staminaPoints, startingExe
 export type { Exertion, ExertionState, ExertionTickOutcome, RestIntent, RestOutcome } from "./exertion.js";
 export { ARRIVAL_MM, candidatesFor, HUNGRY_BELOW, newAgent, PLAN_TICK_BUDGET, planFor, stepAgent, straightLineMover } from "./tasks.js";
 export type { ActorKnowledge, Agent, AgentOutcome, AgentStatus, GoalId, KnownFood, KnownRestSocket, Plan, PlanFailureReason, PlanStep, StepKind, TaskServices } from "./tasks.js";
+export { clockAt, coldFrontActive, DAY, EXPOSURE, exposurePoints, exposureTick, mechanicalSightMilli, NIGHT_INTERVALS, NIGHT_SIGHT_MILLI, NIGHT_STARTS_AT_TICK, startingExposure, TICKS_PER_DAY, visualLightMilli } from "./daynight.js";
+export type { ColdFront, ExposureOutcome, ExposureState, MatchClock } from "./daynight.js";

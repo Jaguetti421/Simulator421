@@ -1,0 +1,9 @@
+=== P1-11: day, night and exposure ===
+  published night intervals (minutes): [[8,12],[20,24],[32,36],[44,48],[56,60]]
+  boundary at tick 4800: t4799 isNight=false, t4800 isNight=true
+  mechanical sight: t4650 = 1000, t4800 = 450 — steps, never blends
+  visual light    : t4400 = 1000, t4650 = 725 — blending through twilight while the mechanical value has not moved
+  four-minute night outdoors        : exposure 36
+  same night with a 2-min cold front: exposure 60
+  ten minutes sheltered afterwards  : exposure 0
+  mid-twilight exposure tick        : isNight=false, gained 0 — a visual blend has no door into a fact
