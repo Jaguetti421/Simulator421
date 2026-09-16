@@ -861,7 +861,7 @@
    ],
    "refs": "TP 3,10,14; TIME 01",
    "gate": null,
-   "status": "PLANNED",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": "React components; keyboard and text scale from CSS (TP v2.0 \u00a714).",
    "lane": "A4"
