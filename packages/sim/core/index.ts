@@ -56,3 +56,5 @@ export { ARRIVAL_MM, candidatesFor, HUNGRY_BELOW, newAgent, PLAN_TICK_BUDGET, pl
 export type { ActorKnowledge, Agent, AgentOutcome, AgentStatus, GoalId, KnownFood, KnownRestSocket, Plan, PlanFailureReason, PlanStep, StepKind, TaskServices } from "./tasks.js";
 export { clockAt, coldFrontActive, DAY, EXPOSURE, exposurePoints, exposureTick, mechanicalSightMilli, NIGHT_INTERVALS, NIGHT_SIGHT_MILLI, NIGHT_STARTS_AT_TICK, startingExposure, TICKS_PER_DAY, visualLightMilli } from "./daynight.js";
 export type { ColdFront, ExposureOutcome, ExposureState, MatchClock } from "./daynight.js";
+export { advanceSwing, beginAttack, BOW, earliestContactTick, isFacing, MELEE, swingTotalTicks } from "./combat.js";
+export type { AttackKind, AttackPhase, AttackRefusal, Attacker, AttackTarget, BeginResult, ContactResult, Swing } from "./combat.js";

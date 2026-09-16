@@ -1,0 +1,8 @@
+=== P1-22: combat preparation and contact ===
+  waiting out a truce: t60 PermissionDenied, t99 PermissionDenied
+  truce lapses at t100: swing begins at t100, earliest contact t106 — the full 6-tick wind-up, no head start
+    t105 WindingUp | t106 Hit | t107 Recovering | t111 Done
+  truce installed mid-swing: Aborted (PermissionDenied) — stamina 8000 still spent, the actor did swing
+  target steps away before contact: Aborted (OutOfRange)
+  reach/range: melee 1800 mm ok=true, 1900 ok=false; bow 45 m ok=true
+  behind the attacker: NotFacing
