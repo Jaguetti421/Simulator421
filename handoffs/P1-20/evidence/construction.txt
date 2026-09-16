@@ -1,0 +1,10 @@
+=== P1-20: socket construction and input milestones ===
+  two claimants on one socket: first=Building, second=Refused (SocketTaken) — refused before any input is spent
+  firepit milestones consume as they are reached:
+    t39: progress 33333 consumed {"item.stone":2}
+    t79: progress 66666 consumed {"item.stone":4}
+    t119: progress 100000 consumed {"item.stone":4,"item.branch":3}
+  abandoned at 85 ticks having consumed {"item.stone":4}: returned {"item.stone":2}, lost {"item.stone":2} — conserved: true
+  shelter at clear ground            allowed
+  shelter at on the water path       refused — Shelter leaves the path to water open (blocks 2 cell(s) of it)
+  shelter at corner clipping the pathrefused — Shelter leaves the path to water open (blocks 1 cell(s) of it)

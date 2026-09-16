@@ -66,3 +66,5 @@ export { DEER_FLIGHT_MM, denPlacementValid, prototypePopulation, speciesPolicy, 
 export type { Animal, AnimalAction, AnimalPerception, AnimalPolicyResult, FallbackResult, Species, ThreatSighting } from "./wildlife.js";
 export { actOnPermissionOpening, AMENDMENT_NOTICE_TICKS, beginWait, checkOverdue, mayWait, stepWait } from "./waiting.js";
 export type { NeedProfile, ReadyToAct, TimedWait, WaitDecision, WaitOutcome, WaitStep } from "./waiting.js";
+export { checkPlacement, claimSocket, PROTOTYPE_SOCKETS, SALVAGE_RETURN_MILLI, salvage, stepBuild, totalItems as totalBuildItems } from "./construction.js";
+export type { BuildSite, BuildStep, Milestone, PlacementFinding, RouteRequirement, SalvageResult, SocketDefinition } from "./construction.js";
