@@ -840,7 +840,7 @@
    ],
    "refs": "GDD 13\u201314",
    "gate": null,
-   "status": "PLANNED",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": "React components over view models; the W0-09 readability renderer becomes the overview map.",
    "lane": "A4"

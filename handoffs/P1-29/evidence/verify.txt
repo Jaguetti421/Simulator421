@@ -1,0 +1,830 @@
+
+> lastclan@0.0.0 verify
+> npm run build && npm run lint && npm test && npm run test:tools && npm run check:workboard
+
+
+> lastclan@0.0.0 build
+> tsc -b tsconfig.json && vite build --config apps/web/vite.config.ts
+
+vite v7.1.5 building for production...
+transforming...
+✓ 90 modules transformed.
+rendering chunks...
+computing gzip size...
+dist-site/capture.html                                 0.91 kB │ gzip:   0.53 kB
+dist-site/index.html                                   1.29 kB │ gzip:   0.69 kB
+dist-site/assets/sim.worker-BHc3ZIBY.js               24.37 kB
+dist-site/assets/modulepreload-polyfill-B5Qt9EMX.js    0.71 kB │ gzip:   0.40 kB
+dist-site/assets/index-C96N5M43.js                   196.43 kB │ gzip:  61.68 kB
+dist-site/assets/capture-BnsrUdww.js                 509.08 kB │ gzip: 131.35 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.71s
+
+> lastclan@0.0.0 lint
+> eslint .
+
+
+> lastclan@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.0 /home/claude/repo
+
+ ✓ packages/sim/spatial/terrain.test.ts (26 tests) 13995ms
+   ✓ one geometry, one hash (criterion 1) (5)
+     ✓ recompiles to the same hash from the same recipe, and a different one when the seed changes 6830ms
+     ✓ changes the hash when the fine geometry changes, not only the coarse grid 3406ms
+   ✓ the geometry hash is canonical (4)
+     ✓ would reject the swap the old XOR scheme accepted: exchanging two arrays changes the hash 367ms
+   ✓ the shipping valley is an island (7)
+     ✓ keeps `trough` as an unshipped test template that still instances every class 3331ms
+ ✓ tests/kernel/movement-parity.test.ts (2 tests) 10347ms
+   ✓ headless and rendered movement agree (2)
+     ✓ produces the same movement digest with rendering interleaved as without 3575ms
+     ✓ agrees across a second compile of the same world, so the terrain is not carrying hidden state 6770ms
+ ✓ packages/sim/spatial/route.test.ts (20 tests) 8836ms
+   ✓ routes on the shipping island (R4) (3)
+     ✓ routes between every D05 anchor pair, and the longest crossing is inside the band 6377ms
+     ✓ refuses to route into the sea 2242ms
+ ✓ tests/arch/int-arithmetic.test.ts (2 tests) 5969ms
+   ✓ no-bare-int-arithmetic is enforced (2)
+     ✓ flags bare arithmetic on Int in a cleaned file 2868ms
+     ✓ leaves the cleaned file clean 3099ms
+ ✓ packages/sim/spatial/scene.test.ts (6 tests) 3943ms
+   ✓ the G1 scene satisfies R3 (6)
+     ✓ derives socket positions from the compiled world, so a map change moves them 3920ms
+ ✓ packages/sim/spatial/movement.test.ts (10 tests) 3524ms
+   ✓ no corner cutting (criterion 1) (1)
+     ✓ refuses a diagonal step between two blocked cells 3497ms
+ ✓ packages/sim/host/snapshot.test.ts (8 tests) 3036ms
+   ✓ snapshot round trip (7)
+     ✓ continues to the same hashes as an uninterrupted run 691ms
+     ✓ survives several save/restore cycles without drifting 715ms
+     ✓ carries pending commands and the rules version across a restore 749ms
+   ✓ kernel saves through the generation store (1)
+     ✓ restores a continued run from the previous generation when the newest is corrupt 598ms
+ ✓ packages/lab/render/render.test.ts (23 tests) 2360ms
+   ✓ the renderer is pure over the snapshot (3)
+     ✓ produces identical bytes for the same snapshot, twice 305ms
+ ✓ tests/kernel/kernel.test.ts (9 tests) 2596ms
+   ✓ cross-runtime determinism (G0 criterion 1) (4)
+     ✓ gives the same authoritative digest on repeated Node runs 769ms
+     ✓ gives the same digest in a Node worker_thread as in the main thread 322ms
+     ✓ keeps the 136-actor and 137-actor workloads distinguishable 300ms
+   ✓ PERF-OPS-BASE through the real harness (G0 criteria 1 and 2) (3)
+     ✓ passes every assertion when run against a tape the kernel produced 351ms
+     ✓ fails the fixture if the tick loop runs its stages in a different order 324ms
+   ✓ SAVE-ROUNDTRIP through the real harness (G0 criterion 1) (2)
+     ✓ passes when the tape comes from a run that was saved, restored and continued 342ms
+ ✓ packages/lab/cli/kernel-host.test.ts (15 tests) 1935ms
+   ✓ SaveReload is evaluated, not blocked (W0-08) (2)
+     ✓ passes when a run saved and continued reaches the uninterrupted digest 968ms
+     ✓ leaves the variants no host can produce Blocked, naming what each needs 352ms
+ ✓ tests/arch/boundaries.test.ts (80 tests) 1497ms
+   ✓ eslint.config.js is the configuration under test (2)
+     ✓ resolves a config for a packages/sim file that carries the boundary rules 810ms
+ ✓ packages/sim/core/tick.test.ts (16 tests) 540ms
+ ✓ packages/sim/primitives/random.test.ts (18 tests) 241ms
+ ✓ packages/sim/primitives/checkedMath.test.ts (17 tests) 253ms
+ ✓ tests/contracts/samples.test.ts (49 tests) 260ms
+ ✓ packages/sim/host/host.test.ts (10 tests) 190ms
+ ✓ packages/sim/primitives/units.test.ts (17 tests) 102ms
+ ✓ packages/sim/core/exertion.test.ts (13 tests) 99ms
+ ✓ packages/sim/core/needs.test.ts (14 tests) 77ms
+ ✓ packages/lab/cli/runner.test.ts (16 tests) 84ms
+ ✓ packages/sim/core/tasks.test.ts (16 tests) 70ms
+ ✓ packages/lab/bundle/bundle.test.ts (12 tests) 74ms
+ ✓ packages/sim/primitives/serialize.test.ts (11 tests) 80ms
+ ✓ packages/sim/core/daynight.test.ts (15 tests) 75ms
+ ✓ packages/sim/primitives/hash.test.ts (12 tests) 52ms
+ ✓ packages/sim/contracts/schema.test.ts (19 tests) 35ms
+ ✓ tests/fixtures/conformance.test.ts (22 tests) 28ms
+ ✓ packages/sim/spatial/visibility.test.ts (22 tests) 24ms
+ ✓ packages/lab/fixture/parse.test.ts (30 tests) 21ms
+ ✓ packages/lab/cli/run.test.ts (8 tests) 24ms
+ ✓ packages/sim/contracts/contracts.test.ts (25 tests) 19ms
+ ✓ packages/sim/persistence/adapter-contract.test.ts (16 tests) 20ms
+ ✓ packages/sim/core/sanctuary.test.ts (12 tests) 18ms
+ ✓ packages/sim/core/sensory.test.ts (15 tests) 19ms
+ ✓ packages/lab/cli/host.test.ts (13 tests) 17ms
+ ✓ tests/contracts/lifecycle.test.ts (31 tests) 14ms
+ ✓ packages/sim/persistence/index.test.ts (17 tests) 15ms
+ ✓ packages/sim/core/action.test.ts (17 tests) 13ms
+ ✓ packages/sim/core/permission.test.ts (11 tests) 11ms
+ ✓ packages/sim/host/bridge.test.ts (14 tests) 14ms
+ ✓ packages/sim/spatial/avoidance.test.ts (11 tests) 16ms
+ ✓ packages/sim/core/elimination.test.ts (17 tests) 13ms
+ ✓ apps/web/src/kit/recipe.test.ts (9 tests) 11ms
+ ✓ tests/contracts/consumers.test.ts (7 tests) 13ms
+ ✓ packages/sim/core/projectile.test.ts (14 tests) 11ms
+ ✓ apps/web/src/view/selection.test.ts (17 tests) 11ms
+ ✓ packages/sim/core/decision.test.ts (14 tests) 13ms
+ ✓ packages/sim/core/wildlife.test.ts (15 tests) 9ms
+ ✓ packages/sim/core/health.test.ts (16 tests) 10ms
+ ✓ packages/sim/core/inventory.test.ts (13 tests) 8ms
+ ✓ packages/sim/core/belief.test.ts (13 tests) 9ms
+ ✓ packages/lab/fixture/assertions.test.ts (13 tests) 9ms
+ ✓ packages/sim/core/reservation.test.ts (14 tests) 10ms
+ ✓ packages/sim/core/combat.test.ts (13 tests) 8ms
+ ✓ packages/sim/host/providers.test.ts (7 tests) 8ms
+ ✓ packages/lab/fixture/semantics.test.ts (6 tests) 6ms
+ ✓ apps/web/src/scene/camera.test.ts (6 tests) 6ms
+ ✓ apps/web/src/view/pacing.test.ts (5 tests) 4ms
+ ✓ packages/lab/cli/logfile.test.ts (4 tests) 4ms
+
+ Test Files  59 passed (59)
+      Tests  923 passed (923)
+   Start at  12:30:03
+   Duration  107.50s (tests 60%, import 38%, transform 2%)
+
+     Import  212 modules were evaluated 322 times · 38.19s total, 38% of tracked time
+             ~13.05s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+
+
+> lastclan@0.0.0 test:tools
+> python3 -m unittest discover -s tools -p test_tools.py -v
+
+test_snapshot_matches_manifest (test_tools.KitSnapshot.test_snapshot_matches_manifest) ... /home/claude/repo/tools/test_tools.py:53: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/claude/repo/docs/production/MANIFEST.json' mode='r' encoding='utf-8'>
+  m = json.load(open(os.path.join(self.SNAPSHOT, "MANIFEST.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/AGENTS.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/CLAUDE.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/CONVENTIONS.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/PROMPT_FOR_NEW_WINDOW.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/RESEARCH_PROTOCOL.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/START_HERE.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/The_Last_Clan_Technical_Plan_v2_0_Web.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/The_Last_Clan_Web_Work_Phases_v1.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/agents/A0_Integration_Architect.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/agents/A1_Simulation_Rules.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/agents/A2_World_Navigation.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/agents/A3_AI_Social_Decisions.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/agents/A4_Client_Presentation.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/agents/A5_Persistence_Observer.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/agents/A6_Content_Story.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/agents/A7_Verification_Release.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/contracts/FIXTURE_DSL.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/contracts/INTERFACES.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/contracts/examples/AI-03-PATIENT-WAIT.json'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/contracts/examples/LAW-NOTICE-REJECTION.json'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/contracts/examples/SAVE-BOOTSTRAP-01.json'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/contracts/fixture.schema.json'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/design/GDD_TRACEABILITY.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/design/GDD_v1.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/design/GDD_v1_1_Addendum.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/Technical_Plan_v1_1.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_AGENTS_v2.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_Agent_Work_Phases_v2.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_REVIEW_DECISIONS.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_phases/P1.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_phases/P2.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_phases/P3.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_phases/P4.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_phases/P5.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_phases/P6.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/kit_phases/PX.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/reviews/01_GDD_v0_2_Design_Review.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/reviews/02_Tech_Plan_v1_Review.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/reviews/03_Agent_Work_Phases_v1_proposal.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/reviews/04_Dev_Kit_v2_Feedback.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/reference/reviews/05_HTML_Pivot_Analysis.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/state/ACCEPTED_BASELINE.json'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/state/STATUS.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/state/acceptance_map.json'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/state/gates.json'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/state/workboard.json'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/templates/GATE_EVIDENCE.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/templates/HANDOFF.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/templates/JANI_PC_CHECKLIST.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/templates/PLAYTEST_BRIEF.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/templates/REVIEW.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/templates/SESSION_RESUME.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/tools/README.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/tools/check_workboard.py'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/tools/mark.py'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/tools/next_work.py'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/tools/test_tools.py'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-01.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-02.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-03.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-04.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-05.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-06.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-07.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-08.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-09.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-10.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-11.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-12.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-13.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-14.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-15.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-16.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-17.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-18.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-19.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-20.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-21.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-22.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-23.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-24.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-25.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-26.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-27.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-28.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-29.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-30.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-31.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-32.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-33.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-34.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P1-35.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-01.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-02.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-03.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-04.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-05.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-06.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-07.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-08.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-09.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-10.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-11.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-12.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-13.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-14.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-15.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-16.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-17.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-18.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-19.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-20.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-21.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-22.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-23.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-24.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-25.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P2-26.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-01.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-02.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-03.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-04.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-05.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-06.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-07.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-08.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-09.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-10.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-11.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-12.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-13.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-14.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-15.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-16.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-17.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-18.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-19.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P3-20.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-01.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-02.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-03.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-04.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-05.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-06.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-07.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-08.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-09.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-10.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-11.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-12.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-13.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P4-14.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-01.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-02.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-03.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-04.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-05.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-06.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-07.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-08.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-09.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-10.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-11.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-12.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-13.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-14.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P5-15.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-01.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-02.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-03.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-04.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-05.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-06.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-07.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-08.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-09.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-10.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-11.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/P6-12.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/PX-01.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/PX-02.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/PX-03.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/PX-04.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/PX-05.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/PX-06.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-01.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-02.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-03.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-04.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-05.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-06.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-07.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-08.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-09.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-10.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:58: ResourceWarning: unclosed file <_io.BufferedReader name='/home/claude/repo/docs/production/work/W0-11.md'>
+  data = open(p, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_check_detects_cycle_and_missing_dep (test_tools.KitTools.test_check_detects_cycle_and_missing_dep) ... /home/claude/repo/tools/test_tools.py:22: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpe7z0wccd/state/workboard.json' mode='r' encoding='utf-8'>
+  p = os.path.join(self.tmp, "state/workboard.json"); wb = json.load(open(p))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:24: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpe7z0wccd/state/workboard.json' mode='w' encoding='utf-8'>
+  wb["packets"][3]["depends"].append("NOPE-99"); json.dump(wb, open(p, "w"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/check_workboard.py:11: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpe7z0wccd/state/workboard.json' mode='r' encoding='utf-8'>
+  wb = json.load(open(os.path.join(root, "state/workboard.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/check_workboard.py:12: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpe7z0wccd/state/gates.json' mode='r' encoding='utf-8'>
+  gates = json.load(open(os.path.join(root, "state/gates.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/check_workboard.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpe7z0wccd/state/acceptance_map.json' mode='r' encoding='utf-8'>
+  am = json.load(open(os.path.join(root, "state/acceptance_map.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_check_passes_on_shipped_kit (test_tools.KitTools.test_check_passes_on_shipped_kit) ... /home/claude/repo/tools/check_workboard.py:11: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp7gxjufe9/state/workboard.json' mode='r' encoding='utf-8'>
+  wb = json.load(open(os.path.join(root, "state/workboard.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/check_workboard.py:12: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp7gxjufe9/state/gates.json' mode='r' encoding='utf-8'>
+  gates = json.load(open(os.path.join(root, "state/gates.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/check_workboard.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp7gxjufe9/state/acceptance_map.json' mode='r' encoding='utf-8'>
+  am = json.load(open(os.path.join(root, "state/acceptance_map.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_live_board_next_work_is_in_w0_until_g0 (test_tools.KitTools.test_live_board_next_work_is_in_w0_until_g0) ... /home/claude/repo/tools/test_tools.py:41: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpg6it911i/state/workboard.json' mode='r' encoding='utf-8'>
+  wb = json.load(open(os.path.join(self.tmp, "state/workboard.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpg6it911i/state/workboard.json' mode='r' encoding='utf-8'>
+  wb = json.load(open(os.path.join(root, "state/workboard.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_mark_refuses_accept_with_unaccepted_deps (test_tools.KitTools.test_mark_refuses_accept_with_unaccepted_deps) ... /home/claude/repo/tools/test_tools.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp55kcjdo4/state/workboard.json' mode='r' encoding='utf-8'>
+  p = os.path.join(self.tmp, "state/workboard.json"); wb = json.load(open(p))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:15: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp55kcjdo4/state/workboard.json' mode='w' encoding='utf-8'>
+  json.dump(wb, open(p, "w"), indent=1)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/mark.py:8: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp55kcjdo4/state/workboard.json' mode='r' encoding='utf-8'>
+  path = os.path.join(root, "state/workboard.json"); wb = json.load(open(path))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/mark.py:16: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp55kcjdo4/state/workboard.json' mode='w' encoding='utf-8'>
+  json.dump(wb, open(path, "w"), indent=1); print(f"{pid} -> {status}")
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+W0-01 -> ACCEPTED
+W0-02 -> ACCEPTED
+/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp55kcjdo4/state/workboard.json' mode='r' encoding='utf-8'>
+  wb = json.load(open(os.path.join(root, "state/workboard.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_next_work_initially_only_w0_01 (test_tools.KitTools.test_next_work_initially_only_w0_01) ... /home/claude/repo/tools/test_tools.py:13: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmplh2r8y3g/state/workboard.json' mode='r' encoding='utf-8'>
+  p = os.path.join(self.tmp, "state/workboard.json"); wb = json.load(open(p))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/test_tools.py:15: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmplh2r8y3g/state/workboard.json' mode='w' encoding='utf-8'>
+  json.dump(wb, open(p, "w"), indent=1)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/claude/repo/tools/next_work.py:7: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmplh2r8y3g/state/workboard.json' mode='r' encoding='utf-8'>
+  wb = json.load(open(os.path.join(root, "state/workboard.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.054s
+
+OK
+
+> lastclan@0.0.0 check:workboard
+> python3 tools/check_workboard.py
+
+{
+ "status": "PASS",
+ "packets": 139,
+ "byPhase": {
+  "W0": 11,
+  "P1": 35,
+  "P2": 26,
+  "P3": 20,
+  "P4": 14,
+  "P5": 15,
+  "P6": 12,
+  "PX": 6
+ },
+ "accepted": 35,
+ "scenes": 51,
+ "errors": []
+}
