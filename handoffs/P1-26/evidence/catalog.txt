@@ -1,0 +1,16 @@
+=== P1-26: the eight-person prototype catalog ===
+  PASS  Prototype8 declares 8 contestants  ->  8 present
+  PASS  Prototype8 declares 12 actions  ->  12 present
+  PASS  actor ids are unique  ->  8 of 8 unique
+  PASS  appearance recipes are unique  ->  8 of 8 unique
+  PASS  appearance uses only the GDD 14.1 families  ->  all within families
+  PASS  every skill is a whole 0-100 value and none is missing  ->  all present and in range
+  PASS  every contestant has at least one declared trait  ->  all declared
+  PASS  starting inventory counts are whole items  ->  all whole
+  PASS  personal accents are unique, so a clan change leaves an individual recognisable  ->  8 of 8 unique
+  PASS  every action has an intent, an icon, an animation and a sound-or-silent mapping  ->  all four present on all actions
+  PASS  action ids are unique  ->  12 of 12 unique
+  PASS  durations are whole ticks, at least one  ->  all whole
+  same catalog against Standard: ok=false, failures = Standard declares 100 contestants | Standard declares 48 actions
+  rules run are identical once the scope numbers are masked: true
+  silent-by-design actions: action.rest, action.observe
