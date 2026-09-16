@@ -1,0 +1,7 @@
+=== P1-24: revival, bleed and elimination cleanup ===
+  pause rules: Hostile+covered=true, Hostile+uncovered=false, Environment+covered=false — protection does not stabilize wildlife injuries
+  hostile wound: 4000 left, 40 covered ticks -> 4000 left (40 paused)
+  revive over 60 ticks: Completed, consumed item.bandage, wound penalty until t1259 (x700/1000)
+  interrupted one tick from done: Interrupted, bandageConsumed=false — time lost, nothing else
+  cleanup: released stack.flint, station.bench; dropped item.axex1, item.berryx4; C009 keeps station.fire=true
+  150 further tick-loop calls: 0 additional drops

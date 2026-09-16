@@ -60,3 +60,5 @@ export { advanceSwing, beginAttack, BOW, earliestContactTick, isFacing, MELEE, s
 export type { AttackKind, AttackPhase, AttackRefusal, Attacker, AttackTarget, BeginResult, ContactResult, Swing } from "./combat.js";
 export { applyRevives, BLEED_OUT_TICKS, healthTick, resolveTick, REVIVE_TICKS, REVIVED_HEALTH_MILLI, reviveRemaining, standing, tickBleedOut } from "./health.js";
 export type { ActorHealth, BleedOutOptions, HealthState, PendingHit, ResolveResult, Revive, Transition } from "./health.js";
+export { BANDAGE_ITEM_ID, beginRevive, bleedPauses, EliminationRegistry, stepRevive, tickBleedSource, woundMultiplierMilli, woundPenaltyActive, WOUND_PENALTY_MILLI, WOUND_PENALTY_TICKS } from "./elimination.js";
+export type { BleedSource, BleedTick, CleanupResult, Drop, ReviveEnd, ReviveEpisode, ReviveStep } from "./elimination.js";
