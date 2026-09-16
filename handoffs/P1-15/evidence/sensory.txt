@@ -1,0 +1,11 @@
+=== P1-15: sensory adapter and isolation ===
+  evidence without three hidden hostiles: C009  |  with them: C009
+  identical: true — far, behind and fully concealed produce nothing at all
+  in front (30 m)     Sight
+  90 deg to the side  not perceived
+  behind at 30 m      not perceived
+  behind at 7 m       Awareness
+  sound: subjectId=undefined (no identity), uncertainty 12000mm
+  sight range: awake 60000mm, asleep 15000mm, at half light 30000mm
+  threat sensed t100, delivered t103: latency 3 ticks (bound 5); overdue at t103: 0
+  undelivered at t106: overdue=1 with latency 6 — reported, not hidden

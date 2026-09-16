@@ -42,3 +42,5 @@ export { beginEating, continueEating, FOOD, fullnessPoints, PROTOTYPE8_FOOD, sta
 export type { DamageEvent, DamageSource, EatFailure, EatOutcome, EatProgress, ItemNutrition, NeedsState, TickOutcome } from "./needs.js";
 export { applyDamage, bleedRemaining, healTo, isCovered, newBleed, resolveHarm, tickBleed } from "./sanctuary.js";
 export type { BleedState, BleedTickOutcome, HarmAttempt, HarmOutcome } from "./sanctuary.js";
+export { AWARENESS_RADIUS_MM, beliefFrom, BASE_SIGHT_RANGE_MM, distanceBetween, FORWARD_HALF_ANGLE_DEGREES, HEARING_RADIUS_MM, perceive, scaleMilli, sightRangeMm, SLEEP_RANGE_MILLI, THREAT_INTERRUPT_TICKS, ThreatQueue } from "./sensory.js";
+export type { Channel, Evidence, Observer, QueuedThreat, SensedActor, SensoryInputs, SoundEvent } from "./sensory.js";
