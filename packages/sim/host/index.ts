@@ -219,3 +219,6 @@ export class SimHost {
     return Math.max(0, sub(t, this.#world.tick));
   }
 }
+
+export { dataAgeLabel, freezeSnapshot, InterpolationCache, sampleOf, settlePause, SnapshotBridge } from "./bridge.js";
+export type { ActorSample, InterpolatedActor, PauseState, ReadResult, Snapshot } from "./bridge.js";

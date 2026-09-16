@@ -1,0 +1,12 @@
+=== P1-27: snapshot bridge and interpolation ownership ===
+  1000 ticks published with nobody reading: core never blocked, acknowledged t999
+  first read gets t999 and reports 999 skipped — one slot, never a queue
+  snapshot frozen: true, actors frozen: true
+  a view trying to write into it: throws — it holds a value, not a handle
+    alpha    0 -> x 400000
+    alpha  500 -> x 401000
+    alpha 1000 -> x 402000
+    alpha 5000 -> x 402000  (clamped, never extrapolated)
+  interpolated shape: actorId, xMm, yMm, state, interpolated — a different type from ActorSample, so it cannot be published back
+  pause settles on t42 — the acknowledged tick, not a fraction between two
+  data age label: "tick 7 (current)"

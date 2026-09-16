@@ -799,7 +799,7 @@
    ],
    "refs": "TP 3; BRIDGE-OWNERSHIP",
    "gate": null,
-   "status": "PLANNED",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": "Worker postMessage bridge with transferable buffers (TP v2.0 \u00a73).",
    "lane": "A4"
