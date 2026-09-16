@@ -820,7 +820,7 @@
    ],
    "refs": "GDD 14.3; PRESENT 01 foundation",
    "gate": null,
-   "status": "PLANNED",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": "Three.js per-instance attributes and state icons; no animation clips (TP v2.0 \u00a713).",
    "lane": "A4"

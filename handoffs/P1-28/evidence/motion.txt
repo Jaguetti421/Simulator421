@@ -1,0 +1,16 @@
+=== P1-28: twelve procedural action motions ===
+  motions: 12, one per catalog action
+  pairwise separation of the five states (phase 500):
+    rest         vs wait           895
+    rest         vs blockedWork   1031
+    rest         vs combat         787
+    rest         vs rescue         765
+    wait         vs blockedWork    436
+    wait         vs combat         392
+    wait         vs rescue         670
+    blockedWork  vs combat         296
+    blockedWork  vs rescue         386
+    combat       vs rescue         450
+  stances: rest=Prone, wait=Upright, blockedWork=Reaching, combat=Striking, rescue=Crouched
+  a pose contains: actionDefId, leanDeciDeg, offsetsMm, phaseMilli, stance — no event, no callback, nothing to fire
+  determinism: same action and phase twice -> true
