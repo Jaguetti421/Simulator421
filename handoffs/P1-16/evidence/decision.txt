@@ -1,0 +1,8 @@
+=== P1-16: utility scoring and decision traces ===
+  no traits : chose goal.forage  scores goal.forage=1300, goal.shelter=1200
+  cautious  : chose goal.shelter  scores goal.shelter=1530, goal.forage=1420
+  considerations that changed: shelter, threat — and nothing else
+  mid-delay, better option : held goal.forage (heldByDelay=true, trigger Routine); its trace still ranks goal.shelter first
+  mid-delay, emergency     : switched to goal.flee immediately (trigger Emergency)
+  mid-delay, now illegal   : switched to goal.shelter (trigger LegalInvalidation)
+  evidence carried: [{"factId":1,"ageTicks":12}]
