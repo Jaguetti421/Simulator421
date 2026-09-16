@@ -882,7 +882,7 @@
    ],
    "refs": "TP 14; WHY-TRACE",
    "gate": null,
-   "status": "PLANNED",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": "React components; Why panel reads DecisionTrace verbatim (TP v2.0 \u00a714).",
    "lane": "A4"
