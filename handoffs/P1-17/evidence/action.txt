@@ -1,0 +1,7 @@
+=== P1-17: action executor lifecycle ===
+  clean run: Completed at tick 19, outputs {"item.axe":1}, events action.completed@19
+  walked away  : OutOfRange — act.1: 10000 mm from its work position, range is 2000 mm
+  lease taken  : LeaseLost — act.1: no longer holds station.bench
+  truce at t9  : PermissionDenied at tick 9 — the blow was one tick from landing
+  failed action committed 0 events; it had retained 90000 milli of progress
+  save mid-action: restored identical=true at 60000 milli, holding station.bench

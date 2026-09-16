@@ -46,3 +46,5 @@ export { AWARENESS_RADIUS_MM, beliefFrom, BASE_SIGHT_RANGE_MM, distanceBetween, 
 export type { Channel, Evidence, Observer, QueuedThreat, SensedActor, SensoryInputs, SoundEvent } from "./sensory.js";
 export { ARROW_MM_PER_SECOND, flyUntilContact, perTickMm, sweepProjectile, TARGET_RADIUS_MM, velocityToward } from "./projectile.js";
 export type { Contact, ContactKind, ProjectileState, SweepResult, TargetCandidate } from "./projectile.js";
+export { ACTIONS_SECTION_ID, ACTIONS_SECTION_VERSION, activeActionFields, cancelAction, captureActions, DEFAULT_REVALIDATE_TICKS, restoreActions, startAction, stepAction } from "./action.js";
+export type { ActionDefinition, ActionFailureRecord, ActionMilestone, ActionState, ActionsSectionRecord, CommittedEventRecord, CompletionRecord, FailureReason, RunningAction, StepOutcome, WorldView } from "./action.js";
