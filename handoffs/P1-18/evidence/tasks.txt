@@ -1,0 +1,15 @@
+=== P1-18: a hungry actor feeds itself ===
+  t  0  plan: goal.eat — nearest unreserved food is bush.near at 4000 mm
+  t  1  Reserve stack.bush.near  at 400000
+  t  2  GoTo bush.near  at 400350
+  t 11  PickUp bush.near  at 402800
+  t 12  Eat bush.near  at 402800
+  t 13  Eat bush.near  at 402800
+  t 14  Eat bush.near  at 402800
+  t 15  Eat bush.near  at 402800
+  t 16  Eat bush.near  at 402800
+  t 17  Eat bush.near  at 402800
+  fullness 30 -> 35, reservation released: true
+  nearest reserved by C009 -> nearest unreserved food is bush.decoy at 30000 mm
+  all reserved             -> goal.explore: every known food source is reserved by someone else
+  nothing known            -> no food is known

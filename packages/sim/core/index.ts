@@ -52,3 +52,5 @@ export { considerationsThatDiffer, decide, scoreCandidate, SWITCH_DELAY_TICKS, T
 export type { Candidate, Consideration, ConsiderationId, Decision, DecisionInput, DecisionTraceRecord, EvidenceRef, NoChoiceReason, ScoredCandidate, ScoredConsideration, TraitId } from "./decision.js";
 export { canSprint, canWalk, EXERTION, fatiguePoints, staminaPoints, startingExertion, tickExertion, tickRest } from "./exertion.js";
 export type { Exertion, ExertionState, ExertionTickOutcome, RestIntent, RestOutcome } from "./exertion.js";
+export { ARRIVAL_MM, candidatesFor, HUNGRY_BELOW, newAgent, PLAN_TICK_BUDGET, planFor, stepAgent, straightLineMover } from "./tasks.js";
+export type { ActorKnowledge, Agent, AgentOutcome, AgentStatus, GoalId, KnownFood, KnownRestSocket, Plan, PlanFailureReason, PlanStep, StepKind, TaskServices } from "./tasks.js";
