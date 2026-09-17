@@ -953,7 +953,7 @@
    ],
    "refs": "TP 18,20,22; Gate G1",
    "gate": null,
-   "status": "PLANNED",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A7"

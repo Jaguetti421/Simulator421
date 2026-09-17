@@ -1,0 +1,22 @@
+# Handoff — P1-34 / attempt 1
+
+Status: **ACCEPTED** (standing producer authorization; self-review below found no material issues).
+Base: `90654b4` → this commit. Contract v0, 24 records, digest unchanged.
+Goal and implemented behavior: the G1 evidence pass — what the eight contestants actually did and why, which scenes run, what is not exercised, and the synthetic counters kept separate from all of it.
+
+Changed files: `tools/gen_g1_evidence.mjs` (new, generates `handoffs/P1-34/evidence/g1-evidence.txt`); `tests/arch/g1-evidence.test.ts` (new, 10 tests asserting every claim the report makes).
+
+| Acceptance criterion | Evidence | Executed result |
+| --- | --- | --- |
+| 1. Eight contestants complete meaningful tasks with traceable reasons | `evidence/g1-evidence.txt`, `g1-evidence.test.ts` | **PASS** — over 1,200 ticks (two minutes of match time) the eight complete `goal.eat` repeatedly, with the completing tick recorded per actor; fullness rises from its starting spread and all eight are alive at the end. One decision trace is printed **in full** — `goal.eat = 700 (hunger 700×1000=700)` against `goal.rest = 140 (fatigue 200×700=140)` — so a reviewer can follow the arithmetic rather than take the choice on trust |
+| 2. All G1-mapped scenes execute; omitted full-game behaviours are listed | `evidence/g1-evidence.txt`, `g1-evidence.test.ts` | **PASS** — six mapped scenes run: survival, the validated island, the G1 scene's sockets, reaching the first night, a law denying harm, and a 600-tick replay. **Six omissions are listed by name**, including that building and combat are *composed but unchosen* and that knowledge is supplied rather than perceived. A test asserts the goal library really is limited to eat/rest/explore, so the omission list cannot quietly become stale while the report keeps claiming it |
+| 3. 136/137-actor counters and actual rendering evidence are separate | `evidence/g1-evidence.txt`, `g1-evidence.test.ts` | **PASS** — the report prints the synthetic workload's numbers (137 actors, 600 ticks, digest `4d0bd28a`) **with its eight declared omissions attached**, and the composed host's separately (8 actors, 600 ticks), and states that the two are not comparable. Neither is a rendering measurement: GPU frame timing at 1920×1080 is stated as HUMAN_REQUIRED, and a test asserts the host exposes no `fps`, `frameMs`, `renderMs` or `gpu` field that could be mistaken for one |
+
+Commands executed: `npm run verify` → **0** (build, lint, **1,050/1,050** vitest across 68 files — 1,040 at the packet baseline; 6 python; workboard PASS). `node tools/gen_g1_evidence.mjs` regenerates the report.
+
+Self-review (same session; standing authorization): no material findings. Three notes.
+1. **The report is generated, and its claims are tested.** A hand-written evidence document drifts from the build the first time the build changes. Every line the generator prints corresponds to an assertion in `g1-evidence.test.ts`, so the report cannot become plausible-but-wrong without a test failing.
+2. **The omission list is the most important part of this packet.** Six behaviours are named, and the one I would most want a reviewer to notice is that combat and building are *reachable and unexercised* — every system is composed into the host, and no goal selects them. "The code is there" is not "the behaviour happens", and a gate package that blurred those would be the exact failure W0-11 was written to avoid.
+3. **The two populations are printed together and declared incomparable.** 137 synthetic actors in 256 ms and 8 real ones in 39 ms are both true and measure different things; presenting either alone, or presenting them as a trend, would mislead. The synthetic workload's own eight omissions are printed beside its number.
+
+Deferred and out of scope: **`apps/web` still runs the W0-07 synthetic kernel in its worker**, so the browser screenshots in `handoffs/W0-10/evidence` show the synthetic workload, not this host. Pointing the worker at `ComposedHost` is app work I did not do here, and the honest consequence is that the G1 package's *running build* and its *evidence* are not yet the same thing — that is the single largest item for P1-35 to state plainly, and the first thing to fix if Jani wants the gate build to show what these numbers describe. Also absent: captured images (the P1-28 checklist grades measurements a capture pass supplies), and any career or population statistics, which the Prototype8 profile does not write.
