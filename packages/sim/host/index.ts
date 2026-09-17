@@ -222,3 +222,6 @@ export class SimHost {
 
 export { dataAgeLabel, freezeSnapshot, InterpolationCache, sampleOf, settlePause, SnapshotBridge } from "./bridge.js";
 export type { ActorSample, InterpolatedActor, PauseState, ReadResult, Snapshot } from "./bridge.js";
+
+export { ComposedHost, HOST_VERSION, PROTOTYPE_NUTRITION, sameComposition } from "./composed.js";
+export type { HostActor, HostOptions, TickReport } from "./composed.js";

@@ -1,0 +1,10 @@
+=== P1-32: the first real simulation host ===
+  world: geometryHash 70bc28b8, island validated true, 8 actors, 4 food nodes, 1 rest socket
+  declares simulated=false, omissions=[] — the W0-07 synthetic workload listed 8 omissions; this host has none
+  600 ticks in 175 ms: living 8, completed goals 5, failures 0, digest 940d21e1
+  fullness before: [40, 38, 36, 34, 32, 30, 28, 26]
+  fullness after : [58, 62, 60, 28, 62, 60, 64, 56]  (actors that reached food are fuller)
+  two independent hosts, 60 ticks: identical digests = true; sameComposition = true
+  a law installed at composition: Denied — the same permission service every system asks
+  5,200 ticks (into the first night): isNight=true, living 8
+  published snapshot fields: actors, digest, publishedSequence, tick — no watermark, no synthetic flag
