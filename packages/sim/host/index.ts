@@ -225,3 +225,5 @@ export type { ActorSample, InterpolatedActor, PauseState, ReadResult, Snapshot }
 
 export { ComposedHost, HOST_VERSION, PROTOTYPE_NUTRITION, sameComposition } from "./composed.js";
 export type { HostActor, HostOptions, TickReport } from "./composed.js";
+export { digestsOver, REQUIRED_SECTIONS, replayDivergence, restoreHost, SAVE_FORMAT_VERSION, saveHost } from "./persistence.js";
+export type { ComposedSave, RestoreResult, SectionName } from "./persistence.js";

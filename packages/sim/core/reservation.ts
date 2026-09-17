@@ -71,6 +71,19 @@ export class ReservationBook {
   readonly #invalidated = new Set<string>();
   readonly releases: Release[] = [];
 
+  /**
+   * Put a lease back exactly as it was — the restore path.
+   *
+   * `grant` recomputes the expiry from the current tick, which is wrong on
+   * restore: a lease due to lapse at tick 60 must still lapse at 60, or a save
+   * changes when things expire. It did — a save at tick 50 diverged at 54 until
+   * this existed.
+   */
+  restoreLease(lease: Lease): void {
+    this.#leases.set(lease.key, lease);
+  }
+
+
   holderOf(key: string): string | undefined {
     return this.#leases.get(key)?.holderActorId;
   }

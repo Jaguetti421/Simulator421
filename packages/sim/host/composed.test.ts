@@ -11,20 +11,24 @@ import type { Law } from "../core/permission.js";
 const T = (n: number): Int => n as Int;
 const SEED = T(4107);
 
-const host = ComposedHost.create({ seed: SEED });
+/** Compiled once: every host below is the same world, so the island is compiled once. */
+const TERRAIN = ComposedHost.create({ seed: SEED }).terrain;
+const make = (): ComposedHost => ComposedHost.create({ seed: SEED, terrain: TERRAIN });
+
+const host = make();
 host.runTicks(300);
 
 describe("both frontends use identical registrations and content (criterion 1)", () => {
   it("builds the same composition twice from the same seed", () => {
-    const other = ComposedHost.create({ seed: SEED });
+    const other = make();
     expect(sameComposition(host, other)).toBe(true);
     expect(other.terrain.manifest.geometryHash).toBe(host.terrain.manifest.geometryHash);
     expect(other.actors.map((a) => a.agent.actorId)).toEqual(host.actors.map((a) => a.agent.actorId));
   });
 
   it("produces identical tick digests from two independent hosts", () => {
-    const a = ComposedHost.create({ seed: SEED });
-    const b = ComposedHost.create({ seed: SEED });
+    const a = make();
+    const b = make();
     const digestsA: string[] = [];
     const digestsB: string[] = [];
     for (let i = 0; i < 60; i += 1) {
@@ -48,7 +52,7 @@ describe("both frontends use identical registrations and content (criterion 1)",
   });
 
   it("publishes exactly one snapshot per tick", () => {
-    const counted = ComposedHost.create({ seed: SEED });
+    const counted = make();
     counted.runTicks(25);
     expect(counted.bridge.publishedCount).toBe(25);
     expect(counted.bridge.acknowledgedTick).toBe(24);
@@ -100,7 +104,7 @@ describe("the valley runs real survival, building and law behaviour (criterion 3
   });
 
   it("feeds actors that started hungry", () => {
-    const fed = ComposedHost.create({ seed: SEED });
+    const fed = make();
     const before = fed.summary().fullness;
     fed.runTicks(400);
     const after = fed.summary().fullness;
@@ -109,7 +113,7 @@ describe("the valley runs real survival, building and law behaviour (criterion 3
   });
 
   it("keeps hunger running: nobody is frozen at their starting value", () => {
-    const fresh = ComposedHost.create({ seed: SEED });
+    const fresh = make();
     const before = fresh.summary().fullness;
     fresh.runTicks(200);
     const after = fresh.summary().fullness;
@@ -118,14 +122,14 @@ describe("the valley runs real survival, building and law behaviour (criterion 3
 
   it("enforces an installed law through the same permission service", () => {
     const truce: Law = { lawId: "law.truce", version: T(1), permission: "SentientHarm", activationTick: T(0), endTick: T(10_000), scope: {}, reasonId: "WaitingForLaw" };
-    const lawful = ComposedHost.create({ seed: SEED, laws: [truce] });
+    const lawful = ComposedHost.create({ seed: SEED, terrain: TERRAIN, laws: [truce] });
     lawful.runTicks(20);
     expect(lawful.permissions.lawsAt(T(10)).map((law) => law.lawId)).toEqual(["law.truce"]);
     expect(lawful.permissions.check({ permission: "SentientHarm", tick: T(10), actorPositionMm: [T(400_000), T(400_000)] }).verdict).toBe("Denied");
   });
 
   it("runs a night without losing anyone to a crash", () => {
-    const long = ComposedHost.create({ seed: SEED });
+    const long = make();
     const report = long.runTicks(5_200);
     expect(report.isNight).toBe(true);
     expect(report.living).toBeGreaterThan(0);
@@ -133,7 +137,7 @@ describe("the valley runs real survival, building and law behaviour (criterion 3
   });
 
   it("advances its clock and reports night at the published boundary", () => {
-    const clocked = ComposedHost.create({ seed: SEED });
+    const clocked = make();
     const day = clocked.runTicks(10);
     expect(day.isNight).toBe(false);
   });

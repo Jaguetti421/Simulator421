@@ -1,0 +1,16 @@
+=== P1-33: save and replay ===
+  island compiled once and shared across every host below
+    save at tick   1: identical over the next 200 ticks
+    save at tick  17: identical over the next 200 ticks
+    save at tick  50: identical over the next 200 ticks
+    save at tick  73: identical over the next 200 ticks
+    save at tick 120: identical over the next 200 ticks
+    save at tick 199: identical over the next 200 ticks
+    save at tick 377: identical over the next 200 ticks
+    save at tick 600: identical over the next 200 ticks
+  save at 120, replay 600 ticks: identical
+  sections: actors, exertion, exposure, health, meta, needs, reservations
+    without "needs": MissingSections — missing section(s): needs — a decoder refuses rather than substituting defaults
+    without "reservations": MissingSections — missing section(s): reservations — a decoder refuses rather than substituting defaults
+  wrong seed: SeedMismatch
+  future format: UnknownFormatVersion

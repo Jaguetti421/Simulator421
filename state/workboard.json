@@ -933,7 +933,7 @@
    ],
    "refs": "TP 15; SAVE-ROUNDTRIP,SAVE-FREQUENCY",
    "gate": null,
-   "status": "PLANNED",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": "IndexedDB adapter in the browser, in-memory/fake-indexeddb in Node; JSON export/import (TP v2.0 \u00a715).",
    "lane": "A5"

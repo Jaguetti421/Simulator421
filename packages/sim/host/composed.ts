@@ -58,6 +58,16 @@ export interface HostActor {
 
 export interface HostOptions {
   readonly seed: Int;
+  /**
+   * A terrain already compiled from this seed.
+   *
+   * Compiling the 640,000-cell island costs about three seconds, and a caller
+   * that builds several hosts of the same world — a replay check, an evidence
+   * pass, a real app restoring a save — should pay that once. Passing a terrain
+   * from a different seed would be a lie about the world, so `create` checks the
+   * recipe seed rather than trusting it.
+   */
+  readonly terrain?: CompiledTerrain;
   readonly coldFronts?: readonly ColdFront[];
   readonly laws?: readonly Law[];
 }
@@ -102,7 +112,10 @@ export class ComposedHost {
 
   static create(options: HostOptions): ComposedHost {
     const sockets: Socket[] = [];
-    const terrain = compileTerrain({ recipeId: "valley-shipping", seed: options.seed, template: "valley", sockets });
+    if (options.terrain !== undefined && options.terrain.recipe.seed !== options.seed) {
+      throw new Error(`terrain was compiled from seed ${options.terrain.recipe.seed}, host asked for ${options.seed}`);
+    }
+    const terrain = options.terrain ?? compileTerrain({ recipeId: "valley-shipping", seed: options.seed, template: "valley", sockets });
     const scene = buildG1Scene(terrain);
 
     const knowledge: ActorKnowledge = {
@@ -217,6 +230,18 @@ export class ComposedHost {
       failed,
       digest,
     };
+  }
+
+  /**
+   * Replace the host's tick and actor state — the restore path.
+   *
+   * Deliberately the only way in: a save writes every field it captured and a
+   * restore sets them all at once, so there is no partial-restore state a caller
+   * could observe or a future field could quietly skip.
+   */
+  restoreState(tick: Int, actors: readonly HostActor[]): void {
+    this.#tick = tick;
+    this.#actors = [...actors];
   }
 
   runTicks(count: number): TickReport {
