@@ -973,7 +973,7 @@
    ],
    "refs": "Gate G1",
    "gate": "G1",
-   "status": "PLANNED",
+   "status": "ACCEPTED",
    "complexity": "unrated",
    "webAdaptation": null,
    "lane": "A0"

@@ -1,116 +1,121 @@
 {
- "schemaVersion": 1,
- "gates": [
-  {
-   "id": "G0",
-   "phase": "W0",
-   "status": "APPROVED",
-   "candidateBaseline": "w0-baseline",
-   "janiApproval": "Producer accepted in chat, 12 September 2026: \"Accepted and continue. I'll have to postpone testing and do it later.\" All six G0 criteria executed and passed; the human checks below were deferred by the producer, not satisfied.",
-   "criteria": [
-    "Node headless kernel and browser Worker produce identical canonical hashes on the synthetic 137-actor workload.",
-    "clanlab validates, runs and bundles failures for the example fixtures; a readability PNG renders in the sandbox.",
-    "A real 3D screenshot of eight procedural identities is produced through /capture under Playwright (CI or Jani's PC) with metadata.",
-    "IndexedDB save/recover and exactly-once finalization smoke pass in Node adapters and in the browser adapter; no duplicate result.",
-    "Static build serves offline; operation counters, tick timing and the environment are recorded; ADR 001 (web now, wrapper later) is written.",
-    "Unavailable checks are BLOCKED_RENDER / BLOCKED_TOOL / HUMAN_REQUIRED, never PASS."
-   ],
-   "deferredHumanChecks": [
-    "Visual judgement of the eight procedural identities at tabletop distance (JANI_PC_CHECKLIST.md step 2). Not a G0 criterion; it is the question that decides whether the procedural kit reaches G1 (Addendum D06).",
-    "GPU frame timing at 1920x1080 with 137 actors on reference hardware (JANI_PC_CHECKLIST.md step 3). Every timing number in this repository came from a 1-CPU sandbox with software rendering and is a diagnostic only."
-   ],
-   "carryTo": "G1"
-  },
-  {
-   "id": "G1",
-   "phase": "P1",
-   "status": "PLANNED",
-   "candidateBaseline": null,
-   "janiApproval": null,
-   "criteria": [
-    "Eight real actors complete food/work/build/wait/threat sequences; mapped law/route/inventory scenes pass.",
-    "All twelve action states, selection/follow/Why/timeline and real capture are readable.",
-    "Save/load agrees for 600 ticks; production query population stress is measured with remaining omissions listed."
-   ]
-  },
-  {
-   "id": "G2",
-   "phase": "P2",
-   "status": "PLANNED",
-   "candidateBaseline": null,
-   "janiApproval": null,
-   "criteria": [
-    "Complete Trial runs with clans, powers, knowledge, differentiated rescue, careers and forecasts.",
-    "Mapped GDD scenes, 100-seed Trial evidence and save/observer invariance pass.",
-    "Ten real new viewers are tested; at least eight recall three contestants, explain two choices and understand the next law.",
-    "Actual Jani's PC (Jani's PC (reference hardware)) and operation-count evidence meets accepted Trial targets; missing evidence blocks closure."
-   ]
-  },
-  {
-   "id": "G3",
-   "phase": "P3",
-   "status": "PLANNED",
-   "candidateBaseline": null,
-   "janiApproval": null,
-   "criteria": [
-    "Complete Standard100 plus 36 wildlife, 28 recipes, migration and legal finale run through the same host.",
-    "All non-Story production scenes and 100 varied Standard seeds terminate by 36000 ticks without illegal effects, duplication or deadlock.",
-    "Pre-cutoff winner target of at least 95 percent is a reported tuning gate, distinct from correctness; passive coalitions have separate fixtures.",
-    "Supported Custom commands, two commandments, three whispers and scenario provenance are complete.",
-    "Reference-machine performance and urgent response remain valid at full population."
-   ]
-  },
-  {
-   "id": "G4",
-   "phase": "P4",
-   "status": "PLANNED",
-   "candidateBaseline": null,
-   "janiApproval": null,
-   "criteria": [
-    "All 100 identities and twelve action states meet day/night/dense-camp/finale readability at 100 and 150 percent text scale.",
-    "All 300 core lines, action intents and supported sound/visual cues validate.",
-    "Six factual threads, career dossiers, epithets, notes and safe offline Saga exports work.",
-    "Human visual/readability review and content evidence are attached."
-   ]
-  },
-  {
-   "id": "GS",
-   "phase": "P5",
-   "status": "PLANNED",
-   "candidateBaseline": null,
-   "janiApproval": null,
-   "criteria": [
-    "All STORY 01\u201312 scenes pass, including guest-disabled equivalence, interrupted persecution and exact Accord eligibility.",
-    "Eight sourced themes and six encounters support voluntary diverse responses without LLM dependence.",
-    "Guest state persists and records never contaminate Standard wins or competitor K/A totals.",
-    "Independent source/portrayal and user-facing readability evidence is complete."
-   ]
-  },
-  {
-   "id": "GR",
-   "phase": "P6",
-   "status": "PLANNED",
-   "candidateBaseline": null,
-   "janiApproval": null,
-   "criteria": [
-    "G4 and GS are accepted and all affected prior evidence is revalidated on the integrated candidate.",
-    "All 51 scenes, release regression, fuzz/recovery/soak and full-population hardware checks pass.",
-    "Eight-minute lesson, first-run flow and clean-PC offline Windows package work.",
-    "Licenses/credits, source/executable manifests and known limitations are complete; public distribution still awaits its own instruction."
-   ]
-  },
-  {
-   "id": "GL",
-   "phase": "PX",
-   "status": "PLANNED",
-   "candidateBaseline": null,
-   "janiApproval": null,
-   "criteria": [
-    "All 100 grounding/adversarial probes and enabled/disabled core comparisons execute.",
-    "No generated output can mutate game state, invent canonical scripture or become memory.",
-    "Actual local model/license/runtime/hardware latency and failure behavior justify enablement.",
-    "Jani explicitly approves optional shipping; deferral does not block GR."
-   ]
-  }
- ]
+  "schemaVersion": 1,
+  "gates": [
+    {
+      "id": "G0",
+      "phase": "W0",
+      "status": "APPROVED",
+      "candidateBaseline": "w0-baseline",
+      "janiApproval": "Producer accepted in chat, 12 September 2026: \"Accepted and continue. I'll have to postpone testing and do it later.\" All six G0 criteria executed and passed; the human checks below were deferred by the producer, not satisfied.",
+      "criteria": [
+        "Node headless kernel and browser Worker produce identical canonical hashes on the synthetic 137-actor workload.",
+        "clanlab validates, runs and bundles failures for the example fixtures; a readability PNG renders in the sandbox.",
+        "A real 3D screenshot of eight procedural identities is produced through /capture under Playwright (CI or Jani's PC) with metadata.",
+        "IndexedDB save/recover and exactly-once finalization smoke pass in Node adapters and in the browser adapter; no duplicate result.",
+        "Static build serves offline; operation counters, tick timing and the environment are recorded; ADR 001 (web now, wrapper later) is written.",
+        "Unavailable checks are BLOCKED_RENDER / BLOCKED_TOOL / HUMAN_REQUIRED, never PASS."
+      ],
+      "deferredHumanChecks": [
+        "Visual judgement of the eight procedural identities at tabletop distance (JANI_PC_CHECKLIST.md step 2). Not a G0 criterion; it is the question that decides whether the procedural kit reaches G1 (Addendum D06).",
+        "GPU frame timing at 1920x1080 with 137 actors on reference hardware (JANI_PC_CHECKLIST.md step 3). Every timing number in this repository came from a 1-CPU sandbox with software rendering and is a diagnostic only."
+      ],
+      "carryTo": "G1"
+    },
+    {
+      "id": "G1",
+      "phase": "P1",
+      "status": "AWAITING_PRODUCER",
+      "candidateBaseline": "g1-candidate",
+      "janiApproval": null,
+      "criteria": [
+        "Eight real actors complete food/work/build/wait/threat sequences; mapped law/route/inventory scenes pass.",
+        "All twelve action states, selection/follow/Why/timeline and real capture are readable.",
+        "Save/load agrees for 600 ticks; production query population stress is measured with remaining omissions listed."
+      ],
+      "requestedOn": "2026-09-14",
+      "humanChecks": [
+        "GPU frame timing at 1920x1080 on reference hardware",
+        "visual judgement of the eight procedural identities (carried from G0)"
+      ]
+    },
+    {
+      "id": "G2",
+      "phase": "P2",
+      "status": "PLANNED",
+      "candidateBaseline": null,
+      "janiApproval": null,
+      "criteria": [
+        "Complete Trial runs with clans, powers, knowledge, differentiated rescue, careers and forecasts.",
+        "Mapped GDD scenes, 100-seed Trial evidence and save/observer invariance pass.",
+        "Ten real new viewers are tested; at least eight recall three contestants, explain two choices and understand the next law.",
+        "Actual Jani's PC (Jani's PC (reference hardware)) and operation-count evidence meets accepted Trial targets; missing evidence blocks closure."
+      ]
+    },
+    {
+      "id": "G3",
+      "phase": "P3",
+      "status": "PLANNED",
+      "candidateBaseline": null,
+      "janiApproval": null,
+      "criteria": [
+        "Complete Standard100 plus 36 wildlife, 28 recipes, migration and legal finale run through the same host.",
+        "All non-Story production scenes and 100 varied Standard seeds terminate by 36000 ticks without illegal effects, duplication or deadlock.",
+        "Pre-cutoff winner target of at least 95 percent is a reported tuning gate, distinct from correctness; passive coalitions have separate fixtures.",
+        "Supported Custom commands, two commandments, three whispers and scenario provenance are complete.",
+        "Reference-machine performance and urgent response remain valid at full population."
+      ]
+    },
+    {
+      "id": "G4",
+      "phase": "P4",
+      "status": "PLANNED",
+      "candidateBaseline": null,
+      "janiApproval": null,
+      "criteria": [
+        "All 100 identities and twelve action states meet day/night/dense-camp/finale readability at 100 and 150 percent text scale.",
+        "All 300 core lines, action intents and supported sound/visual cues validate.",
+        "Six factual threads, career dossiers, epithets, notes and safe offline Saga exports work.",
+        "Human visual/readability review and content evidence are attached."
+      ]
+    },
+    {
+      "id": "GS",
+      "phase": "P5",
+      "status": "PLANNED",
+      "candidateBaseline": null,
+      "janiApproval": null,
+      "criteria": [
+        "All STORY 01\u201312 scenes pass, including guest-disabled equivalence, interrupted persecution and exact Accord eligibility.",
+        "Eight sourced themes and six encounters support voluntary diverse responses without LLM dependence.",
+        "Guest state persists and records never contaminate Standard wins or competitor K/A totals.",
+        "Independent source/portrayal and user-facing readability evidence is complete."
+      ]
+    },
+    {
+      "id": "GR",
+      "phase": "P6",
+      "status": "PLANNED",
+      "candidateBaseline": null,
+      "janiApproval": null,
+      "criteria": [
+        "G4 and GS are accepted and all affected prior evidence is revalidated on the integrated candidate.",
+        "All 51 scenes, release regression, fuzz/recovery/soak and full-population hardware checks pass.",
+        "Eight-minute lesson, first-run flow and clean-PC offline Windows package work.",
+        "Licenses/credits, source/executable manifests and known limitations are complete; public distribution still awaits its own instruction."
+      ]
+    },
+    {
+      "id": "GL",
+      "phase": "PX",
+      "status": "PLANNED",
+      "candidateBaseline": null,
+      "janiApproval": null,
+      "criteria": [
+        "All 100 grounding/adversarial probes and enabled/disabled core comparisons execute.",
+        "No generated output can mutate game state, invent canonical scripture or become memory.",
+        "Actual local model/license/runtime/hardware latency and failure behavior justify enablement.",
+        "Jani explicitly approves optional shipping; deferral does not block GR."
+      ]
+    }
+  ]
 }
