@@ -123,16 +123,16 @@ test("renders after warm-up frames and writes a PNG carrying its own metadata", 
   expect(text["Fixture"]).toBe("PRESENT-READ-01");
   expect(text["Tick"]).toBe("300");
   expect(text["AuthoritativeDigest"]).toBe(meta.digest);
-  expect(text["Watermark"]).toBe("FakeSim");
+  expect(text["Watermark"]).toBe("FirstPlayable");
   expect(png.byteLength).toBeGreaterThan(5_000);
 });
 
-test("every FakeSim frame carries a visible watermark inside the captured image", async ({ page }) => {
+test("every captured frame carries a visible watermark inside the image", async ({ page }) => {
   await page.goto(`${CAPTURE}?fixture=PRESENT-READ-01&tick=50`);
   await expect(page.locator("#stage")).toHaveAttribute("data-capture-ready", "true", { timeout: 20_000 });
   const watermark = page.getByTestId("fakesim-watermark");
   await expect(watermark).toBeVisible();
-  await expect(watermark).toContainText("FakeSim");
+  await expect(watermark).toContainText("First playable");
   const box = await watermark.boundingBox();
   const stageBox = await page.locator("#stage").boundingBox();
   expect(box).not.toBeNull();

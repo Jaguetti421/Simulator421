@@ -8,7 +8,9 @@
  *
  * "A screenshot from anything other than the real renderer is not evidence"
  * (TP v2.0 §13). This uses the real kernel and the real scene — and because
- * nothing in this build is gameplay yet, every frame carries the FakeSim
+ * this build runs the composed host (P1-32), so a frame shows real actors; the
+ * banner names what is still missing rather than claiming the whole game. Until
+ * P1-35 it read FakeSim, because until P1-35 it was the synthetic
  * watermark **inside the captured image**, not merely in a caption beside it.
  */
 import { host as simHost, persistence } from "@lastclan/sim";
@@ -28,7 +30,7 @@ export interface CaptureMetadata {
   readonly renderer: string;
   readonly kernel: string;
   readonly digest: string;
-  readonly watermark: "FakeSim";
+  readonly watermark: string;
   readonly warmupFrames: number;
   readonly mode: "world" | "recipes";
   readonly cameraTargetM: readonly [number, number, number];
@@ -68,7 +70,7 @@ export function startCapture(): void {
   const watermark = document.createElement("div");
   watermark.id = "watermark";
   watermark.dataset["testid"] = "fakesim-watermark";
-  watermark.textContent = "FakeSim — synthetic workload, not gameplay";
+  watermark.textContent = "First playable — survival only; no building, combat or perceived knowledge";
   watermark.style.fontSize = `${13 * textScale}px`;
   stage.append(watermark);
 
@@ -137,7 +139,7 @@ export function startCapture(): void {
       renderer: "lastclan-tabletop-3d-v1",
       kernel: simHost.KERNEL_VERSION,
       digest: host.authoritativeDigest(),
-      watermark: "FakeSim",
+      watermark: "FirstPlayable",
       warmupFrames: WARMUP_FRAMES,
       cameraTargetM: centroidM,
       /** Sanity: actors whose projection lands inside the viewport. Zero means the picture is empty. */

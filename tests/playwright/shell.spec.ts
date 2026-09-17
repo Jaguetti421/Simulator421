@@ -14,8 +14,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("boots the kernel in a Worker and shows the confirmed tick advancing", async ({ page }) => {
-  await expect(page.getByTestId("actors")).toHaveText("137");
-  await expect(page.getByTestId("kernel")).toContainText("w0-07-synthetic");
+  await expect(page.getByTestId("actors")).toHaveText("8", { timeout: 20_000 });
+  await expect(page.getByTestId("kernel")).toContainText("composed-1");
   // Deliberately not asserting that t=0 is ever observed: the Worker may have
   // advanced before the first paint, and a race is not the claim. The claim is
   // that the number on screen is a tick the Worker confirmed, and that it moves.
@@ -40,6 +40,11 @@ test("pause settles on a tick and nothing advances past it", async ({ page }) =>
 test("offers 1x, 2x and 4x, and 4x advances more ticks per second than 1x", async ({ page }) => {
   for (const speed of [1, 2, 4]) await expect(page.getByTestId(`speed-${speed}`)).toBeVisible();
 
+  // The composed host compiles the island before its first tick, so the shell
+  // is genuinely busy for a few seconds at boot. Wait for it to be running
+  // before measuring rates, rather than measuring the compile.
+  await expect(page.getByTestId("actors")).toHaveText("8", { timeout: 20_000 });
+
   const measure = async (speed: number): Promise<number> => {
     await page.getByTestId(`speed-${speed}`).click();
     await expect(page.getByTestId(`speed-${speed}`)).toHaveAttribute("aria-pressed", "true");
@@ -56,9 +61,14 @@ test("offers 1x, 2x and 4x, and 4x advances more ticks per second than 1x", asyn
   expect(atFour).toBeGreaterThan(atOne);
 });
 
-test("carries the synthetic watermark and lists what the workload does not do", async ({ page }) => {
-  await expect(page.getByTestId("watermark")).toContainText("SYNTHETIC WORKLOAD");
-  await expect(page.getByTestId("watermark")).toContainText("not gameplay");
+test("carries a watermark naming what this build is and is not", async ({ page }) => {
+  // The claim changed with the build: this runs the composed host, so the
+  // watermark names what is missing instead of calling the whole thing fake.
+  await expect(page.getByTestId("watermark")).toContainText("FIRST PLAYABLE");
+  await expect(page.getByTestId("watermark")).toContainText("Not in it yet");
+  for (const missing of ["building", "combat", "clans"]) {
+    await expect(page.getByTestId("watermark")).toContainText(missing);
+  }
   await expect(page.locator("main ul li")).not.toHaveCount(0);
 });
 
@@ -85,7 +95,7 @@ test("serves offline: the built site boots with every non-local request blocked"
   });
 
   await page.goto(SITE);
-  await expect(page.getByTestId("actors")).toHaveText("137");
+  await expect(page.getByTestId("actors")).toHaveText("8", { timeout: 20_000 });
   const read = async (): Promise<number> => Number(/t=(\d+)/u.exec((await page.getByTestId("confirmed-tick").textContent()) ?? "")?.[1] ?? "-1");
   await expect.poll(read, { timeout: 5000 }).toBeGreaterThan(0);
   await expect(page.getByTestId("error")).toHaveCount(0);

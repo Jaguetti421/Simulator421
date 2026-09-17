@@ -21,6 +21,21 @@ export function App(): React.JSX.Element {
   const [actors, setActors] = useState(0);
   const [kernel, setKernel] = useState("");
   const [omissions, setOmissions] = useState<readonly string[]>([]);
+
+  /**
+   * What this build does not do yet.
+   *
+   * The composed host declares **no** omissions — it stubs nothing — so this
+   * list is about scope rather than fakery, and it is the same list the G1
+   * evidence prints. It lives here, not in the worker, because it describes the
+   * goal library and the content, not the simulation kernel.
+   */
+  const notYet = [
+    "building: sockets exist, no goal chooses to build",
+    "combat: preparation, damage and wildlife exist, no goal chooses to fight",
+    "perception: knowledge is given to actors, not earned by looking",
+    "clans, trust, teaching and careers: all of P2",
+  ];
   const [digest, setDigest] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,8 +73,16 @@ export function App(): React.JSX.Element {
 
   return (
     <main>
+      {/*
+        The watermark now states what this build actually is. It ran the W0-07
+        synthetic workload until P1-35; it runs the composed host, so the claim
+        changed with the code rather than outliving it. The list is the same one
+        the G1 evidence prints — building and combat are composed and unchosen,
+        and knowledge is supplied rather than perceived.
+      */}
       <p className="watermark" data-testid="watermark">
-        SYNTHETIC WORKLOAD (W0-07 kernel) — not gameplay. No goals, combat, economy or terrain exist yet.
+        FIRST PLAYABLE (P1) — eight contestants surviving on the island. Not in it yet: building, combat, perceived
+        knowledge, clans or careers.
       </p>
 
       <h1>The Last Clan — runtime shell</h1>
@@ -95,9 +118,9 @@ export function App(): React.JSX.Element {
 
       {error !== null && <p data-testid="error">Worker error: {error}</p>}
 
-      <h2>What this workload does not do</h2>
+      <h2>What this build does not do yet</h2>
       <ul>
-        {omissions.map((o) => (
+        {[...omissions, ...notYet].map((o) => (
           <li key={o}>{o}</li>
         ))}
       </ul>

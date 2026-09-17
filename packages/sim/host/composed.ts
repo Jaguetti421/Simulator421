@@ -146,8 +146,39 @@ export class ComposedHost {
     return host;
   }
 
+  #paused = false;
+  #lastDigest = "00000000";
+
   get tick(): Int {
     return this.#tick;
+  }
+
+  get actorCount(): number {
+    return this.#actors.length;
+  }
+
+  get paused(): boolean {
+    return this.#paused;
+  }
+
+  /**
+   * Pause and resume.
+   *
+   * A pause settles on the **last completed tick** — the host only ever advances
+   * in whole ticks, so there is no partial state to stop in. The flag is read by
+   * the caller's pump; nothing inside a tick consults it.
+   */
+  pause(): void {
+    this.#paused = true;
+  }
+
+  resume(): void {
+    this.#paused = false;
+  }
+
+  /** The digest of the last published tick — the authoritative state a view can quote. */
+  authoritativeDigest(): string {
+    return this.#lastDigest;
   }
 
   get actors(): readonly HostActor[] {
@@ -218,6 +249,7 @@ export class ComposedHost {
       state: actor.health.state,
     }));
     const digest = digestOf(samples, tick);
+    this.#lastDigest = digest;
     this.bridge.publish({ tick, actors: samples, digest, publishedSequence: 0 });
 
     this.#tick = asInt((tick as number) + 1, "tick");
